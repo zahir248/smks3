@@ -313,7 +313,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                                 <a class="dropdown-item" href="kelab-persatuan.php">Kelab Dan Persatuan</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="sukan-permainan.php">Sukan Dan Permainan</a>
+                                <a class="dropdown-item" target="_blank" href="https://laporan-sukan-permainan-s3.my.canva.site/">Sukan Dan Permainan</a>
                             </li>
                         </ul>
                     </li>
@@ -330,7 +330,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                                 <a class="dropdown-item" href="kawatankuasa-pibg.php">Jawatankuasa PIBG</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="no-akaun-pibg.php">Nombor Akaun PIBG</a>
+                                <a class="dropdown-item" target="_blank" href="images/NO AKAUN PIBG SMK S3.png">Nombor Akaun PIBG</a>
                             </li>
                         </ul>
                     </li>

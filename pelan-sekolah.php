@@ -26,7 +26,7 @@ require_once __DIR__ . '/includes/header.php';
         <h2 class="text-center fw-bold mb-5">Pelan Bangunan Sekolah</h2>
         <div class="text-center">
             <!-- Trigger Modal -->
-            <img src="pelansekolah.png" alt="Pelan Sekolah Menengah Kebangsaan Seremban 3" 
+            <img src="images/pelansekolah.png" alt="Pelan Sekolah Menengah Kebangsaan Seremban 3" 
                  class="img-fluid shadow rounded zoom-img" 
                  style="cursor: pointer; max-width: 100%; height: auto;" 
                  data-bs-toggle="modal" data-bs-target="#zoomModal">
