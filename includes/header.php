@@ -8,6 +8,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title) ?> | SMK S3</title>
+    <link rel="icon" type="image/png" href="images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -241,7 +242,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                                 <a class="dropdown-item" href="cuti-perayaan.php">Cuti Perayaan</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="carta-organisasi.php">Carta Organisasi Induk</a>
+                                <a class="dropdown-item" target="_blank" href="images/CARTA ORGANISASI INDUK.pdf">Carta Organisasi Induk</a>
                             </li>
                         </ul>
                     </li>
