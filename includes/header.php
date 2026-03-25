@@ -8,6 +8,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title) ?> | SMK S3</title>
+    <link rel="icon" type="image/png" href="images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -164,36 +165,201 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
         }
         .form-label { font-weight: 500; color: #334155; }
         .alert { border-radius: 10px; border: none; }
+        /**/
+        @media (min-width: 992px) {
+            .navbar .dropdown:hover .dropdown-menu {
+                display: block;
+                margin-top: 0;
+            }
+        }
+        @media (min-width: 992px) {
+            .navbar-nav {
+                max-width: 750px;
+                margin-left: auto;
+            }
+
+            .navbar-nav .nav-item {
+                flex: 0 0 20%;
+                text-align: center;
+            }
+
+        }.navbar-nav .nav-link {
+            padding: 0.6rem 0.5rem !important;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container">
             <a class="navbar-brand" href="index.php">
-                <i class="bi bi-mortarboard-fill me-2"></i>SMK S3
+                <i class="bi bi-mortarboard-fill me-2"></i>SMK SEREMBAN 3
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Menu navigasi">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto flex-wrap">
                     <li class="nav-item">
                         <a class="nav-link <?= $current_page === 'index' ? 'active' : '' ?>" href="index.php">Laman Utama</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page === 'about' ? 'active' : '' ?>" href="about.php">Perihal</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['profil-sekolah','misi-visi-sekolah','sejarah-sekolah']) ? 'active' : '' ?>" 
+                        href="#" 
+                        role="button" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false">
+                            Pengurusan Dan Pentadbiran
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="profil-sekolah.php">Profil Sekolah</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="misi-visi-sekolah.php">FPK, Visi, Misi, Motto Sekolah</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="sejarah-sekolah.php">Sejarah Sekolah</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="senarai-pengetua.php">Senarai Pengetua</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="pelan-sekolah.php">Pelan Sekolah</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="lencana-lagu-sekolah.php">Lencana & Lagu Sekolah</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="pengurusan-tertinggi.php">Pengurusan Tertinggi Sekolah</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="guru-apk.php">Barisan Guru Dan AKP</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="kalendar-akademik.php">Kalendar Akademik</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="cuti-perayaan.php">Cuti Perayaan</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" target="_blank" href="images/CARTA ORGANISASI INDUK.pdf">Carta Organisasi Induk</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page === 'courses' ? 'active' : '' ?>" href="courses.php">Jurusan</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['pentaksiran-peperiksaan','pusat-sumber','pra-sekolah','kecemerlangan-program-akademik','pilihan-mata-pelajaran']) ? 'active' : '' ?>" 
+                        href="#" 
+                        role="button" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false">
+                            Kurikulum
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="pentaksiran-peperiksaan.php">Pentaksiran Dan Peperiksaan</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="pusat-sumber.php">Pusat Sumber Sekolah</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="pra-sekolah.php">Pra Sekolah</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="kecemerlangan-program-akademik.php">Kecemerlangan Program Akademik</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="pilihan-mata-pelajaran.php">Pilihan Mata Pelajaran</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page === 'staff' ? 'active' : '' ?>" href="staff.php">Guru & Kakitangan</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['enrolmen-murid','bil-kelas-gambar','unit-bimbingan-kaunseling','peraturan-sekolah','pemimpin-murid']) ? 'active' : '' ?>" 
+                        href="#" 
+                        role="button" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false">
+                            Hal Ehwal Murid 
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="enrolmen-murid.php">Enrolmen Murid</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="bil-kelas-gambar.php">Bilangan Kelas-Gambar</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="unit-bimbingan-kaunseling.php">Unit Bimbingan Dan Kaunseling</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="peraturan-sekolah.php">Peraturan Sekolah</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="pemimpin-murid.php">Pemimpin Murid</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page === 'news' ? 'active' : '' ?>" href="news.php">Berita</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['unit-badan-beruniform','kelab-persatuan','sukan-permainan']) ? 'active' : '' ?>" 
+                        href="#" 
+                        role="button" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false">
+                            Kokurikulum
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="unit-badan-beruniform.php">Unit Badan Beruniform</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="kelab-persatuan.php">Kelab Dan Persatuan</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" target="_blank" href="https://laporan-sukan-permainan-s3.my.canva.site/">Sukan Dan Permainan</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page === 'contact' ? 'active' : '' ?>" href="contact.php">Hubungi</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['jawatankuasa-pibg','no-akaun-pibg']) ? 'active' : '' ?>" 
+                        href="#" 
+                        role="button" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false">
+                            PIBG
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="kawatankuasa-pibg.php">Jawatankuasa PIBG</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" target="_blank" href="images/NO AKAUN PIBG SMK S3.png">Nombor Akaun PIBG</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" 
+                        href="#" 
+                        role="button" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false">
+                            Media Sekolah
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="https://www.tiktok.com/@smkseremban3?lang=en" target="_blank" rel="noopener noreferrer">
+                                    TikTok
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="https://www.facebook.com/share/17rxCJHqUJ/" target="_blank" rel="noopener noreferrer">
+                                    Facebook
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="https://www.youtube.com/@TVPSSSMKSEREMBAN3" target="_blank" rel="noopener noreferrer">
+                                    YouTube
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>
