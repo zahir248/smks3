@@ -11,8 +11,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <section class="py-5 bg-light">
     <div class="container">
-        <h1 class="fw-bold mb-2">Guru & Kakitangan</h1>
-        <p class="text-muted lead">Tenaga pengajar dan kakitangan kami.</p>
+        <p class="text-muted lead mb-4">Tenaga pengajar dan kakitangan kami.</p>
         <div class="row g-4 mt-4">
             <?php foreach ($staff_list as $s) : ?>
             <div class="col-md-6 col-lg-4">

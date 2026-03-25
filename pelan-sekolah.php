@@ -5,24 +5,10 @@ $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Hero Section -->
-<section class="hero text-white py-5">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-4 fw-bold">Pelan Sekolah</h1>
-                <p class="lead">Lihat pelan bangunan dan kawasan Sekolah Menengah Kebangsaan Seremban 3.</p>
-            </div>
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-map-fill opacity-50" style="font-size: 7rem;"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- School Plan Section -->
 <section class="py-5 bg-light">
     <div class="container">
+        <p class="text-center text-muted lead mb-5">Lihat pelan bangunan dan kawasan Sekolah Menengah Kebangsaan Seremban 3.</p>
         <h2 class="text-center fw-bold mb-5">Pelan Bangunan Sekolah</h2>
         <div class="text-center">
             <!-- Trigger Modal -->

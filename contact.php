@@ -24,8 +24,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <section class="py-5 bg-light">
     <div class="container">
-        <h1 class="fw-bold mb-2">Hubungi</h1>
-        <p class="text-muted lead">Hubungi kami untuk maklumat lanjut.</p>
+        <p class="text-muted lead mb-4">Hubungi kami untuk maklumat lanjut.</p>
         <div class="row g-4 mt-4">
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm">

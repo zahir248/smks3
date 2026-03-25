@@ -5,12 +5,6 @@ $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<section class="hero text-white py-5">
-    <div class="container text-center py-4">
-        <h1 class="display-4 fw-bold">Cuti Perayaan Tahun 2026</h1>
-    </div>
-</section>
-
 <section class="py-5 bg-light">
     <div class="container">
 

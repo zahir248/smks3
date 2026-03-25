@@ -6,24 +6,10 @@ $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<section class="hero text-white py-5">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-5 fw-bold mb-3">Pentaksiran & Peperiksaan</h1>
-                <p class="lead mb-4">Maklumat berkaitan pentaksiran pelajar termasuk peperiksaan dalaman, peperiksaan awam dan Pentaksiran Bilik Darjah (PBD).</p>
-                <a href="contact.php" class="btn btn-light btn-lg">Hubungi Kami</a>
-            </div>
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-file-earmark-text-fill opacity-75" style="font-size: 7rem;"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Unit Peperiksaan Dalaman -->
 <section class="py-5">
     <div class="container">
+        <p class="text-center text-muted lead mb-4">Maklumat berkaitan pentaksiran pelajar termasuk peperiksaan dalaman, peperiksaan awam dan Pentaksiran Bilik Darjah (PBD). <a href="contact.php" class="text-decoration-none fw-semibold">Hubungi kami</a> untuk pertanyaan lanjut.</p>
 
         <div class="text-center mb-5">
             <h2 class="fw-bold">Unit Peperiksaan Dalaman</h2>

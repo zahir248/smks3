@@ -5,21 +5,6 @@ $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Hero Section -->
-<section class="hero text-white py-5" style="background: linear-gradient(145deg, #0B3C5D, #0d4a73, #082a42); position: relative; overflow: hidden;">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-4 fw-bold">Falsafah, Visi & Misi Sekolah</h1>
-                <p class="lead">Panduan pendidikan dan aspirasi SMK Seremban 3 untuk melahirkan insan seimbang, bertanggungjawab dan berilmu.</p>
-            </div>
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-book-half text-white opacity-50" style="font-size: 8rem;"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Falsafah Pendidikan Kebangsaan -->
 <section class="py-5 bg-light">
     <div class="container">

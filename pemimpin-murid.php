@@ -25,28 +25,13 @@ require_once __DIR__ . '/includes/header.php';
     font-size: 2rem;
 }
 </style>
-<!-- Hero Section -->
-<section class="hero text-white py-5 bg-primary">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-4 fw-bold">Pemimpin Murid</h1>
-                <p class="lead">
-                    Barisan kepimpinan murid yang berwibawa, berdisiplin dan komited dalam membantu pengurusan serta pembangunan sahsiah pelajar di sekolah.
-                </p>
-                <a href="#barisan" class="btn btn-light btn-lg me-2">Lihat Barisan</a>
-                <a href="#info" class="btn btn-outline-light btn-lg">Maklumat Lanjut</a>
-            </div>
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-people-fill text-white opacity-75" style="font-size: 7rem;"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Gambar Barisan Pemimpin Murid -->
 <section class="py-5 bg-light" id="barisan">
     <div class="container">
+        <p class="text-center text-muted lead mb-3">Barisan kepimpinan murid yang berwibawa, berdisiplin dan komited dalam membantu pengurusan serta pembangunan sahsiah pelajar di sekolah.</p>
+        <div class="text-center mb-4">
+            <a href="#info" class="btn btn-outline-primary btn-sm">Maklumat Lanjut</a>
+        </div>
         <h2 class="fw-bold text-center mb-4">Barisan Pemimpin Murid</h2>
 
         <div class="text-center">

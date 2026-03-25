@@ -7,8 +7,10 @@ require_once __DIR__ . '/includes/header.php';
 
 <section class="py-5 bg-light">
     <div class="container">
-        <h1 class="fw-bold mb-4">Perihal <?= htmlspecialchars($settings['school_name']) ?></h1>
-        <p class="lead text-muted"><?= htmlspecialchars($settings['tagline'] ?? '') ?></p>
+        <h2 class="h3 fw-bold mb-4">Perihal <?= htmlspecialchars($settings['school_name']) ?></h2>
+        <?php if (!empty($settings['tagline'])) : ?>
+        <p class="lead text-muted"><?= htmlspecialchars($settings['tagline']) ?></p>
+        <?php endif; ?>
         <div class="row mt-4">
             <div class="col-lg-8">
                 <p><?= nl2br(htmlspecialchars($settings['about_summary'] ?? 'SMK S3 ialah sekolah menengah yang komited menyediakan pendidikan vokasional berkualiti dan siap bekerja.')) ?></p>

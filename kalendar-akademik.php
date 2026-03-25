@@ -5,15 +5,9 @@ $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<section class="hero text-white py-5">
-    <div class="container text-center py-4">
-        <h1 class="display-4 fw-bold">Kalendar Akademik Tahun 2026</h1>
-        <p class="lead">Kumpulan B: Johor, Melaka, Negeri Sembilan, Pahang, Perak, Perlis, Pulau Pinang, Sabah, Sarawak, Selangor, Wilayah Persekutuan KL, Labuan & Putrajaya</p>
-    </div>
-</section>
-
 <section class="py-5 bg-light">
     <div class="container">
+        <p class="text-muted lead mb-4"><strong>Kumpulan B:</strong> Johor, Melaka, Negeri Sembilan, Pahang, Perak, Perlis, Pulau Pinang, Sabah, Sarawak, Selangor, Wilayah Persekutuan KL, Labuan & Putrajaya</p>
         <div class="table-responsive">
             <table class="table table-bordered text-center align-middle">
                 <thead class="table-dark">

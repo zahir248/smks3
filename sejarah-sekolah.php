@@ -5,24 +5,10 @@ $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Hero Section -->
-<section class="hero text-white py-5" style="background: linear-gradient(145deg, #0B3C5D, #0d4a73, #082a42);">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-4 fw-bold">Sejarah Sekolah</h1>
-                <p class="lead">Menelusuri perjalanan awal penubuhan dan perkembangan SMK Seremban 3 hingga kini.</p>
-            </div>
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-building display-1 opacity-50"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Timeline Section -->
 <section class="py-5 bg-light">
     <div class="container">
+        <p class="text-center text-muted lead mb-4">Menelusuri perjalanan awal penubuhan dan perkembangan SMK Seremban 3 hingga kini.</p>
         <h2 class="text-center fw-bold mb-5">Sejarah Penubuhan SMK Seremban 3</h2>
         <div class="timeline">
             <!-- 2013 Caretaker -->
@@ -96,20 +82,6 @@ require_once __DIR__ . '/includes/header.php';
 .fade-in.show {
     opacity: 1;
     transform: translateY(0);
-}
-.hero .bi-building {
-    font-size: 9rem; /* lebih besar dari 7rem */
-    transition: transform 0.3s;
-}
-
-@media (max-width: 991px) {
-    .hero .bi-building {
-        font-size: 5rem; /* responsive untuk tablet & phone */
-    }
-}
-.hero .bi-building {
-    color: rgba(255,255,255,0.15);
-    text-shadow: 0 4px 15px rgba(0,0,0,0.25);
 }
 </style>
 

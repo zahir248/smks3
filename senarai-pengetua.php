@@ -5,24 +5,10 @@ $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Hero Section -->
-<section class="hero text-white py-5">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-4 fw-bold">Senarai Pengetua</h1>
-                <p class="lead">Sejak penubuhan, SMK Seremban 3 telah dipimpin oleh beberapa pengetua berwibawa.</p>
-            </div>
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-people-fill opacity-50" style="font-size: 7rem;"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Timeline Section -->
 <section class="py-5 bg-light">
     <div class="container">
+        <p class="text-center text-muted lead mb-4">Sejak penubuhan, SMK Seremban 3 telah dipimpin oleh beberapa pengetua berwibawa.</p>
         <h2 class="text-center fw-bold mb-5">Timeline Pengetua SMK Seremban 3</h2>
         <div class="timeline">
             <?php

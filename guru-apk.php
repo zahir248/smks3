@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Guru APK';
+$page_title = 'Barisan Guru Dan AKP';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/admin/config.php'; // <--- tambah ini
 $settings = getSettings();
@@ -17,15 +17,9 @@ if($result){
 }
 ?>
 
-<section class="hero text-white py-5">
-    <div class="container py-4 text-center">
-        <h1 class="display-4 fw-bold">Guru AKP Sekolah Menengah Kebangsaan Seremban 3</h1>
-        <p class="lead">Kenali barisan guru AKP sekolah kita.</p>
-    </div>
-</section>
-
 <section class="py-5 bg-light">
     <div class="container">
+        <p class="text-center text-muted lead mb-4">Kenali barisan guru AKP sekolah kita.</p>
         <style>
             .pengurusan-card {
                 text-align: center;

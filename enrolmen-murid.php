@@ -48,27 +48,14 @@ require_once __DIR__ . '/includes/header.php';
     letter-spacing: 2px;
 }
 </style>
-<!-- Hero Section -->
-<section class="hero text-white py-5">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h1 class="display-4 fw-bold">Pelan Kedudukan Kelas</h1>
-                <p class="lead">Susun atur kelas mengikut blok dan aras di SMK Seremban 3.</p>
-                <a href="#blok-a" class="btn btn-light btn-lg me-2">Blok Akademik A</a>
-                <a href="#blok-b" class="btn btn-outline-light btn-lg">Blok Akademik B</a>
-            </div>
-            <div class="col-lg-4 text-center d-none d-lg-block">
-                <i class="bi bi-grid-3x3-gap text-white opacity-75" style="font-size: 6rem;"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- ENROLMENT SECTION -->
 <section class="py-5 bg-white">
     <div class="container text-center">
-        
+        <p class="text-muted lead mb-3">Susun atur kelas mengikut blok dan aras di SMK Seremban 3.</p>
+        <div class="mb-4">
+            <a href="#blok-a" class="btn btn-outline-primary btn-sm me-2">Blok Akademik A</a>
+            <a href="#blok-b" class="btn btn-outline-primary btn-sm">Blok Akademik B</a>
+        </div>
         <div class="mb-4">
             <img src="images/ENROLMENT FEB.jpg" 
                  alt="Enrolment February"

@@ -5,28 +5,11 @@ $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Hero Section -->
-<section class="hero text-white py-5">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-4 fw-bold">Profil Sekolah</h1>
-                <p class="lead">SMK Seremban 3. Sekolah yang berpendidikan berkualiti, persekitaran kondusif dan peluang pembangunan menyeluruh untuk pelajar.</p>
-                <a href="#maklumat-sekolah" class="btn btn-light btn-lg me-2">Maklumat Sekolah</a>
-                <a href="contact.php" class="btn btn-outline-light btn-lg">Hubungi Kami</a>
-            </div>
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-building text-white opacity-75" style="font-size: 7rem;"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Profil Sekolah Creative Cards -->
 <section class="py-5" id="maklumat-sekolah">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Mengenai SMK Seremban 3</h2>
+            <h2 class="text-center fw-bold mb-3">Mengenai SMK Seremban 3</h2>
             <p class="text-muted">Maklumat Am dan ringkas tentang sekolah kami.</p>
         </div>
 
@@ -48,8 +31,11 @@ require_once __DIR__ . '/includes/header.php';
                 ['title'=>'Jenis Bantuan','value'=>'Sekolah Menengah Kerajaan','icon'=>'bi-bank2','color'=>'#22c55e'],
             ];
 
-            foreach($profil_data as $item): ?>
-            <div class="col-md-6 col-lg-4">
+            $profil_count = count($profil_data);
+            foreach ($profil_data as $index => $item) :
+                $is_last_card = ($index === $profil_count - 1);
+            ?>
+            <div class="col-md-6 col-lg-4<?= $is_last_card ? ' offset-md-3 offset-lg-4' : '' ?>">
                 <div class="card card-hover h-100 shadow-sm border-0">
                     <div class="card-body d-flex align-items-start">
                         <div class="me-3">

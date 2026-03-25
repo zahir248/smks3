@@ -27,27 +27,11 @@ $buletin_list = [
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<section class="hero text-white py-5">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-5 fw-bold mb-3">Buletin Sekolah</h1>
-                <p class="lead mb-4">
-                    Koleksi buletin rasmi SMK Seremban 3 yang memaparkan aktiviti, program dan pencapaian warga sekolah.
-                </p>
-            </div>
-
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-newspaper opacity-75" style="font-size:7rem;"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
 <section class="py-5">
     <div class="container">
 
         <div class="text-center mb-5">
+            <p class="text-muted lead mb-3">Koleksi buletin rasmi SMK Seremban 3 — aktiviti, program dan pencapaian warga sekolah.</p>
             <h2 class="fw-bold">Koleksi Buletin</h2>
             <p class="text-muted">Klik buletin untuk melihat atau memuat turun versi PDF.</p>
         </div>

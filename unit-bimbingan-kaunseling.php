@@ -5,26 +5,14 @@ $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Hero Section -->
-<section class="hero text-white py-5 bg-primary">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-4 fw-bold">Unit Bimbingan & Kaunseling</h1>
-                <p class="lead">Perkhidmatan bimbingan menyeluruh untuk pembangunan akademik, kerjaya, psikologi, kepimpinan, dan kesihatan mental pelajar.</p>
-                <a href="#perkhidmatan" class="btn btn-light btn-lg me-2">Perkhidmatan</a>
-                <a href="contact.php" class="btn btn-outline-light btn-lg">Hubungi Kami</a>
-            </div>
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-people-fill text-white opacity-75" style="font-size: 7rem;"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Pengenalan -->
 <section class="py-5" id="pengenalan">
     <div class="container">
+        <p class="text-center text-muted lead mb-3">Perkhidmatan bimbingan menyeluruh untuk pembangunan akademik, kerjaya, psikologi, kepimpinan, dan kesihatan mental pelajar.</p>
+        <div class="text-center mb-4">
+            <a href="#visi-misi" class="btn btn-outline-primary btn-sm me-2">Visi &amp; Misi</a>
+            <a href="contact.php" class="btn btn-outline-primary btn-sm">Hubungi Kami</a>
+        </div>
         <div class="text-center mb-5">
             <h2 class="fw-bold">Pengenalan Perkhidmatan Bimbingan & Kaunseling</h2>
         </div>

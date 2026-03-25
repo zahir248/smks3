@@ -6,28 +6,10 @@ $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- HERO -->
-<section class="hero text-white py-5">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-5 fw-bold mb-3">Kecemerlangan Program Akademik</h1>
-                <p class="lead mb-4">
-                    Pelbagai program akademik dijalankan bagi meningkatkan prestasi dan kecemerlangan pelajar SMK Seremban 3.
-                </p>
-            </div>
-
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-mortarboard-fill opacity-75" style="font-size:7rem;"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
-
 <!-- PROGRAM AKADEMIK -->
 <section class="py-5">
     <div class="container">
+        <p class="text-center text-muted lead mb-4">Pelbagai program akademik dijalankan bagi meningkatkan prestasi dan kecemerlangan pelajar SMK Seremban 3.</p>
 
         <div class="text-center mb-5">
             <h2 class="fw-bold">Program Akademik</h2>

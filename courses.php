@@ -12,8 +12,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <section class="py-5 bg-light">
     <div class="container">
-        <h1 class="fw-bold mb-2">Jurusan</h1>
-        <p class="text-muted lead">Program kemahiran yang kami tawarkan untuk masa depan pelajar.</p>
+        <p class="text-muted lead mb-4">Program kemahiran yang kami tawarkan untuk masa depan pelajar.</p>
         <div class="row g-4 mt-3">
             <?php foreach ($courses as $c) : ?>
             <div class="col-md-6 col-lg-4" id="<?= htmlspecialchars($c['slug']) ?>">
