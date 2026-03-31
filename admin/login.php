@@ -103,10 +103,6 @@ font-weight:bold;
 
 </form>
 
-<div class="text-center mt-3">
-<a href="register.php">Register Admin</a>
-</div>
-
 </div>
 <script>
 

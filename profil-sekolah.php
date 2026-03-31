@@ -3,6 +3,29 @@ $page_title = 'Profil Sekolah';
 require_once __DIR__ . '/includes/functions.php';
 $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/config/database.php'; // sesuaikan path ikut struktur projek awak
+$pdo = getConnection();
+// Ambil data dari database
+$pdo = getConnection(); // pastikan getConnection() return PDO
+$stmt = $pdo->query("SELECT * FROM profil_sekolah LIMIT 1");
+$school = $stmt->fetch();
+
+// Mapping data untuk cards, kekalkan warna & icon sama
+$profil_data = [
+    ['title'=>'Nama Pengetua','value'=>$school['nama_pengetua'],'icon'=>'bi-person-badge','color'=>'#1e3a8a'],
+    ['title'=>'Bilangan Guru','value'=>$school['bilangan_guru'].' orang','icon'=>'bi-people','color'=>'#0d9488'],
+    ['title'=>'Bilangan Murid','value'=>$school['bilangan_murid'].' orang','icon'=>'bi-people-fill','color'=>'#f59e0b'],
+    ['title'=>'Keluasan Sekolah','value'=>$school['keluasan_sekolah'],'icon'=>'bi-arrows-fullscreen','color'=>'#9333ea'],
+    ['title'=>'Sesi Persekolahan','value'=>$school['sesi_persekolahan'],'icon'=>'bi-clock','color'=>'#ef4444'],
+    ['title'=>'Tingkatan Tertinggi','value'=>$school['tingkatan_tertinggi'],'icon'=>'bi-mortarboard','color'=>'#2563eb'],
+    ['title'=>'Alamat Sekolah','value'=>$school['alamat_sekolah'],'icon'=>'bi-geo-alt','color'=>'#f97316'],
+    ['title'=>'Kod Sekolah','value'=>$school['kod_sekolah'],'icon'=>'bi-hash','color'=>'#10b981'],
+    ['title'=>'Lokasi','value'=>$school['lokasi'],'icon'=>'bi-map','color'=>'#3b82f6'],
+    ['title'=>'Daerah Pentadbiran','value'=>$school['daerah_pentadbiran'],'icon'=>'bi-building','color'=>'#8b5cf6'],
+    ['title'=>'Gred Sekolah','value'=>$school['gred_sekolah'],'icon'=>'bi-award','color'=>'#fbbf24'],
+    ['title'=>'Pejabat Pendidikan Daerah','value'=>$school['pejabat_pendidikan_daerah'],'icon'=>'bi-building','color'=>'#ef4444'],
+    ['title'=>'Jenis Bantuan','value'=>$school['jenis_bantuan'],'icon'=>'bi-bank2','color'=>'#22c55e'],
+];
 ?>
 
 <!-- Profil Sekolah Creative Cards -->
@@ -15,22 +38,6 @@ require_once __DIR__ . '/includes/header.php';
 
         <div class="row g-4">
             <?php 
-            $profil_data = [
-                ['title'=>'Nama Pengetua','value'=>'Puan Siamala A/P Govindan','icon'=>'bi-person-badge','color'=>'#1e3a8a'],
-                ['title'=>'Bilangan Guru','value'=>'43 orang','icon'=>'bi-people','color'=>'#0d9488'],
-                ['title'=>'Bilangan Murid','value'=>'644 orang','icon'=>'bi-people-fill','color'=>'#f59e0b'],
-                ['title'=>'Keluasan Sekolah','value'=>'7.01 hektar','icon'=>'bi-arrows-fullscreen','color'=>'#9333ea'],
-                ['title'=>'Sesi Persekolahan','value'=>'1 Sesi','icon'=>'bi-clock','color'=>'#ef4444'],
-                ['title'=>'Tingkatan Tertinggi','value'=>'5','icon'=>'bi-mortarboard','color'=>'#2563eb'],
-                ['title'=>'Alamat Sekolah','value'=>'Jalan Seremban Tiga 3, 70300 Seremban, Negeri Sembilan','icon'=>'bi-geo-alt','color'=>'#f97316'],
-                ['title'=>'Kod Sekolah','value'=>'NEA 4117','icon'=>'bi-hash','color'=>'#10b981'],
-                ['title'=>'Lokasi','value'=>'Luar Bandar','icon'=>'bi-map','color'=>'#3b82f6'],
-                ['title'=>'Daerah Pentadbiran','value'=>'Seremban','icon'=>'bi-building','color'=>'#8b5cf6'],
-                ['title'=>'Gred Sekolah','value'=>'B','icon'=>'bi-award','color'=>'#fbbf24'],
-                ['title'=>'Pejabat Pendidikan Daerah','value'=>'Seremban','icon'=>'bi-building','color'=>'#ef4444'],
-                ['title'=>'Jenis Bantuan','value'=>'Sekolah Menengah Kerajaan','icon'=>'bi-bank2','color'=>'#22c55e'],
-            ];
-
             $profil_count = count($profil_data);
             foreach ($profil_data as $index => $item) :
                 $is_last_card = ($index === $profil_count - 1);

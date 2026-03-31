@@ -544,7 +544,7 @@ smks3_record_visit();
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['kawatankuasa-pibg'], true) ? 'active' : '' ?>" 
+                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['jawatankuasa-pibg'], true) ? 'active' : '' ?>" 
                         href="#" 
                         role="button" 
                         data-bs-toggle="dropdown" 
@@ -553,7 +553,7 @@ smks3_record_visit();
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item <?= $current_page === 'kawatankuasa-pibg' ? 'active' : '' ?>" href="kawatankuasa-pibg.php">Jawatankuasa PIBG</a>
+                                <a class="dropdown-item <?= $current_page === 'jawatankuasa-pibg' ? 'active' : '' ?>" href="jawatankuasa-pibg.php">Jawatankuasa PIBG</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" target="_blank" href="images/NO AKAUN PIBG SMK S3.png">Nombor Akaun PIBG</a>

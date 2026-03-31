@@ -1,34 +1,31 @@
 <?php
 $page_title = 'Senarai Pengetua';
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/config/database.php'; // guna connection sedia ada
+
 $settings = getSettings();
+$pdo = getConnection(); // <-- ini missing
+// Ambil semua pengetua dari database, ASC supaya dari lama ke baru
+$stmt = $pdo->query("SELECT * FROM pengetua ORDER BY start_year ASC");
+$pengetua_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Reverse array supaya yang baru berada di bawah
+$pengetua_list = array_reverse($pengetua_list);
 require_once __DIR__ . '/includes/header.php';
 ?>
-
 <!-- Timeline Section -->
 <section class="py-5 bg-light">
     <div class="container">
-        <p class="text-center text-muted lead mb-4">Sejak penubuhan, SMK Seremban 3 telah dipimpin oleh beberapa pengetua berwibawa.</p>
-        <h2 class="text-center fw-bold mb-5">Timeline Pengetua SMK Seremban 3</h2>
+        <h2 class="text-center fw-bold mb-5">Garis Masa Pengetua SMK Seremban 3</h2>
         <div class="timeline">
-            <?php
-            $pengetua_list = [
-                ['name' => 'Jamaluddin bin Ahmad', 'start' => '2013', 'end' => '2015'],
-                ['name' => 'Amnah binti Alias', 'start' => '2015', 'end' => '2017'],
-                ['name' => 'Shafie bin Mohd Noor', 'start' => '2017', 'end' => '2020'],
-                ['name' => 'Roslan bin Mohd Zainal', 'start' => 'JAN 2020', 'end' => 'APRIL 2020'],
-                ['name' => 'Mad Pazir bin Md Ahair', 'start' => '2020', 'end' => '2023'],
-                ['name' => 'Siamala a/p Govindan', 'start' => '2023', 'end' => 'KINI'],
-            ];
-            foreach ($pengetua_list as $index => $p) :
-            ?>
-            <div class="timeline-item <?= $index % 2 == 0 ? 'left' : 'right' ?>">
-                <div class="timeline-icon"><i class="bi bi-person-circle"></i></div>
-                <div class="timeline-content">
-                    <h5 class="fw-bold"><?= htmlspecialchars($p['name']) ?></h5>
-                    <p class="text-muted mb-0"><?= htmlspecialchars($p['start']) ?> – <?= htmlspecialchars($p['end']) ?></p>
+            <?php foreach ($pengetua_list as $index => $p) : ?>
+                <div class="timeline-item <?= $index % 2 == 0 ? 'left' : 'right' ?>">
+                    <div class="timeline-icon"><i class="bi bi-person-circle"></i></div>
+                    <div class="timeline-content">
+                        <h5 class="fw-bold"><?= htmlspecialchars($p['name']) ?></h5>
+                        <p class="text-muted mb-0"><?= htmlspecialchars($p['start_year']) ?> – <?= htmlspecialchars($p['end_year']) ?></p>
+                    </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         </div>
     </div>

@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/header.php';
 <!-- Lencana Sekolah Section -->
 <section class="py-5 bg-light">
     <div class="container">
-        <p class="text-center text-muted lead mb-4">Kenali lencana dan lagu rasmi Sekolah Menengah Kebangsaan Seremban 3.</p>
+        
         <h2 class="text-center fw-bold mb-5">Lencana Sekolah</h2>
         <div class="row align-items-center g-4">
             <div class="col-md-4 text-center">

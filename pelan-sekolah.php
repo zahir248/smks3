@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/header.php';
 <!-- School Plan Section -->
 <section class="py-5 bg-light">
     <div class="container">
-        <p class="text-center text-muted lead mb-5">Lihat pelan bangunan dan kawasan Sekolah Menengah Kebangsaan Seremban 3.</p>
+
         <h2 class="text-center fw-bold mb-5">Pelan Bangunan Sekolah</h2>
         <div class="text-center">
             <!-- Trigger Modal -->

@@ -4,50 +4,31 @@ require_once __DIR__ . '/includes/functions.php';
 $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
+<?php
+require_once __DIR__ . '/config/database.php';
+$pdo = getConnection();
 
+$stmt = $pdo->query("SELECT * FROM sejarah_sekolah ORDER BY id DESC");
+$sejarahList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!-- Timeline Section -->
 <section class="py-5 bg-light">
     <div class="container">
-        <p class="text-center text-muted lead mb-4">Menelusuri perjalanan awal penubuhan dan perkembangan SMK Seremban 3 hingga kini.</p>
-        <h2 class="text-center fw-bold mb-5">Sejarah Penubuhan SMK Seremban 3</h2>
+        <h2 class="text-center fw-bold mb-5">Sejarah SMK Seremban 3</h2>
         <div class="timeline">
-            <!-- 2013 Caretaker -->
-            <div class="timeline-item fade-in">
-                <h5 class="fw-bold">Mei 2013 – Penubuhan Sekolah</h5>
-                <p>En Yazid bin Yusof dilantik sebagai caretaker dan guru pertama yang ditugaskan di Sekolah Menengah Kebangsaan Seremban 3. Pada 8 Mei 2013, Pn Noridayu binti Mohd Nordin melaporkan diri sebagai pembantu tadbir. En Jamaluddin bin Ahmad melaporkan diri sebagai Pengetua pada 28 Mei 2013.</p>
-            </div>
-
-            <hr class="divider">
-
-            <!-- Mesyuarat guru -->
-            <div class="timeline-item fade-in">
-                <h5 class="fw-bold">14 Jun 2013 – Mesyuarat Guru Pertama</h5>
-                <p>Mesyuarat guru kali pertama telah diadakan dan turut dihadiri oleh En Mohd Sah bin Zainal Abidin, Pegawai Pendidikan Daerah Seremban, serta beberapa pegawai PPD Seremban.</p>
-            </div>
-
-            <hr class="divider">
-
-            <!-- Murid pertama -->
-            <div class="timeline-item fade-in">
-                <h5 class="fw-bold">17 Jun 2013 – Hari Pertama Persekolahan</h5>
-                <p>Kumpulan murid pertama mendaftar seramai 142 orang (70 orang Tingkatan 1 & 72 orang Tingkatan 2). Kebanyakan murid berasal dari SMK Bukit Mewah dan SMK Mambau. Bilangan guru pada permulaan ialah 10 orang termasuk Pengetua.</p>
-            </div>
-
-            <hr class="divider">
-
-            <!-- Perkembangan murid dan guru -->
-            <div class="timeline-item fade-in">
-                <h5 class="fw-bold">Akhir 2013 – Pertumbuhan Sekolah</h5>
-                <p>Bilangan murid bertambah kepada 152 orang, manakala bilangan guru meningkat kepada 16 orang termasuk Pengetua, tiga Penolong Kanan, dua Guru Kanan Mata Pelajaran, seorang kaunselor, dan tiga staf sokongan.</p>
-            </div>
-
-            <hr class="divider">
-
-            <!-- Sekarang -->
-            <div class="timeline-item fade-in">
-                <h5 class="fw-bold">Kini</h5>
-                <p>SMK Seremban 3 kini mempunyai 644 murid, 43 guru serta 7 AKP. Pengetua pada masa kini ialah Pn Siamala a/p Govindan.</p>
-            </div>
+            <?php if(!empty($sejarahList)): ?>
+                <?php foreach($sejarahList as $row): ?>
+                    <div class="timeline-item fade-in">
+                        <h5 class="fw-bold">
+                            <?= htmlspecialchars($row['tajuk']) ?>
+                        </h5><br>
+                        <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
+                    </div>
+                    <hr class="divider">
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p class="text-center">Tiada sejarah lagi.</p>
+            <?php endif; ?>
         </div>
     </div>
 </section>
@@ -101,3 +82,4 @@ faders.forEach(fader => { appearOnScroll.observe(fader); });
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
+
