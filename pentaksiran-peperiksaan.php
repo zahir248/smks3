@@ -35,23 +35,23 @@ require_once __DIR__ . '/includes/header.php';
 
                             <div class="list-group text-start">
 
-                                <a href="#" class="list-group-item list-group-item-action">
+                                <a href="analisis-pat-t4-uasa-t1,2,3.php" class="list-group-item list-group-item-action">
                                     ANALISIS PAT T4 & UASA T1,2,3
                                 </a>
 
-                                <a href="#" class="list-group-item list-group-item-action">
+                                <a href="analisis-ppt.php" class="list-group-item list-group-item-action">
                                     ANALISIS PPT
                                 </a>
 
-                                <a href="#" class="list-group-item list-group-item-action">
+                                <a href="bank-soalan-uasa-ppt-pat-selaras.php" class="list-group-item list-group-item-action">
                                     BANK SOALAN UASA, PPT, PAT SELARAS
                                 </a>
 
-                                <a href="#" class="list-group-item list-group-item-action">
+                                <a href="keputusan.php" class="list-group-item list-group-item-action">
                                     KEPUTUSAN 2018 - 2024
                                 </a>
 
-                                <a href="#" class="list-group-item list-group-item-action">
+                                <a href="penggubal-soalan-upsa-uasa.php" class="list-group-item list-group-item-action">
                                     PENGGUBAL SOALAN UPSA & UASA
                                 </a>
 
