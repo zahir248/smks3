@@ -28,7 +28,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">ANALISIS SUBJEK</h5>
+                <h5 class="mb-3">2018</h5>
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"
@@ -56,7 +56,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">GPS (ANALISIS PENCAPAIAN KESELURUHAN PELAJAR)</h5>
+                <h5 class="mb-3">2019</h5>
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"
@@ -84,7 +84,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">LEMBARAN MARKAH</h5>
+                <h5 class="mb-3">2020</h5>
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"
@@ -112,7 +112,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">PERATUS LAYAK SIJIL TING. 4 & 5</h5>
+                <h5 class="mb-3">2021</h5>
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"
@@ -138,7 +138,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">RUMUSAN RANKING</h5>
+                <h5 class="mb-3">2022</h5>
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"
@@ -164,7 +164,31 @@ require_once __DIR__ . '/includes/header.php';
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">SISTEM PEPERIKSAAN</h5>
+                <h5 class="mb-3">2023</h5>
+
+                <button class="btn btn-outline-primary"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapse6">
+                    Lihat Bahagian
+                </button>
+
+                <div class="collapse mt-4" id="collapse6">
+                    <div class="list-group text-start">
+                        <a href="#" class="list-group-item">2025</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+        <!-- CARD 7 -->
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm card-hover h-100">
+            <div class="card-body text-center p-4">
+
+                <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
+                <h5 class="mb-3">2024</h5>
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"

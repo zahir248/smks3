@@ -28,7 +28,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">ANALISIS SUBJEK</h5>
+                <h5 class="mb-3">PPT TING. 5 TING. 5 SELARAS</h5>
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"
@@ -56,7 +56,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">GPS (ANALISIS PENCAPAIAN KESELURUHAN PELAJAR)</h5>
+                <h5 class="mb-3">SOALAN PROGRAM PENINGKATAN AKADEMIK TING 4 (PAT)</h5>
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"
@@ -84,7 +84,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">LEMBARAN MARKAH</h5>
+                <h5 class="mb-3">UASA</h5>
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"
@@ -112,7 +112,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">PERATUS LAYAK SIJIL TING. 4 & 5</h5>
+                <h5 class="mb-3">UPSA</h5>
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"
@@ -125,56 +125,6 @@ require_once __DIR__ . '/includes/header.php';
                         <a href="#" class="list-group-item">ANALISA LMS T4 2025</a>
                         <a href="#" class="list-group-item">ANALISA LMS T5 2025</a>
                         <a href="#" class="list-group-item">SENARAI NAMA PELAJAR GAGAL BM SEJ</a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- CARD 5 -->
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
-            <div class="card-body text-center p-4">
-
-                <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">RUMUSAN RANKING</h5>
-
-                <button class="btn btn-outline-primary"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapse5">
-                    Lihat Bahagian
-                </button>
-
-                <div class="collapse mt-4" id="collapse5">
-                    <div class="list-group text-start">
-                        <a href="#" class="list-group-item">TINGKATAN 1</a>
-                        <a href="#" class="list-group-item">TINGKATAN 2</a>
-                        <a href="#" class="list-group-item">TINGKATAN 3</a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- CARD 6 -->
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
-            <div class="card-body text-center p-4">
-
-                <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">SISTEM PEPERIKSAAN</h5>
-
-                <button class="btn btn-outline-primary"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapse6">
-                    Lihat Bahagian
-                </button>
-
-                <div class="collapse mt-4" id="collapse6">
-                    <div class="list-group text-start">
-                        <a href="#" class="list-group-item">2025</a>
                     </div>
                 </div>
 

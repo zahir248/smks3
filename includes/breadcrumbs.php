@@ -37,6 +37,7 @@ function smks3_default_breadcrumb_items(string $currentPage, string $pageTitle):
         'cuti-perayaan' => ['Pengurusan Dan Pentadbiran', 'Cuti Perayaan 2026'],
         // Kurikulum
         'pentaksiran-peperiksaan' => ['Kurikulum', 'Pentaksiran Dan Peperiksaan'],
+        'analisis-pat-t4-uasa-t1,2,3' => ['Kurikulum', 'Pentaksiran Dan Peperiksaan', 'Analisis PAT T4 & UASA T1,2,3'],
         'pusat-sumber' => ['Kurikulum', 'Pusat Sumber Sekolah'],
         'pra-sekolah' => ['Kurikulum', 'Pra Sekolah'],
         'kecemerlangan-program-akademik' => ['Kurikulum', 'Kecemerlangan Program Akademik'],
