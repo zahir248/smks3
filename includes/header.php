@@ -472,7 +472,7 @@ smks3_record_visit();
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['pentaksiran-peperiksaan','pusat-sumber','pra-sekolah','kecemerlangan-program-akademik','pilihan-mata-pelajaran'], true) ? 'active' : '' ?>" 
+                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['pentaksiran-peperiksaan','analisis-pat-t4-uasa-t1,2,3','analisis-ppt','bank-soalan-uasa-ppt-pat-selaras','keputusan','penggubal-soalan-upsa-uasa','pusat-sumber','pra-sekolah','kecemerlangan-program-akademik','pilihan-mata-pelajaran'], true) ? 'active' : '' ?>" 
                         href="#" 
                         role="button" 
                         data-bs-toggle="dropdown" 

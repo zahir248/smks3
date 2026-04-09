@@ -38,11 +38,8 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="collapse mt-4" id="collapse1">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">ANALISIS TINGKATAN 1</a>
-                        <a href="#" class="list-group-item">ANALISIS TINGKATAN 2</a>
-                        <a href="#" class="list-group-item">ANALISIS TINGKATAN 3</a>
-                        <a href="#" class="list-group-item">ANALISIS TINGKATAN 4</a>
-                        <a href="#" class="list-group-item">ANALISIS TINGKATAN 5</a>
+                        <a href="https://drive.google.com/drive/folders/1lQeGZzIFOwVfObRV3yytaz1RattFGvWT" target="_blank" class="list-group-item">PEPERIKSAAN PERTENGAHAN TAHUN</a>
+                        <a href="https://drive.google.com/drive/folders/1KrVNjZ55v4pr5_aNxus5xHrhiIymd8Rn" target="_blank" class="list-group-item">UJIAN 1</a>
                     </div>
                 </div>
 
@@ -66,11 +63,8 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="collapse mt-4" id="collapse2">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">TINGKATAN 1</a>
-                        <a href="#" class="list-group-item">TINGKATAN 2</a>
-                        <a href="#" class="list-group-item">TINGKATAN 3</a>
-                        <a href="#" class="list-group-item">TINGKATAN 4</a>
-                        <a href="#" class="list-group-item">TINGKATAN 5</a>
+                        <a href="https://drive.google.com/drive/folders/14cTAYDHj653MhFb1QzhQgJAZeyvkrBNF" target="_blank" class="list-group-item">PEPERIKSAAN PERTENGAHAN TAHUN</a>
+                        <a href="https://drive.google.com/drive/folders/1ndp7GQw-Igh68JOwpjwkXkaVs8WF26w3" target="_blank" class="list-group-item">PEPERIKSAAN AKHIR TAHUN</a>
                     </div>
                 </div>
 
@@ -94,11 +88,7 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="collapse mt-4" id="collapse3">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">TINGKATAN 1</a>
-                        <a href="#" class="list-group-item">TINGKATAN 2</a>
-                        <a href="#" class="list-group-item">TINGKATAN 3</a>
-                        <a href="#" class="list-group-item">TINGKATAN 4</a>
-                        <a href="#" class="list-group-item">TINGKATAN 5</a>
+                        <a href="https://drive.google.com/drive/folders/11Fe5x9uesnrd_pQ2iy7ocRJP-w1G42iK" target="_blank" class="list-group-item">PEPERIKSAAN PERTENGAHAN TAHUN</a>
                     </div>
                 </div>
 
@@ -122,9 +112,8 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="collapse mt-4" id="collapse4">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">ANALISA LMS T4 2025</a>
-                        <a href="#" class="list-group-item">ANALISA LMS T5 2025</a>
-                        <a href="#" class="list-group-item">SENARAI NAMA PELAJAR GAGAL BM SEJ</a>
+                        <a href="https://drive.google.com/drive/folders/1b08Rzxi_DhvRcyn7EmQbrGehdJpHnpSi" target="_blank" class="list-group-item">PEPERIKSAAN PERTENGAHAN TAHUN</a>
+                        <a href="#" class="list-group-item">PEPERIKSAAN AKHIR TAHUN</a>
                     </div>
                 </div>
 
@@ -148,9 +137,8 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="collapse mt-4" id="collapse5">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">TINGKATAN 1</a>
-                        <a href="#" class="list-group-item">TINGKATAN 2</a>
-                        <a href="#" class="list-group-item">TINGKATAN 3</a>
+                        <a href="https://drive.google.com/drive/folders/1WSPHYYoX_7I9iX4DhuXW-RkpQC4bEtFg" target="_blank" class="list-group-item">PEPERIKSAAN PERTENGAHAN TAHUN</a>
+                        <a href="#" class="list-group-item">UASA</a>
                     </div>
                 </div>
 
@@ -174,7 +162,8 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="collapse mt-4" id="collapse6">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">2025</a>
+                        <a href="https://drive.google.com/drive/folders/16dPHvgsyLCpKAtEDemWA7q_zwLbiSM8p" target="_blank" class="list-group-item">UASA</a>
+                        <a href="https://drive.google.com/drive/folders/1Qz1tY8mLIC8OEX5yD7z1L4GKvoUBHhTN" target="_blank" class="list-group-item">UPSA</a>
                     </div>
                 </div>
 
@@ -192,13 +181,15 @@ require_once __DIR__ . '/includes/header.php';
 
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="collapse"
-                        data-bs-target="#collapse6">
+                        data-bs-target="#collapse7">
                     Lihat Bahagian
                 </button>
 
-                <div class="collapse mt-4" id="collapse6">
+                <div class="collapse mt-4" id="collapse7">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">2025</a>
+                        <a href="https://drive.google.com/drive/folders/1LWuNvvvie8FmtD3G2MiiK0gpO0fypWt5" target="_blank" class="list-group-item">KEPUTUSAN UASA</a>
+                        <a href="https://drive.google.com/drive/folders/1TOfuq0onlcgl5w5GaDz9jJRDvAUJdBR1" target="_blank" class="list-group-item">PELAPORAN PBD AKHIR SESI AKADEMIK 2024/2025</a>
+                        <a href="https://drive.google.com/drive/folders/15MyOSyJqeIoNGriweX9T3cvxnfmBcsn7" target="_blank" class="list-group-item">UPSA</a>
                     </div>
                 </div>
 

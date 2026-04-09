@@ -37,7 +37,11 @@ function smks3_default_breadcrumb_items(string $currentPage, string $pageTitle):
         'cuti-perayaan' => ['Pengurusan Dan Pentadbiran', 'Cuti Perayaan 2026'],
         // Kurikulum
         'pentaksiran-peperiksaan' => ['Kurikulum', 'Pentaksiran Dan Peperiksaan'],
-        'analisis-pat-t4-uasa-t1,2,3' => ['Kurikulum', 'Pentaksiran Dan Peperiksaan', 'Analisis PAT T4 & UASA T1,2,3'],
+        'analisis-pat-t4-uasa-t1,2,3' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan.php'],'Analisis PAT T4 & UASA T1,2,3'],
+        'analisis-ppt' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan.php'],'Analisis PPT'],
+        'bank-soalan-uasa-ppt-pat-selaras' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan.php'],'Bank Soalan UASA PPT, PAT'],
+        'keputusan' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan.php'],'Keputusan 2018-2024'],
+        'penggubal-soalan-upsa-uasa' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan.php'],'Penggubal Soalan UPSA & UASA'],
         'pusat-sumber' => ['Kurikulum', 'Pusat Sumber Sekolah'],
         'pra-sekolah' => ['Kurikulum', 'Pra Sekolah'],
         'kecemerlangan-program-akademik' => ['Kurikulum', 'Kecemerlangan Program Akademik'],
@@ -68,14 +72,35 @@ function smks3_default_breadcrumb_items(string $currentPage, string $pageTitle):
     ];
 
     if (isset($map[$currentPage])) {
-        [$menu, $sub] = $map[$currentPage];
-        if ($menu !== null && $menu !== '') {
-            $landing = smks3_breadcrumb_menu_landing_href($menu);
-            $items[] = ['label' => $menu, 'href' => $landing];
-        }
-        $items[] = ['label' => $sub, 'current' => true];
-        return $items;
+    $levels = $map[$currentPage];
+    $menu = $levels[0] ?? null;
+
+    if ($menu !== null && $menu !== '') {
+        $landing = smks3_breadcrumb_menu_landing_href($menu);
+        $items[] = ['label' => $menu, 'href' => $landing];
     }
+
+    // Loop semua selepas menu
+    for ($i = 1; $i < count($levels); $i++) {
+        $level = $levels[$i];
+
+        if (is_array($level)) {
+            $label = $level[0];
+            $href = $level[1];
+        } else {
+            $label = $level;
+            $href = null;
+        }
+
+        $items[] = [
+            'label' => $label,
+            'href' => $href,
+            'current' => $i === count($levels) - 1
+        ];
+    }
+
+    return $items;
+}
 
     $items[] = ['label' => $pageTitle, 'current' => true];
     return $items;
