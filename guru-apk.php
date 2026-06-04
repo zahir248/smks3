@@ -1,77 +1,160 @@
 <?php
 $page_title = 'Barisan Guru Dan AKP';
 require_once __DIR__ . '/includes/functions.php';
-require_once __DIR__ . '/admin/config.php'; // <--- tambah ini
+require_once __DIR__ . '/admin/config.php';
+
 $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 
-// Ambil data guru APK dari database
-// Anggapkan jadual `guru` ada: id, nama, jawatan, dg, image, kategori
-$guru_apk = [];
-$sql = "SELECT * FROM guru";
-$result = mysqli_query($conn, $sql);
-if($result){
-    while($row = mysqli_fetch_assoc($result)){
-        $guru_apk[] = $row;
-    }
+// =========================
+// CONNECT DATA
+// =========================
+$guru = [];
+$akp = [];
+
+try {
+    // GURU
+    $stmt1 = $pdo->query("SELECT * FROM guru");
+    $guru = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+
+    // AKP
+    $stmt2 = $pdo->query("SELECT * FROM akp");
+    $akp = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    die("Query failed: " . $e->getMessage());
 }
 ?>
 
-<section class="py-5 bg-light">
-    <div class="container">
-        <p class="text-center text-muted lead mb-4">Kenali barisan guru AKP sekolah kita.</p>
-        <style>
-            .pengurusan-card {
-                text-align: center;
-                margin-bottom: 2rem;
-                cursor: pointer;
-            }
-            .pengurusan-card .image-wrapper {
-                width: 100%;
-                padding-top: 100%;
-                position: relative;
-                overflow: hidden;
-            }
-            .pengurusan-card img {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                transform: translate(-50%, -50%);
-                transition: transform 0.3s, box-shadow 0.3s;
-            }
-            .pengurusan-card:hover img {
-                transform: translate(-50%, -50%) scale(1.05);
-                box-shadow: 0 8px 25px rgba(11,60,93,0.2);
-            }
-            .pengurusan-card h5 {
-                margin-top: 0.5rem;
-                transition: color 0.3s;
-            }
-            .pengurusan-card:hover h5 {
-                color: #0B3C5D;
-            }
-        </style>
+<!-- =========================
+    STYLE
+========================= -->
+<style>
+.background-page{
+    background:#d8f9ff;
+}
+.staff-card {
+    text-align: center;
+    margin-bottom: 2rem;
+}
 
-        <div class="row justify-content-center">
-            <?php if(count($guru_apk) > 0): ?>
-                <?php foreach($guru_apk as $guru): ?>
-                <div class="col-md-3 pengurusan-card">
-                    <div class="image-wrapper">
-                        <img src="uploads/<?= htmlspecialchars($guru['image']) ?>" alt="<?= htmlspecialchars($guru['nama']) ?>">
-                    </div>
-                    <h5><?= htmlspecialchars($guru['nama']) ?></h5>
-                    <h5><?= htmlspecialchars($guru['dg']) ?></h5>
-                    <h5><?= htmlspecialchars($guru['jawatan']) ?></h5>
+.staff-card .image-wrapper {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #f5f5f5;
+}
+
+.staff-card img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s ease;
+}
+
+.staff-card:hover img {
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* 5 COLUMN GRID */
+@media (min-width: 992px) {
+    .col-5-grid {
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
+}
+
+/* tablet */
+@media (max-width: 991px) {
+    .col-5-grid {
+        flex: 0 0 33.33%;
+        max-width: 33.33%;
+    }
+}
+
+/* mobile */
+@media (max-width: 576px) {
+    .col-5-grid {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+</style>
+
+<!-- =========================
+    SECTION GURU
+========================= -->
+<section class="py-5" style="background:#d8f9ff;">
+<div class="container">
+
+<h3 class="text-center fw-bold mb-4">Barisan Guru</h3>
+
+<div class="row justify-content-center">
+
+<?php if(count($guru) > 0): ?>
+    <?php foreach($guru as $g): ?>
+        <div class="col-6 col-md-4 col-lg-3 col-5-grid">
+            <div class="staff-card">
+
+                <div class="image-wrapper mb-2">
+                    <img src="uploads/<?= htmlspecialchars($g['image']) ?>" 
+                         alt="<?= htmlspecialchars($g['nama']) ?>">
                 </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p class="text-center">Tiada data guru AKP.</p>
-            <?php endif; ?>
+
+                <h6 class="mb-0 fw-bold"><?= htmlspecialchars($g['nama']) ?></h6>
+                <small class="text-muted"><?= htmlspecialchars($g['dg']) ?></small><br>
+                <small><?= htmlspecialchars($g['jawatan']) ?></small>
+
+            </div>
         </div>
-    </div>
+    <?php endforeach; ?>
+<?php else: ?>
+    <p class="text-center">Tiada data guru.</p>
+<?php endif; ?>
+
+</div>
+</div>
+</section>
+
+<!-- =========================
+    SECTION AKP
+========================= -->
+<section class="py-5" style="background:#d8f9ff;">
+<div class="container">
+
+<h3 class="text-center fw-bold mb-4">Barisan AKP</h3>
+
+<div class="row justify-content-center">
+
+<?php if(count($akp) > 0): ?>
+    <?php foreach($akp as $a): ?>
+        <div class="col-6 col-md-4 col-lg-3 col-5-grid">
+            <div class="staff-card">
+
+                <div class="image-wrapper mb-2">
+                    <img src="uploads/<?= htmlspecialchars($a['image']) ?>" 
+                         alt="<?= htmlspecialchars($a['nama']) ?>">
+                </div>
+
+                <h6 class="mb-0 fw-bold"><?= htmlspecialchars($a['nama']) ?></h6>
+                <small class="text-muted"><?= htmlspecialchars($a['dg']) ?></small><br>
+                <small><?= htmlspecialchars($a['jawatan']) ?></small>
+
+            </div>
+        </div>
+    <?php endforeach; ?>
+<?php else: ?>
+    <p class="text-center">Tiada data AKP.</p>
+<?php endif; ?>
+
+</div>
+</div>
 </section>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

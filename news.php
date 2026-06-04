@@ -1,169 +1,308 @@
 <?php
 $page_title = 'Berita';
 require_once __DIR__ . '/includes/functions.php';
-$news_static = [
-    ['id' => 1, 'title' => 'Kemasukan Pelajar Baru 2025', 'slug' => 'ppdb-2025', 'excerpt' => 'Pendaftaran kemasukan tahun persekolahan 2025/2026 dibuka bermula 1 April 2025.', 'content' => '<p>Pendaftaran kemasukan pelajar baharu bagi sesi persekolahan 2025/2026 akan dibuka secara rasmi bermula 1 April 2025. Ibu bapa dan penjaga digalakkan membuat semakan dokumen asas awal supaya proses permohonan berjalan lancar.</p><p>Maklumat lengkap mengenai syarat kelayakan, borang, dan tarikh penting akan diumumkan melalui laman web sekolah, papan notis, serta media sosial rasmi. Sebarang pertanyaan boleh dibuat melalui pejabat sekolah pada waktu pejabat.</p>', 'published_at' => '2025-02-10 09:00:00'],
-    ['id' => 2, 'title' => 'Aktiviti Latihan Industri', 'slug' => 'pkl-2025', 'excerpt' => 'Pelajar tingkatan lima menjalani latihan industri di pelbagai syarikat rakan.', 'content' => '<p>Program latihan industri (PKL) dijalankan bagi tempoh tiga bulan untuk melengkapkan komponen vokasional pelajar tingkatan lima. Pelajar ditempatkan di syarikat rakan industri yang telah dipersetujui bersama pihak sekolah.</p><p>Semasa PKL, pelajar mempraktikkan kemahiran teknikal dan kerja berpasukan di persekitaran sebenar. Penilaian dan lawatan penyeliaan akan dijalankan bagi memastikan objektif pembelajaran tercapai.</p>', 'published_at' => '2025-03-05 10:30:00'],
-    ['id' => 3, 'title' => 'Program Kokurikulum 2025', 'slug' => 'kokurikulum-2025', 'excerpt' => 'Pelbagai aktiviti kokurikulum dijadualkan untuk pembangunan holistik pelajar sepanjang tahun.', 'content' => '<p>Sekolah merancang pelbagai aktiviti kokurikulum sepanjang tahun 2025 bagi memupuk kepimpinan, kerjasama, dan kesihatan mental serta fizikal pelajar. Kelab dan unit beruniform akan meneruskan sesi latihan dan pertandingan mengikut takwim.</p><p>Senarai aktiviti, tarikh, dan sebarang perubahan akan dikemas kini dari semasa ke semasa melalui papan notis sekolah dan saluran rasmi. Pelajar dinasihatkan merujuk guru penyelaras masing-masing untuk maklumat terperinci.</p>', 'published_at' => '2025-04-18 14:00:00'],
-];
-$slugParam = isset($_GET['slug']) ? trim((string) $_GET['slug']) : '';
-$legacyId = isset($_GET['id']) && is_numeric($_GET['id']) ? (int) $_GET['id'] : 0;
+
+/* =========================
+   1. GET INPUT (WAJIB AWAL)
+========================= */
+$slugParam   = isset($_GET['slug']) ? trim($_GET['slug']) : '';
+$legacyId    = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$yearFilter  = isset($_GET['year']) ? $_GET['year'] : '';
+$listPage    = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
+$news_per_page = 3;
 $news_item = null;
 
+/* =========================
+   2. FETCH SINGLE NEWS
+========================= */
 if ($slugParam !== '' && preg_match('/^[a-zA-Z0-9_-]+$/', $slugParam)) {
     $news_item = smks3_fetch_news_by_slug($slugParam);
-    if ($news_item === null) {
-        foreach ($news_static as $n) {
-            if (($n['slug'] ?? '') === $slugParam) {
-                $news_item = $n;
-                break;
-            }
-        }
-    }
+
 } elseif ($legacyId > 0) {
-    $row = smks3_fetch_news_by_id($legacyId);
-    if ($row === null) {
-        foreach ($news_static as $n) {
-            if ((int) $n['id'] === $legacyId) {
-                $row = $n;
-                break;
-            }
-        }
-    }
-    if ($row !== null) {
-        $slugOut = isset($row['slug']) ? trim((string) $row['slug']) : '';
-        if ($slugOut !== '' && preg_match('/^[a-zA-Z0-9_-]+$/', $slugOut)) {
-            header('Location: news.php?' . http_build_query(['slug' => $slugOut]), true, 301);
-            exit;
-        }
-        $news_item = $row;
+    $news_item = smks3_fetch_news_by_id($legacyId);
+
+    if ($news_item && !empty($news_item['slug'])) {
+        header("Location: news.php?slug=" . $news_item['slug'], true, 301);
+        exit;
     }
 }
 
-$news_per_page = 3;
+/* =========================
+   3. LIST VIEW
+========================= */
 $news_page_items = [];
-$pagination = ['page' => 1, 'per_page' => $news_per_page, 'total' => 0, 'total_pages' => 1];
+$pagination = [
+    'page' => 1,
+    'per_page' => $news_per_page,
+    'total' => 0,
+    'total_pages' => 1
+];
 
 if (!$news_item) {
-    $listPage = isset($_GET['page']) && ctype_digit((string) $_GET['page']) ? max(1, (int) $_GET['page']) : 1;
-    $paginated = smks3_fetch_published_news_paginated($listPage, $news_per_page);
-    if ($paginated !== null && $paginated['total'] > 0) {
+
+    $paginated = smks3_fetch_published_news_paginated($listPage, $news_per_page, $yearFilter);
+
+    if ($paginated && $paginated['total'] > 0) {
+
         $news_page_items = $paginated['items'];
         $pagination = $paginated;
+
     } else {
+
+        $news_static = [
+            [
+                'id' => 1,
+                'title' => 'Kemasukan Pelajar Baru 2025',
+                'slug' => 'ppdb-2025',
+                'excerpt' => 'Pendaftaran kemasukan tahun 2025/2026 dibuka.',
+                'content' => '<p>Maklumat pendaftaran pelajar baru...</p>',
+                'published_at' => '2025-02-10 09:00:00'
+            ],
+            [
+                'id' => 2,
+                'title' => 'Aktiviti Latihan Industri',
+                'slug' => 'pkl-2025',
+                'excerpt' => 'Pelajar menjalani latihan industri.',
+                'content' => '<p>Program PKL dijalankan...</p>',
+                'published_at' => '2025-03-05 10:30:00'
+            ],
+            [
+                'id' => 3,
+                'title' => 'Program Kokurikulum',
+                'slug' => 'kokurikulum-2025',
+                'excerpt' => 'Aktiviti kokurikulum sekolah.',
+                'content' => '<p>Pelbagai aktiviti dijalankan...</p>',
+                'published_at' => '2025-04-18 14:00:00'
+            ],
+        ];
+
         $news_all = smks3_sort_news_by_published_desc($news_static);
+
+        if ($yearFilter !== '') {
+            $news_all = array_filter($news_all, function ($n) use ($yearFilter) {
+                return substr($n['published_at'], 0, 4) == $yearFilter;
+            });
+        }
+
         $total = count($news_all);
-        $totalPages = max(1, (int) ceil($total / $news_per_page));
+        $totalPages = max(1, ceil($total / $news_per_page));
         $listPage = min($listPage, $totalPages);
+
         $offset = ($listPage - 1) * $news_per_page;
         $news_page_items = array_slice($news_all, $offset, $news_per_page);
+
         $pagination = [
             'page' => $listPage,
             'per_page' => $news_per_page,
             'total' => $total,
-            'total_pages' => $totalPages,
+            'total_pages' => $totalPages
         ];
     }
 }
 
-if ($news_item) {
-    $page_title = $news_item['title'];
-    $custom_breadcrumbs = [
-        ['label' => 'Laman Utama', 'href' => 'index.php'],
-        ['label' => 'Berita', 'href' => 'news.php'],
-        ['label' => $news_item['title'], 'current' => true],
-    ];
-}
 require_once __DIR__ . '/includes/header.php';
 ?>
+<style>
+    .news-archive-feed__post {
+    transition: all 0.2s ease;
+}
 
+.news-archive-feed__post:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+.pdf-thumb {
+    width: 100%;
+    max-height: 220px;
+    border-radius: 10px;
+    background: #f1f1f1;
+}
+</style>
+<!-- =========================
+     DETAIL PAGE
+========================= -->
 <?php if ($news_item) : ?>
 <section class="py-5">
-    <div class="container">
-        <article class="mx-auto" style="max-width: 720px;">
-            <small class="text-muted"><?= date('d F Y', strtotime($news_item['published_at'])) ?></small>
-            <h1 class="fw-bold mt-2 mb-4"><?= htmlspecialchars($news_item['title']) ?></h1>
-            <div class="content news-article-content">
-                <?= smks3_news_body_html($news_item['content'] ?? '', $news_item['excerpt'] ?? '') ?>
-            </div>
-            <a href="news.php" class="btn btn-outline-primary mt-4">← Kembali ke Berita</a>
-        </article>
+<div class="container">
+
+<article class="mx-auto" style="max-width: 750px;">
+
+    <small class="text-muted d-block mb-2">
+        <?= date('d F Y', strtotime($news_item['published_at'])) ?>
+    </small>
+
+    <h1 class="fw-bold mb-3">
+        <?= htmlspecialchars($news_item['title']) ?>
+    </h1>
+
+<?php if (!empty($news_item['pdf_file'])): ?>
+    <a href="uploads/pdf/<?= htmlspecialchars($news_item['pdf_file']) ?>" target="_blank">
+        <canvas class="pdf-thumb mb-3"
+                data-pdf="uploads/pdf/<?= htmlspecialchars($news_item['pdf_file']) ?>">
+        </canvas>
+    </a>
+<?php endif; ?>
+
+    <div class="content">
+        <?= $news_item['content'] ?>
     </div>
+
+    <a href="news.php" class="btn btn-outline-primary mt-4">
+        ← Kembali
+    </a>
+
+</article>
+
+</div>
 </section>
+
+<!-- =========================
+     LIST PAGE
+========================= -->
 <?php else : ?>
-<style>
-    .news-archive-feed { max-width: 720px; margin: 0 auto; }
-    .news-archive-feed__post {
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 1px 3px rgba(11, 60, 93, 0.08);
-        border: 1px solid var(--school-border, #e2e8f0);
-        margin-bottom: 1.25rem;
-        transition: box-shadow 0.2s ease;
-    }
-    .news-archive-feed__post:last-child { margin-bottom: 0; }
-    .news-archive-feed__post:hover { box-shadow: 0 8px 24px rgba(11, 60, 93, 0.1); }
-    .news-archive-feed__title {
-        color: var(--school-primary-dark, #082a42);
-        font-weight: 700;
-        font-size: 1.15rem;
-        line-height: 1.35;
-    }
-    .news-archive-feed__title:hover { color: var(--school-primary, #0B3C5D); }
-    .news-archive-feed__body {
-        color: #334155;
-        font-size: 0.95rem;
-        line-height: 1.65;
-    }
-    .news-archive-pagination .page-item.active .page-link {
-        color: #fff !important;
-        background-color: var(--school-primary, #0B3C5D);
-        border-color: var(--school-primary, #0B3C5D);
-    }
-    .news-archive-pagination .page-item.active .page-link:hover {
-        color: #fff !important;
-        background-color: var(--school-primary-dark, #082a42);
-        border-color: var(--school-primary-dark, #082a42);
-    }
-</style>
 <section class="py-5 bg-light">
-    <div class="container">
-        <p class="text-muted lead mb-4 text-center">Informasi terbaru dari sekolah.</p>
-        <?php $p = $pagination; ?>
-        <div class="news-archive-feed">
-            <?php foreach ($news_page_items as $n) : ?>
-            <article class="news-archive-feed__post">
-                <div class="card-body p-4">
-                    <time class="text-muted small d-block mb-2" datetime="<?= date('Y-m-d', strtotime($n['published_at'])) ?>"><?= date('d F Y', strtotime($n['published_at'])) ?></time>
-                    <h2 class="news-archive-feed__title mb-2 h5">
-                        <a href="<?= htmlspecialchars(smks3_news_article_url($n), ENT_QUOTES, 'UTF-8') ?>" class="text-decoration-none"><?= htmlspecialchars($n['title']) ?></a>
-                    </h2>
-                    <div class="news-archive-feed__body news-article-content mb-0">
-                        <?= smks3_news_body_html($n['content'] ?? '', $n['excerpt'] ?? '') ?>
-                    </div>
-                </div>
-            </article>
-            <?php endforeach; ?>
-        </div>
-        <?php if ($p['total_pages'] > 1) : ?>
-        <nav class="mt-4 news-archive-pagination" aria-label="Penomboran halaman berita">
-            <ul class="pagination justify-content-center flex-wrap mb-0">
-                <li class="page-item<?= $p['page'] <= 1 ? ' disabled' : '' ?>">
-                    <a class="page-link" href="<?= $p['page'] <= 1 ? '#' : 'news.php?' . http_build_query(['page' => $p['page'] - 1]) ?>"<?= $p['page'] <= 1 ? ' tabindex="-1" aria-disabled="true"' : '' ?>>Sebelum</a>
-                </li>
-                <?php for ($i = 1; $i <= $p['total_pages']; $i++) : ?>
-                <li class="page-item<?= $i === $p['page'] ? ' active' : '' ?>">
-                    <a class="page-link" href="news.php?<?= http_build_query(['page' => $i]) ?>"<?= $i === $p['page'] ? ' aria-current="page"' : '' ?>><?= $i ?></a>
-                </li>
-                <?php endfor; ?>
-                <li class="page-item<?= $p['page'] >= $p['total_pages'] ? ' disabled' : '' ?>">
-                    <a class="page-link" href="<?= $p['page'] >= $p['total_pages'] ? '#' : 'news.php?' . http_build_query(['page' => $p['page'] + 1]) ?>"<?= $p['page'] >= $p['total_pages'] ? ' tabindex="-1" aria-disabled="true"' : '' ?>>Seterusnya</a>
-                </li>
-            </ul>
-        </nav>
-        <?php endif; ?>
-    </div>
+<div class="container">
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+
+    <p class="text-muted mb-0 fw-semibold">
+        Informasi terbaru dari sekolah
+    </p>
+
+    <form method="GET" class="m-0">
+        <select name="year"
+                class="form-select form-select-sm shadow-sm"
+                onchange="this.form.submit()"
+                style="min-width:140px;">
+            <option value="">Semua Tahun</option>
+            <option value="2025" <?= $yearFilter=='2025'?'selected':'' ?>>2025</option>
+            <option value="2026" <?= $yearFilter=='2026'?'selected':'' ?>>2026</option>
+        </select>
+    </form>
+
+</div>
+
+<!-- NEWS LIST -->
+<div class="news-archive-feed">
+
+<?php foreach ($news_page_items as $n): ?>
+<article class="news-archive-feed__post mb-3 shadow-sm border-0 rounded-3 bg-white">
+<div class="p-3 p-md-4">
+
+    <!-- YEAR BADGE -->
+    <span class="badge bg-primary-subtle text-primary mb-2 px-3 py-2 rounded-pill">
+        <?= htmlspecialchars($n['year'] ?? date('Y', strtotime($n['published_at']))) ?>
+    </span>
+
+    <!-- TITLE -->
+    <h5 class="fw-bold mb-1">
+    <a href="news-details.php?id=<?= (int)$n['id'] ?>" class="text-decoration-none">
+        <?= htmlspecialchars($n['title']) ?>
+    </a>
+    </h5>
+
+    <!-- DATE -->
+    <small class="text-muted d-block mb-2">
+        <?= date('d F Y', strtotime($n['published_at'])) ?>
+    </small>
+
+    <!-- PDF -->
+    <?php if (!empty($n['pdf_file'])): ?>
+        <a href="news-details.php?id=<?= (int)$n['id'] ?>">
+            <canvas class="pdf-thumb mb-2"
+                    data-pdf="uploads/pdf/<?= htmlspecialchars($n['pdf_file']) ?>">
+            </canvas>
+        </a>
+    <?php endif; ?>
+
+    <!-- EXCERPT -->
+    <p class="text-muted mb-0">
+        <?= htmlspecialchars($n['excerpt']) ?>
+    </p>
+
+</div>
+
+</article>
+<?php endforeach; ?>
+
+</div>
+
+<!-- =========================
+     PAGINATION FIXED
+========================= -->
+<?php if ($pagination['total_pages'] > 1): ?>
+<nav class="mt-4">
+<ul class="pagination justify-content-center">
+
+    <!-- PREVIOUS -->
+    <li class="page-item <?= $pagination['page'] <= 1 ? 'disabled' : '' ?>">
+        <a class="page-link"
+           href="<?= $pagination['page'] <= 1 ? '#' : 'news.php?' . http_build_query(['page'=>$pagination['page']-1,'year'=>$yearFilter]) ?>">
+            Sebelumnya
+        </a>
+    </li>
+
+    <!-- NUMBERS -->
+    <?php for ($i=1; $i <= $pagination['total_pages']; $i++): ?>
+        <li class="page-item <?= $i==$pagination['page']?'active':'' ?>">
+            <a class="page-link"
+               href="news.php?<?= http_build_query(['page'=>$i,'year'=>$yearFilter]) ?>">
+                <?= $i ?>
+            </a>
+        </li>
+    <?php endfor; ?>
+
+    <!-- NEXT -->
+    <li class="page-item <?= $pagination['page'] >= $pagination['total_pages'] ? 'disabled' : '' ?>">
+        <a class="page-link"
+           href="<?= $pagination['page'] >= $pagination['total_pages'] ? '#' : 'news.php?' . http_build_query(['page'=>$pagination['page']+1,'year'=>$yearFilter]) ?>">
+            Seterusnya
+        </a>
+    </li>
+
+</ul>
+</nav>
+<?php endif; ?>
+
+</div>
 </section>
 <?php endif; ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+<script>
+document.querySelectorAll('.pdf-thumb').forEach(canvas => {
+
+    const url = canvas.getAttribute('data-pdf');
+
+    if (!url) return;
+
+    pdfjsLib.getDocument(url).promise.then(pdf => {
+
+        pdf.getPage(1).then(page => {
+
+            const ctx = canvas.getContext('2d');
+
+            const viewport = page.getViewport({ scale: 1 });
+
+            const scale = canvas.parentElement.offsetWidth / viewport.width;
+            const scaledViewport = page.getViewport({ scale });
+
+            canvas.width = scaledViewport.width;
+            canvas.height = scaledViewport.height;
+
+            page.render({
+                canvasContext: ctx,
+                viewport: scaledViewport
+            });
+
+        });
+
+    }).catch(err => {
+        console.log("PDF load error:", url, err);
+    });
+
+});
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

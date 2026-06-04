@@ -1,31 +1,45 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
-include "config.php";
+require_once __DIR__ . "/../config/database.php";
+
+$error = "";
 
 if(isset($_POST['login'])){
 
-$username=$_POST['username'];
-$password=$_POST['password'];
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
-$query=mysqli_query($conn,"SELECT * FROM users WHERE username='$username'");
-$data=mysqli_fetch_assoc($query);
+    if(empty($username) || empty($password)){
+        $error = "Sila isi semua maklumat.";
+    } else {
+
+        // 🔥 elak SQL injection
+        $pdo = getConnection();
+
+$stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+$stmt->execute([$username]);
+
+$data = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if($data){
 
-if(password_verify($password,$data['password'])){
+    if(password_verify($password, $data['password'])){
 
-$_SESSION['username']=$data['username'];
-header("Location: dashboard.php");
-exit();
+        $_SESSION['username'] = $data['username'];
+        header("Location: dashboard.php");
+        exit();
 
-}else{
-echo "<script>alert('Password salah')</script>";
+    } else {
+        $error = "Password salah.";
+    }
+
+} else {
+    $error = "Username tidak wujud.";
 }
-
-}else{
-echo "<script>alert('Username tidak wujud')</script>";
-}
-
+    }
 }
 ?>
 
@@ -76,9 +90,15 @@ font-weight:bold;
 <body>
 
 <div class="login-container">
-<img src="../images/logosmks3.jpg" class="logo" alt="Admin Logo">
+<a href="/../smks3/index.php">
+    <img src="../images/logosmks3 new.png" class="logo" alt="Admin Logo">
+</a>
 <h3 class="login-title">Admin Login</h3>
-
+<?php if(!empty($error)): ?>
+    <div class="alert alert-danger text-center">
+        <?= $error ?>
+    </div>
+<?php endif; ?>
 <form method="POST">
 
 <div class="mb-3">

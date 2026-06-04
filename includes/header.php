@@ -472,7 +472,7 @@ smks3_record_visit();
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['pentaksiran-peperiksaan','pusat-sumber','pra-sekolah','kecemerlangan-program-akademik','pilihan-mata-pelajaran'], true) ? 'active' : '' ?>" 
+                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['pentaksiran-peperiksaan','analisis-pat-t4-uasa-t1,2,3','analisis-ppt','bank-soalan-uasa-ppt-pat-selaras','keputusan','penggubal-soalan-upsa-uasa','pusat-sumber','pra-sekolah','kecemerlangan-program-akademik','pilihan-mata-pelajaran'], true) ? 'active' : '' ?>" 
                         href="#" 
                         role="button" 
                         data-bs-toggle="dropdown" 
@@ -490,7 +490,7 @@ smks3_record_visit();
                                 <a class="dropdown-item <?= $current_page === 'pra-sekolah' ? 'active' : '' ?>" href="pra-sekolah.php">Pra Sekolah</a>
                             </li>
                             <li>
-                                <a class="dropdown-item <?= $current_page === 'kecemerlangan-program-akademik' ? 'active' : '' ?>" href="kecemerlangan-program-akademik.php">Kecemerlangan Program Akademik</a>
+                                <a class="dropdown-item <?= $current_page === 'kecemerlangan-program-akademik' ? 'active' : '' ?>" href="kecemerlangan-program-akademik.php">Program Kecemerlangan Akademik</a>
                             </li>
                             <li>
                                 <a class="dropdown-item <?= $current_page === 'pilihan-mata-pelajaran' ? 'active' : '' ?>" href="pilihan-mata-pelajaran.php">Pilihan Mata Pelajaran</a>
@@ -523,25 +523,12 @@ smks3_record_visit();
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle <?= in_array($current_page, ['unit-badan-beruniform','kelab-persatuan','sukan-permainan'], true) ? 'active' : '' ?>" 
-                        href="#" 
-                        role="button" 
-                        data-bs-toggle="dropdown" 
-                        aria-expanded="false">
+                    <li class="nav-item">
+                        <a class="nav-link <?= $current_page === 'kokurikulum' ? 'active' : '' ?>" 
+                           href="https://sites.google.com/moe-dl.edu.my/unit-kokurikulum-smk-s3?usp=sharing" 
+                           target="_blank">
                             Kokurikulum
                         </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item <?= $current_page === 'unit-badan-beruniform' ? 'active' : '' ?>" href="unit-badan-beruniform.php">Unit Badan Beruniform</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item <?= $current_page === 'kelab-persatuan' ? 'active' : '' ?>" href="kelab-persatuan.php">Kelab Dan Persatuan</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" target="_blank" href="https://laporan-sukan-permainan-s3.my.canva.site/">Sukan Dan Permainan</a>
-                            </li>
-                        </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle <?= in_array($current_page, ['jawatankuasa-pibg'], true) ? 'active' : '' ?>" 
@@ -575,7 +562,7 @@ smks3_record_visit();
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="https://www.facebook.com/share/17rxCJHqUJ/" target="_blank" rel="noopener noreferrer">
+                                <a class="dropdown-item" href="https://www.facebook.com/share/1ECEvkNEJQ/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
                                     Facebook
                                 </a>
                             </li>

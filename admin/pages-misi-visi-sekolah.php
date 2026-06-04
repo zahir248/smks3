@@ -1,34 +1,36 @@
 <?php
-session_start();
-
-if(!isset($_SESSION['username'])){
-    header("Location: login.php");
-    exit();
-}
-
-require '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
 $pdo = getConnection();
 
-// 🔹 Ambil semua data FPK/Misi/Visi
+/**
+ * FETCH DATA
+ */
 $stmt = $pdo->query("SELECT * FROM fpk_misi_visi ORDER BY id ASC");
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// 🔹 Handle update (content sahaja)
-if(isset($_POST['update']) && isset($_POST['content'])){
-    foreach($_POST['content'] as $id => $content){
-        $stmt = $pdo->prepare("UPDATE fpk_misi_visi 
-                               SET content = :content, updated_at = NOW() 
-                               WHERE id = :id");
+/**
+ * UPDATE DATA
+ */
+if (isset($_POST['update'])) {
+
+    $stmt = $pdo->prepare("
+        UPDATE fpk_misi_visi
+        SET content = :content,
+            updated_at = NOW()
+        WHERE id = :id
+    ");
+
+    foreach ($_POST['content'] as $id => $content) {
         $stmt->execute([
-            ':content' => $content,
-            ':id' => $id
+            ':id' => $id,
+            ':content' => $content
         ]);
     }
-    echo "<script>alert('Data berjaya dikemaskini!'); window.location='pages-misi-visi-sekolah.php';</script>";
-    exit();
+
+    header("Location: " . $_SERVER['PHP_SELF'] . "?success=1");
+    exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Unit Peperiksaan Dalaman -->
-<section class="py-5">
+<section class="py-5" style="background:#d8f9ff;">
     <div class="container">
         <p class="text-center text-muted lead mb-4">Maklumat berkaitan pentaksiran pelajar termasuk peperiksaan dalaman, peperiksaan awam dan Pentaksiran Bilik Darjah (PBD). <a href="contact.php" class="text-decoration-none fw-semibold">Hubungi kami</a> untuk pertanyaan lanjut.</p>
 
@@ -19,7 +19,7 @@ require_once __DIR__ . '/includes/header.php';
         <div class="row justify-content-center">
             <div class="col-lg-8">
 
-                <div class="card border-0 shadow-sm card-hover">
+                <div class="card border-0 shadow card-hover">
                     <div class="card-body text-center p-4">
 
                         <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
@@ -69,7 +69,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Peperiksaan Umum / SPM -->
-<section class="py-5 bg-light">
+<section class="py-5" style="background:#d8f9ff;">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="fw-bold">Peperiksaan Umum / SPM</h2>
@@ -78,7 +78,7 @@ require_once __DIR__ . '/includes/header.php';
 
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm">
+                <div class="card border-0 shadow">
                     <div class="card-body p-4">
                         <h5>Sijil Pelajaran Malaysia (SPM)</h5>
                         <p class="text-muted">
@@ -100,7 +100,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Pentaksiran Bilik Darjah -->
-<section class="py-5">
+<section class="py-5" style="background:#d8f9ff;">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="fw-bold">Pentaksiran Bilik Darjah (PBD)</h2>
@@ -111,7 +111,7 @@ require_once __DIR__ . '/includes/header.php';
 
             <!-- UNIT PBD -->
             <div class="col-md-5">
-                <div class="card card-hover border-0 shadow-sm h-100">
+                <div class="card card-hover border-0 shadow h-100">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-folder-check text-primary display-5 mb-3"></i>
                         <h5>UNIT PBD</h5>
@@ -128,7 +128,7 @@ require_once __DIR__ . '/includes/header.php';
 
             <!-- SEMAKAN PBD -->
             <div class="col-md-5">
-                <div class="card card-hover border-0 shadow-sm h-100">
+                <div class="card card-hover border-0 shadow h-100">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-search text-primary display-5 mb-3"></i>
                         <h5>SEMAKAN PBD SMK SEREMBAN 3</h5>

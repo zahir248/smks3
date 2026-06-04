@@ -1,46 +1,51 @@
 <?php
-session_start();
-require '../config/database.php';
-
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
-}
-
+require_once __DIR__ . '/../config/database.php';
 $pdo = getConnection();
 
-// Handle delete
+/**
+ * DELETE
+ */
 if (isset($_GET['delete_id'])) {
     $stmt = $pdo->prepare("DELETE FROM pengetua WHERE id = ?");
     $stmt->execute([$_GET['delete_id']]);
-    header("Location: pengetua.php");
-    exit();
+
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
-// Handle insert/update
+/**
+ * UPDATE ALL ROWS
+ */
 if (isset($_POST['save_changes'])) {
-    foreach ($_POST['id'] as $index => $id) {
-        $name = $_POST['name'][$index];
-        $start_year = $_POST['start_year'][$index];
-        $end_year = $_POST['end_year'][$index];
 
-        if ($id) {
-            $stmt = $pdo->prepare("UPDATE pengetua SET name=?, start_year=?, end_year=? WHERE id=?");
-            $stmt->execute([$name, $start_year, $end_year, $id]);
-        } else {
-            $stmt = $pdo->prepare("INSERT INTO pengetua (name, start_year, end_year) VALUES (?, ?, ?)");
-            $stmt->execute([$name, $start_year, $end_year]);
-        }
+    $stmt = $pdo->prepare("
+        UPDATE pengetua
+        SET name = :name,
+            start_year = :start_year,
+            end_year = :end_year
+        WHERE id = :id
+    ");
+
+    foreach ($_POST['id'] as $i => $id) {
+
+        $stmt->execute([
+            ':id' => $id,
+            ':name' => $_POST['name'][$i] ?? null,
+            ':start_year' => $_POST['start_year'][$i] ?? null,
+            ':end_year' => $_POST['end_year'][$i] ?? null
+        ]);
     }
-    header("Location: pages-senarai-pengetua.php");
-    exit();
+
+    header("Location: " . $_SERVER['PHP_SELF'] . "?success=1");
+    exit;
 }
 
-// Fetch all pengetua
+/**
+ * FETCH DATA
+ */
 $stmt = $pdo->query("SELECT * FROM pengetua ORDER BY start_year ASC");
-$data = $stmt->fetchAll();
+$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>

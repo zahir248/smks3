@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-if(!isset($_SESSION['username'])){
+if (!isset($_SESSION['username'])) {
     header("Location: login.php");
-    exit();
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -121,6 +121,7 @@ a {text-decoration: none;}
 
     <div class="menu-item">
         <a href="dashboard.php">Dashboard</a>
+        <a href="homepage.php">Homepage (Berita)</a>
     </div>
 
     <div class="menu-item">

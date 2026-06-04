@@ -1,70 +1,124 @@
 <?php
 session_start();
-include "config.php";
+require_once '../config/database.php';
 
-if(!isset($_SESSION['username'])){
-    header("Location: login.php");
-    exit();
-}
+$pdo = getConnection();
 
-$upload_dir = "../uploads/";
-
-// CREATE / ADD Guru
-if(isset($_POST['add_guru'])){
+/* INSERT */
+if(isset($_POST['add_guru'])) {
 
     $nama = $_POST['nama'];
     $jawatan = $_POST['jawatan'];
     $dg = $_POST['dg'];
 
-    $image = time() . "_" . $_FILES['image']['name'];
-    $tmp_name = $_FILES['image']['tmp_name'];
-    $image_path = $upload_dir . $image;
-
-    if(move_uploaded_file($tmp_name, $image_path)){
-
-        $sql = "INSERT INTO guru (nama, jawatan, dg, image) 
-                VALUES ('$nama','$jawatan','$dg','$image')";
-
-        if(mysqli_query($conn, $sql)){
-            $_SESSION['message'] = "Guru berjaya ditambah!";
-            header("Location: crud.php");
-            exit();
-        } else {
-            echo "Error: " . mysqli_error($conn);
-        }
-
-    } else {
-        echo "Gagal upload gambar.";
-    }
-}
-
-
-// DELETE Guru
-if(isset($_GET['delete'])){
-
-    $id = $_GET['delete'];
-
-    $res = mysqli_query($conn,"SELECT image FROM guru WHERE id=$id");
-    $row = mysqli_fetch_assoc($res);
-
-    if($row && file_exists($upload_dir.$row['image'])){
-        unlink($upload_dir.$row['image']);
-    }
-
-    $sql = "DELETE FROM guru WHERE id=$id";
-
-    if(mysqli_query($conn, $sql)){
-        $_SESSION['message'] = "Guru berjaya dipadam!";
+    $allowed = ['jpg','jpeg','png','gif'];
+    
+    $image = $_FILES['image']['name'];
+    $tmp = $_FILES['image']['tmp_name'];
+    $size = $_FILES['image']['size'];
+    
+    $ext = strtolower(pathinfo($image, PATHINFO_EXTENSION));
+    
+    if(!in_array($ext, $allowed)){
+        $_SESSION['message'] = "File tidak dibenarkan";
         header("Location: crud.php");
-        exit();
-    } else {
-        echo "Error: " . mysqli_error($conn);
+        exit;
     }
+    
+    if($size > 20 * 1024 * 1024){
+        $_SESSION['message'] = "File terlalu besar (max 20MB)";
+        header("Location: crud.php");
+        exit;
+    }
+    
+    $newName = time() . '_' . rand(1000,9999) . '.' . $ext;
+    
+    $uploadDir = __DIR__ . "/../uploads/";
+    
+    if(!is_dir($uploadDir)){
+        mkdir($uploadDir, 0755, true);
+    }
+    
+    if(!move_uploaded_file($tmp, $uploadDir . $newName)){
+        $_SESSION['message'] = "Upload gagal (permission folder issue)";
+        header("Location: crud.php");
+        exit;
+    }
+
+    $stmt = $pdo->prepare("
+        INSERT INTO guru (nama, jawatan, dg, image)
+        VALUES (:nama, :jawatan, :dg, :image)
+    ");
+
+    $stmt->execute([
+        ':nama' => $nama,
+        ':jawatan' => $jawatan,
+        ':dg' => $dg,
+        ':image' => $newName
+    ]);
+
+    $_SESSION['message'] = "Guru berjaya ditambah!";
+    header("Location: crud.php");
+    exit;
 }
 
+if(isset($_POST['add_akp'])) {
 
-// FETCH DATA
-$result = mysqli_query($conn, "SELECT * FROM guru");
+    $nama = $_POST['nama'];
+    $jawatan = $_POST['jawatan'];
+    $dg = $_POST['dg']; // ✅ TAMBAH INI
+    $allowed = ['jpg','jpeg','png','gif'];
+
+    $image = $_FILES['image']['name'];
+    $tmp = $_FILES['image']['tmp_name'];
+    $size = $_FILES['image']['size'];
+
+    $ext = strtolower(pathinfo($image, PATHINFO_EXTENSION));
+
+    if(!in_array($ext, $allowed)){
+        $_SESSION['message'] = "File tidak dibenarkan";
+        header("Location: crud.php");
+        exit;
+    }
+
+    if($size > 20 * 1024 * 1024){
+        $_SESSION['message'] = "File terlalu besar";
+        header("Location: crud.php");
+        exit;
+    }
+
+    $newName = time().'_'.rand(1000,9999).'.'.$ext;
+
+    $uploadDir = __DIR__ . "/../uploads/";
+    if(!move_uploaded_file($tmp, $uploadDir . $newName)){
+        $_SESSION['message'] = "Upload gagal";
+        header("Location: crud.php");
+        exit;
+    }
+
+    $stmt = $pdo->prepare("
+        INSERT INTO akp (nama, jawatan, dg, image)
+        VALUES (:nama, :jawatan, :dg,:image)
+    ");
+
+    $stmt->execute([
+        ':nama' => $nama,
+        ':jawatan' => $jawatan,
+        ':dg' => $dg, // ✅ TAMBAH INI
+        ':image' => $newName
+    ]);
+
+    $_SESSION['message'] = "AKP berjaya ditambah!";
+    header("Location: crud.php");
+    exit;
+}
+
+/* SELECT GURU*/
+$stmt = $pdo->query("SELECT * FROM guru ORDER BY id DESC");
+$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+/*SELECT AKP*/
+$stmt2 = $pdo->query("SELECT * FROM akp ORDER BY id DESC");
+$akp_result = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -245,11 +299,11 @@ unset($_SESSION['message']);
 </div>
 <?php endif; ?>
 
-<!-- FORM -->
+<!-- FORM GURU-->
 <div class="card-box mb-4">
 <h5>Tambah Guru Baru</h5>
 
-<form method="POST" enctype="multipart/form-data" class="row g-3">
+<form method="POST" enctype="multipart/form-data" class="row g-3" autocomplete="off">
 
 <div class="col-md-6">
 <input type="text" name="nama" class="form-control" placeholder="Nama Guru" required>
@@ -276,9 +330,40 @@ Tambah Guru
 </form>
 </div>
 
-<!-- TABLE -->
+<!-- FORM AKP-->
+<div class="card-box mb-4">
+<h5>Tambah AKP Baru</h5>
+
+<form method="POST" enctype="multipart/form-data" class="row g-3" autocomplete="off">
+
+<div class="col-md-6">
+<input type="text" name="nama" class="form-control" placeholder="Nama Guru" required>
+</div>
+
+<div class="col-md-3">
+<input type="text" name="jawatan" class="form-control" placeholder="Jawatan" required>
+</div>
+
+<div class="col-md-3">
+<input type="text" name="dg" class="form-control" placeholder="DG (Contoh DG44)" required>
+</div>
+
+<div class="col-md-12">
+<input type="file" name="image" class="form-control" required>
+</div>
+
+<div class="col-md-12">
+<button type="submit" name="add_akp" class="btn btn-primary">
+Tambah AKP
+</button>
+</div>
+
+</form>
+</div>
+
+<!-- TABLE GURU-->
 <div class="card-box">
-<h5>Senarai Guru</h5>
+<h5>SENARAI GURU SMK SEREMBAN 3</h5>
 <table class="table table-bordered">
 <thead>
 <tr>
@@ -292,24 +377,63 @@ Tambah Guru
 </thead>
 
 <tbody>
-<?php while($row = mysqli_fetch_assoc($result)): ?>
+<?php foreach($result as $row): ?>
 <tr>
-<td><?= $row['id'] ?></td>
-<td><?= $row['nama'] ?></td>
-<td><?= $row['jawatan'] ?></td>
-<td><?= $row['dg'] ?></td>
-<td>
-<img src="../uploads/<?= $row['image'] ?>" alt="<?= $row['nama'] ?>">
-</td>
-<td>
-<a href="edit_guru.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
-<a href="crud.php?delete=<?= $row['id'] ?>" 
-onclick="return confirm('Padam guru ini?');"
-class="btn btn-danger btn-sm">Delete</a>
-</td>
+    <td><?= $row['id'] ?></td>
+    <td><?= $row['nama'] ?></td>
+    <td><?= $row['jawatan'] ?></td>
+    <td><?= $row['dg'] ?></td>
+    <td>
+        <img src="../uploads/<?= $row['image'] ?>" width="80">
+    </td>
+    <td>
+        <a href="edit-guru.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+        <a href="delete-guru.php?id=<?= $row['id'] ?>" 
+           class="btn btn-danger btn-sm"
+           onclick="return confirm('Padam guru ini?');">
+        Delete
+        </a>
+    </td>
 </tr>
-<?php endwhile; ?>
-</tbody>
+<?php endforeach; ?>
+</table>
+</div>
+
+<!-- TABLE AKP-->
+<div class="card-box">
+<h5>SENARAI ANGGOTA KUMPULAN PELAKSANA (AKP)</h5>
+<table class="table table-bordered">
+<thead>
+<tr>
+<th>ID</th>
+<th>Nama</th>
+<th>Jawatan</th>
+<th>DG</th>
+<th>Gambar</th>
+<th>Tindakan</th>
+</tr>
+</thead>
+
+<tbody>
+<?php foreach($akp_result as $row): ?>
+<tr>
+    <td><?= $row['id'] ?></td>
+    <td><?= $row['nama'] ?></td>
+    <td><?= $row['jawatan'] ?></td>
+    <td><?= $row['dg'] ?></td>
+    <td>
+        <img src="../uploads/<?= $row['image'] ?>" width="80">
+    </td>
+    <td>
+        <a href="edit-guru.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+        <a href="delete-guru.php?id=<?= $row['id'] ?>" 
+           class="btn btn-danger btn-sm"
+           onclick="return confirm('Padam guru ini?');">
+        Delete
+        </a>
+    </td>
+</tr>
+<?php endforeach; ?>
 </table>
 </div>
 

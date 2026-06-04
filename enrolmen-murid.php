@@ -1,10 +1,19 @@
 <?php
 $page_title = 'Pelan Kedudukan Kelas';
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/config/database.php';
+$pdo = getConnection();
 $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
 ?>
 <style>
+.img-enrolment {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: contain;
+    display: block;
+}
     .floor-plan {
     background: white;
     padding: 25px;
@@ -47,20 +56,101 @@ require_once __DIR__ . '/includes/header.php';
 .letter-spacing {
     letter-spacing: 2px;
 }
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    filter: invert(1);
+}
+@media (max-width: 768px) {
+    .img-enrolment {
+        max-height: none;
+        object-fit: contain;
+    }
+
+    .grid-7 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .room {
+        font-size: 11px;
+        padding: 10px;
+    }
+}
+@media (max-width: 768px) {
+    .bilangan-kelas-title {
+        font-size: 1.2rem;
+        line-height: 1.4;
+    }
+}
 </style>
 <!-- ENROLMENT SECTION -->
-<section class="py-5 bg-white">
+<section class="py-5" style="background:#d8f9ff;">
     <div class="container text-center">
         <p class="text-muted lead mb-3">Susun atur kelas mengikut blok dan aras di SMK Seremban 3.</p>
         <div class="mb-4">
             <a href="#blok-a" class="btn btn-outline-primary btn-sm me-2">Blok Akademik A</a>
             <a href="#blok-b" class="btn btn-outline-primary btn-sm">Blok Akademik B</a>
         </div>
+
+<?php
+$enrolments = $pdo->query("
+    SELECT *
+    FROM enrolmen_murid
+    ORDER BY id DESC
+")->fetchAll();
+?>
+
+<?php if($enrolments): ?>
+
+<div id="enrolmentCarousel" class="carousel slide" data-bs-ride="carousel">
+
+    <div class="carousel-inner">
+
+        <?php foreach($enrolments as $index => $item): ?>
+
+        <div class="carousel-item <?= $index == 0 ? 'active' : '' ?>">
+
+            <div class="mb-4">
+                <img src="uploads/enrolmen/<?= htmlspecialchars($item['image']) ?>"
+                     alt="<?= htmlspecialchars($item['title']) ?>"
+                     class="img-fluid rounded shadow-sm img-enrolment">
+            </div>
+
+            <h3 class="fw-bold letter-spacing">
+                <?= htmlspecialchars($item['title']) ?>
+            </h3>
+
+        </div>
+
+        <?php endforeach; ?>
+
+    </div>
+
+    <button class="carousel-control-prev"
+            type="button"
+            data-bs-target="#enrolmentCarousel"
+            data-bs-slide="prev">
+
+        <span class="carousel-control-prev-icon"></span>
+
+    </button>
+
+    <button class="carousel-control-next"
+            type="button"
+            data-bs-target="#enrolmentCarousel"
+            data-bs-slide="next">
+
+        <span class="carousel-control-next-icon"></span>
+
+    </button>
+
+</div>
+
+<?php endif; ?>
+
         <div class="mb-4">
-            <img src="images/ENROLMENT FEB.jpg" 
-                 alt="Enrolment February"
-                 class="img-fluid rounded shadow-sm"
-                 style="max-height: 500px; object-fit: cover;">
+        <img src="images/ENROLMENT FEB.jpg" 
+             alt="Enrolment February"
+             class="img-fluid rounded shadow-sm img-enrolment">
         </div>
 
         <h3 class="fw-bold letter-spacing">ENROLMENT FEBRUARY</h3>
@@ -68,7 +158,7 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<section class="py-5" id="blok-a">
+<section class="py-5" style="background:#d8f9ff;" id="blok-a">
 <div class="container">
     <div class="text-center mb-4">
         <h2 class="fw-bold">Blok Akademik A</h2>
@@ -125,7 +215,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 
-<section class="py-5 bg-light" id="blok-b">
+<section class="py-5" style="background:#d8f9ff;" id="blok-b">
 <div class="container">
     <div class="text-center mb-4">
         <h2 class="fw-bold">Blok Akademik B</h2>
@@ -181,10 +271,12 @@ require_once __DIR__ . '/includes/header.php';
 
 
 <!-- BILANGAN KELAS -->
-<section class="py-5">
+<section class="py-5" style="background:#d8f9ff;">
     <div class="container">
         <div class="text-center mb-4">
-            <h2 class="fw-bold">Bilangan Kelas ( IKRAM/ IHSAN/ IKHLAS/ ITQAN )</h2>
+<h2 class="fw-bold bilangan-kelas-title">
+    Bilangan Kelas ( IKRAM/ IHSAN/ IKHLAS/ ITQAN )
+</h2>
         </div>
 
         <div class="row g-4 text-center">

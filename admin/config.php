@@ -1,11 +1,13 @@
 <?php
+require_once __DIR__ . "/../config/database.php";
 
-require_once __DIR__ . '/../config/database.php';
+/**
+ * Gunakan PDO connection dari database.php
+ */
+$pdo = getConnection();
 
-$conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-if (!$conn) {
-    die('Connection Failed: ' . mysqli_connect_error());
-}
-
-mysqli_set_charset($conn, 'utf8mb4');
+/**
+ * Optional: kalau kau masih ada file lama yang guna $conn (mysqli),
+ * kita boleh "bridge" sementara — tapi ini hanya sementara sahaja.
+ */
+$conn = null;

@@ -1,60 +1,93 @@
 <?php
-session_start();
-require '../config/database.php';
-
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
-}
-
+require_once __DIR__ . '/../config/database.php';
 $pdo = getConnection();
 
-// Handle delete
+/**
+ * DELETE
+ */
 if (isset($_GET['delete_id'])) {
+
+    $stmt = $pdo->prepare("SELECT gambar FROM pengurusan WHERE id = ?");
+    $stmt->execute([$_GET['delete_id']]);
+    $img = $stmt->fetchColumn();
+
+    if ($img && file_exists("../" . $img)) {
+        unlink("../" . $img);
+    }
+
     $stmt = $pdo->prepare("DELETE FROM pengurusan WHERE id = ?");
     $stmt->execute([$_GET['delete_id']]);
-    header("Location: admin-pengurusan-tertinggi.php");
-    exit();
+
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
-// Handle insert/update
+/**
+ * UPDATE
+ */
 if (isset($_POST['save_changes'])) {
-    foreach ($_POST['id'] as $index => $id) {
-        $nama = $_POST['nama'][$index];
-        $gred = $_POST['gred'][$index];
-        $jawatan = $_POST['jawatan'][$index];
-        $kategori = $_POST['kategori'][$index];
 
-        // Handle gambar upload
-        $gambarPath = '';
-        if (!empty($_FILES['gambar']['name'][$index])) {
-            $uploadDir = __DIR__ . '/../images/';
-            $gambarPath = 'images/' . basename($_FILES['gambar']['name'][$index]);
-            move_uploaded_file($_FILES['gambar']['tmp_name'][$index], $uploadDir . basename($_FILES['gambar']['name'][$index]));
-        }
+    $stmt = $pdo->prepare("
+        UPDATE pengurusan
+        SET nama = :nama,
+            jawatan = :jawatan,
+            gred = :gred,
+            kategori = :kategori,
+            gambar = :gambar
+        WHERE id = :id
+    ");
 
-        if ($id) {
-            if($gambarPath != ''){
-                $stmt = $pdo->prepare("UPDATE pengurusan SET nama=?, gred=?, jawatan=?, kategori=?, gambar=? WHERE id=?");
-                $stmt->execute([$nama, $gred, $jawatan, $kategori, $gambarPath, $id]);
-            } else {
-                $stmt = $pdo->prepare("UPDATE pengurusan SET nama=?, gred=?, jawatan=?, kategori=? WHERE id=?");
-                $stmt->execute([$nama, $gred, $jawatan, $kategori, $id]);
+    foreach ($_POST['id'] as $i => $id) {
+
+        $gambarPath = null;
+
+        /**
+         * FILE UPLOAD
+         */
+        if (!empty($_FILES['gambar']['name'][$i])) {
+
+            $fileName = time() . '_' . $_FILES['gambar']['name'][$i];
+            $tmpName = $_FILES['gambar']['tmp_name'][$i];
+
+            $uploadDir = "../uploads/pengurusan/";
+
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
             }
+
+            $targetFile = $uploadDir . $fileName;
+
+            move_uploaded_file($tmpName, $targetFile);
+
+            $gambarPath = "uploads/pengurusan/" . $fileName;
+
         } else {
-            $stmt = $pdo->prepare("INSERT INTO pengurusan (nama, gred, jawatan, kategori, gambar) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$nama, $gred, $jawatan, $kategori, $gambarPath]);
+            // keep old image
+            $stmt2 = $pdo->prepare("SELECT gambar FROM pengurusan WHERE id = ?");
+            $stmt2->execute([$id]);
+            $gambarPath = $stmt2->fetchColumn();
         }
+
+        $stmt->execute([
+            ':id' => $id,
+            ':nama' => $_POST['nama'][$i],
+            ':jawatan' => $_POST['jawatan'][$i],
+            ':gred' => $_POST['gred'][$i],
+            ':kategori' => $_POST['kategori'][$i],
+            ':gambar' => $gambarPath
+        ]);
     }
-    header("Location: admin-pengurusan-tertinggi.php");
-    exit();
+
+    header("Location: " . $_SERVER['PHP_SELF'] . "?success=1");
+    exit;
 }
 
-// Fetch all pengurusan
-$stmt = $pdo->query("SELECT * FROM pengurusan ORDER BY susunan ASC");
-$data = $stmt->fetchAll();
+/**
+ * FETCH DATA
+ */
+$stmt = $pdo->query("SELECT * FROM pengurusan ORDER BY kategori ASC, id ASC");
+$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>

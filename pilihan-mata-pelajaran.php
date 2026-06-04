@@ -1,41 +1,57 @@
 <?php
 $page_title = 'Pilihan Mata Pelajaran';
+
 require_once __DIR__ . '/includes/functions.php';
-$settings = getSettings();
+require_once __DIR__ . '/config/database.php';
+
+$pdo = getConnection();
+
+$stmt = $pdo->query("
+    SELECT * 
+    FROM pilihan_mata_pelajaran 
+    ORDER BY id DESC 
+    LIMIT 1
+");
+
+$data = $stmt->fetch();
 
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Pilihan Mata Pelajaran -->
-<section class="py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Pilihan Mata Pelajaran</h2>
-            <p class="text-muted">Senarai mata pelajaran yang boleh dipilih oleh pelajar mengikut tingkatan dan aliran. 
-            <br>Untuk sementara, tiada data tersedia.</p>
+<section class="py-5" style="background:#d8f9ff;">
+<div class="container">
+
+    <h2 class="text-center fw-bold mb-4">
+        Pilihan Mata Pelajaran
+    </h2>
+            <p class="text-muted">Senarai mata pelajaran yang boleh dipilih oleh pelajar mengikut tingkatan dan aliran. </p>
+
+    <?php if(!empty($data['file_pdf'])): ?>
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body p-0">
+
+                <iframe 
+                    src="uploads/pilihan_mata_pelajaran/<?= $data['file_pdf'] ?>"
+                    width="100%"
+                    height="800px"
+                    style="border:none;">
+                </iframe>
+
+            </div>
+
         </div>
 
-        <?php if(false): // Ganti false dengan query data mata pelajaran sebenar ?>
-            <div class="row g-4 justify-content-center">
-                <!-- Loop data mata pelajaran di sini -->
-                <!-- Contoh: -->
-                <!--
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body text-center p-4">
-                            <h5>Mata Pelajaran XYZ</h5>
-                            <p class="text-muted">Deskripsi ringkas mata pelajaran.</p>
-                        </div>
-                    </div>
-                </div>
-                -->
-            </div>
-        <?php else: ?>
-            <div class="alert alert-warning text-center">
-                Tiada data mata pelajaran lagi.
-            </div>
-        <?php endif; ?>
-    </div>
+    <?php else: ?>
+
+        <div class="alert alert-info text-center">
+            Tiada PDF dimuat naik lagi
+        </div>
+
+    <?php endif; ?>
+
+</div>
 </section>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

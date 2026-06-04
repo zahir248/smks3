@@ -30,7 +30,7 @@ foreach ($pengurusan as $p) {
 $placeholderImage = '/smks3/images/placeholder.png';
 ?>
 
-<section class="py-5 bg-light">
+<section class="py-5" style="background:#d8f9ff;">
     <div class="container">
 
         <style>
@@ -64,7 +64,7 @@ $placeholderImage = '/smks3/images/placeholder.png';
             .pengurusan-card img {
                 width: 100%;
                 height: 100%;
-                object-fit: cover;
+                object-fit: contain;
                 transition: transform 0.3s;
             }
             .pengurusan-card:hover img {

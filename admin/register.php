@@ -1,21 +1,24 @@
 <?php
 include "config.php";
-
+$role = 'admin'; // paksa semua jadi admin
 if(isset($_POST['register'])){
 
-$username=$_POST['username'];
-$password=password_hash($_POST['password'],PASSWORD_DEFAULT);
+    $username = trim($_POST['username']);
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $role = $_POST['role'];
 
-$query="INSERT INTO users(username,password)
-VALUES('$username','$password')";
+    // 🔒 Prepared statement
+    $stmt = $conn->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $username, $password, $role);
 
-mysqli_query($conn,$query);
-
-echo "<script>
-alert('Admin berjaya didaftarkan');
-window.location='login.php';
-</script>";
-
+    if($stmt->execute()){
+        echo "<script>
+        alert('Pengguna berjaya didaftarkan');
+        window.location='login.php';
+        </script>";
+    } else {
+        echo "<script>alert('Ralat semasa daftar')</script>";
+    }
 }
 ?>
 
@@ -89,7 +92,19 @@ font-weight:bold;
 </div>
 </div>
 
+<div class="mb-3">
+<label>Role</label>
+<select class="form-control" name="role" required>
+    <option value="">-- Pilih Role --</option>
+    <option value="admin">Admin</option>
+    <option value="superadmin">Superadmin</option>
+</select>
+</div>
+
 <button class="btn btn-success w-100" name="register">Register</button>
+<div class="text-center mt-3">
+    <a href="dashboard.php" class="btn btn-secondary w-100">Kembali ke Dashboard</a>
+</div>
 
 </form>
 

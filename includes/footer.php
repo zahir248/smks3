@@ -7,7 +7,7 @@ $smks3_visit_stats = smks3_get_visit_stats();
             <div class="row g-4">
                 <div class="col-lg-4">
                     <h5 class="mb-3"><i class="bi bi-mortarboard-fill me-2"></i>SMK SEREMBAN 3</h5>
-                    <p class="text-white-50 small">Sekolah Menengah Kebangsaan dengan pendidikan vokasional berkualiti untuk masa depan pelajar.</p>
+                    <p class="text-white-50 small">Sekolah Menengah Kebangsaan dengan pendidikan berkualiti untuk masa depan pelajar.</p>
                 </div>
                 <div class="col-lg-4">
                     <h6 class="text-uppercase mb-3">Hubungi</h6>

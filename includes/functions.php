@@ -5,7 +5,7 @@
 
 function getSettings() {
     return [
-        'school_name' => 'Sekolah Menengah Kebangsaaan Seremban 3',
+        'school_name' => 'Sekolah Menengah Kebangsaan Seremban 3',
         'tagline' => '',
         'address' => 'Jalan Seremban Tiga 3 25, Seremban 3, 70300 Seremban, Negeri Sembilan',
         'phone' => '011-65732533',
@@ -78,18 +78,52 @@ function smks3_news_body_html(?string $content, ?string $fallbackExcerpt = ''): 
 }
 
 /** Published news rows, newest first. Empty if DB unavailable or `news` missing. */
-function smks3_fetch_published_news(?int $limit = null): array
+function smks3_fetch_published_news_paginated(int $page, int $perPage = 3, ?string $year = null): ?array
 {
     require_once __DIR__ . '/../config/database.php';
+
     try {
         $pdo = getConnection();
-        $sql = 'SELECT id, title, slug, excerpt, content, published_at FROM news WHERE published_at IS NOT NULL ORDER BY published_at DESC';
-        if ($limit !== null && $limit > 0) {
-            $sql .= ' LIMIT ' . (int) $limit;
+
+        $where = "WHERE published_at IS NOT NULL";
+        $params = [];
+
+        if ($year) {
+            $where .= " AND year = ?";
+            $params[] = $year;
         }
-        return $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+        // COUNT
+        $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM news $where");
+        $stmtCount->execute($params);
+        $total = (int) $stmtCount->fetchColumn();
+
+        $totalPages = max(1, (int) ceil($total / $perPage));
+        $page = min($page, $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        // DATA
+        $stmt = $pdo->prepare("
+            SELECT id, title, slug, excerpt, content, image, published_at, year
+            FROM news
+            $where
+            ORDER BY published_at DESC
+            LIMIT $perPage OFFSET $offset
+        ");
+
+        $stmt->execute($params);
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'items' => $items,
+            'total' => $total,
+            'total_pages' => $totalPages,
+            'page' => $page,
+            'per_page' => $perPage,
+        ];
+
     } catch (Throwable $e) {
-        return [];
+        return null;
     }
 }
 
@@ -99,7 +133,7 @@ function smks3_fetch_news_by_id(int $id): ?array
     require_once __DIR__ . '/../config/database.php';
     try {
         $pdo = getConnection();
-        $stmt = $pdo->prepare('SELECT id, title, slug, excerpt, content, published_at FROM news WHERE id = :id LIMIT 1');
+        $stmt = $pdo->prepare('SELECT id, title, slug, excerpt, content, image, published_at FROM news WHERE id = :id LIMIT 1');
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
@@ -119,45 +153,11 @@ function smks3_fetch_news_by_slug(string $slug): ?array
     try {
         $pdo = getConnection();
         $stmt = $pdo->prepare(
-            'SELECT id, title, slug, excerpt, content, published_at FROM news WHERE slug = :slug AND published_at IS NOT NULL LIMIT 1'
+            'SELECT id, title, slug, excerpt, content, image, published_at FROM news WHERE slug = :slug AND published_at IS NOT NULL LIMIT 1'
         );
         $stmt->execute(['slug' => $slug]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
-    } catch (Throwable $e) {
-        return null;
-    }
-}
-
-/**
- * Paginated published news from DB. Returns null on connection/query failure.
- * Keys: items, total, total_pages, page, per_page
- */
-function smks3_fetch_published_news_paginated(int $page, int $perPage = 3): ?array
-{
-    require_once __DIR__ . '/../config/database.php';
-    $perPage = max(1, min(50, $perPage));
-    $page = max(1, $page);
-    try {
-        $pdo = getConnection();
-        $total = (int) $pdo->query('SELECT COUNT(*) FROM news WHERE published_at IS NOT NULL')->fetchColumn();
-        $totalPages = max(1, (int) ceil($total / $perPage));
-        $page = min($page, $totalPages);
-        $offset = ($page - 1) * $perPage;
-        $stmt = $pdo->prepare(
-            'SELECT id, title, slug, excerpt, content, published_at FROM news WHERE published_at IS NOT NULL ORDER BY published_at DESC LIMIT :lim OFFSET :off'
-        );
-        $stmt->bindValue(':lim', $perPage, PDO::PARAM_INT);
-        $stmt->bindValue(':off', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return [
-            'items' => $items,
-            'total' => $total,
-            'total_pages' => $totalPages,
-            'page' => $page,
-            'per_page' => $perPage,
-        ];
     } catch (Throwable $e) {
         return null;
     }
@@ -174,4 +174,21 @@ function smks3_news_article_url(array $n): string
         return 'news.php?' . http_build_query(['id' => (int) $n['id']]);
     }
     return 'news.php';
+}
+function getLatestYear($pdo) {
+    $stmt = $pdo->query("SELECT MAX(year) as latest_year FROM news");
+    $row = $stmt->fetch();
+    return $row['latest_year'];
+}
+function getLatestNewsByYear($pdo) {
+    $year = getLatestYear($pdo);
+
+    $stmt = $pdo->prepare("
+        SELECT * FROM news 
+        WHERE year = ? 
+        ORDER BY created_at DESC
+    ");
+    $stmt->execute([$year]);
+
+    return $stmt->fetchAll();
 }

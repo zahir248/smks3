@@ -3,12 +3,12 @@ $page_title = 'Profil Sekolah';
 require_once __DIR__ . '/includes/functions.php';
 $settings = getSettings();
 require_once __DIR__ . '/includes/header.php';
-require_once __DIR__ . '/config/database.php'; // sesuaikan path ikut struktur projek awak
+require_once __DIR__ . '/config/database.php';
+
 $pdo = getConnection();
-// Ambil data dari database
-$pdo = getConnection(); // pastikan getConnection() return PDO
+
 $stmt = $pdo->query("SELECT * FROM profil_sekolah LIMIT 1");
-$school = $stmt->fetch();
+$school = $stmt->fetch() ?? [];
 
 // Mapping data untuk cards, kekalkan warna & icon sama
 $profil_data = [
@@ -27,9 +27,29 @@ $profil_data = [
     ['title'=>'Jenis Bantuan','value'=>$school['jenis_bantuan'],'icon'=>'bi-bank2','color'=>'#22c55e'],
 ];
 ?>
+<style>
+.card-hover{
+    transition: all 0.3s ease;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    background: #fff;
+}
 
+.card-hover:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+}
+
+.row.g-4{
+    overflow: visible;
+}
+
+.card-text{
+    color: #4b5563;
+}
+</style>
 <!-- Profil Sekolah Creative Cards -->
-<section class="py-5" id="maklumat-sekolah">
+<section class="py-5" id="maklumat-sekolah" style="background:#d8f9ff;">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="text-center fw-bold mb-3">Mengenai SMK Seremban 3</h2>
@@ -43,7 +63,7 @@ $profil_data = [
                 $is_last_card = ($index === $profil_count - 1);
             ?>
             <div class="col-md-6 col-lg-4<?= $is_last_card ? ' offset-md-3 offset-lg-4' : '' ?>">
-                <div class="card card-hover h-100 shadow-sm border-0">
+                <div class="card card-hover h-100 border-0">
                     <div class="card-body d-flex align-items-start">
                         <div class="me-3">
                             <i class="bi <?= $item['icon'] ?> fs-1" style="color: <?= $item['color'] ?>;"></i>

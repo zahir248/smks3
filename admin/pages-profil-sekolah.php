@@ -1,58 +1,63 @@
 <?php
-session_start();
+require_once __DIR__ . '/../config/database.php';
+$pdo = getConnection();
 
-if(!isset($_SESSION['username'])){
-    header("Location: login.php");
-    exit();
+/**
+ * Ambil data profil (1 row sahaja)
+ */
+$stmt = $pdo->query("SELECT * FROM profil_sekolah LIMIT 1");
+$school = $stmt->fetch(PDO::FETCH_ASSOC);
+
+/**
+ * Kalau belum ada data dalam table
+ */
+if (!$school) {
+    $school = [];
 }
 
-require '../config/database.php';
-$pdo = getConnection(); // ambil PDO connection
+/**
+ * UPDATE DATA
+ */
+if (isset($_POST['update'])) {
 
-// Ambil data sekolah
-$stmt = $pdo->query("SELECT * FROM profil_sekolah LIMIT 1");
-$school = $stmt->fetch();
+    $sql = "UPDATE profil_sekolah SET
+        nama_pengetua = :nama_pengetua,
+        bilangan_guru = :bilangan_guru,
+        bilangan_murid = :bilangan_murid,
+        keluasan_sekolah = :keluasan_sekolah,
+        sesi_persekolahan = :sesi_persekolahan,
+        tingkatan_tertinggi = :tingkatan_tertinggi,
+        alamat_sekolah = :alamat_sekolah,
+        kod_sekolah = :kod_sekolah,
+        lokasi = :lokasi,
+        daerah_pentadbiran = :daerah_pentadbiran,
+        gred_sekolah = :gred_sekolah,
+        pejabat_pendidikan_daerah = :pejabat_pendidikan_daerah,
+        jenis_bantuan = :jenis_bantuan
+        LIMIT 1";
 
-// Handle update
-if(isset($_POST['update'])){
-    $stmt = $pdo->prepare("UPDATE profil_sekolah SET 
-        nama_pengetua=:nama_pengetua,
-        bilangan_guru=:bil_guru,
-        bilangan_murid=:bil_murid,
-        keluasan_sekolah=:keluasan,
-        sesi_persekolahan=:sesi,
-        tingkatan_tertinggi=:tingkatan,
-        alamat_sekolah=:alamat,
-        kod_sekolah=:kod,
-        lokasi=:lokasi,
-        daerah_pentadbiran=:daerah,
-        gred_sekolah=:gred,
-        pejabat_pendidikan_daerah=:ppd,
-        jenis_bantuan=:bantuan
-        WHERE id=:id
-    ");
+    $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
-        ':nama_pengetua' => $_POST['nama_pengetua'],
-        ':bil_guru' => (int)$_POST['bilangan_guru'],
-        ':bil_murid' => (int)$_POST['bilangan_murid'],
-        ':keluasan' => $_POST['keluasan_sekolah'],
-        ':sesi' => $_POST['sesi_persekolahan'],
-        ':tingkatan' => $_POST['tingkatan_tertinggi'],
-        ':alamat' => $_POST['alamat_sekolah'],
-        ':kod' => $_POST['kod_sekolah'],
-        ':lokasi' => $_POST['lokasi'],
-        ':daerah' => $_POST['daerah_pentadbiran'],
-        ':gred' => $_POST['gred_sekolah'],
-        ':ppd' => $_POST['pejabat_pendidikan_daerah'],
-        ':bantuan' => $_POST['jenis_bantuan'],
-        ':id' => $school['id']
+        ':nama_pengetua' => $_POST['nama_pengetua'] ?? null,
+        ':bilangan_guru' => $_POST['bilangan_guru'] ?? null,
+        ':bilangan_murid' => $_POST['bilangan_murid'] ?? null,
+        ':keluasan_sekolah' => $_POST['keluasan_sekolah'] ?? null,
+        ':sesi_persekolahan' => $_POST['sesi_persekolahan'] ?? null,
+        ':tingkatan_tertinggi' => $_POST['tingkatan_tertinggi'] ?? null,
+        ':alamat_sekolah' => $_POST['alamat_sekolah'] ?? null,
+        ':kod_sekolah' => $_POST['kod_sekolah'] ?? null,
+        ':lokasi' => $_POST['lokasi'] ?? null,
+        ':daerah_pentadbiran' => $_POST['daerah_pentadbiran'] ?? null,
+        ':gred_sekolah' => $_POST['gred_sekolah'] ?? null,
+        ':pejabat_pendidikan_daerah' => $_POST['pejabat_pendidikan_daerah'] ?? null,
+        ':jenis_bantuan' => $_POST['jenis_bantuan'] ?? null,
     ]);
 
-    echo "<script>alert('Profil Sekolah berjaya dikemaskini!'); window.location='pages-profil-sekolah.php';</script>";
+    header("Location: pages-profil-sekolah.php?success=1");
+    exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,6 +65,7 @@ if(isset($_POST['update'])){
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin SMK S3 - Manage Profil Sekolah</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="../images/favicon.ico">
 <style>
 body{font-family:Segoe UI; background:#f4f6f9; margin:0;}
 

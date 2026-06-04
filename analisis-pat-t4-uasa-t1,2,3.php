@@ -6,7 +6,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Unit Peperiksaan Dalaman -->
-<section class="py-5">
+<section class="py-5" style="background:#d8f9ff;">
     <div class="container">
         <p class="text-center text-muted lead mb-4">
             Paparan analisis pencapaian pelajar bagi Peperiksaan Akhir Tahun (PAT) Tingkatan 4 serta Ujian Akhir Sesi Akademik (UASA) bagi Tingkatan 1, 2 dan 3.
@@ -23,7 +23,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- CARD 1 -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card border-0 shadow card-hover h-100">
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
@@ -82,7 +82,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- CARD 2 -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card border-0 shadow card-hover h-100">
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
@@ -106,7 +106,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- CARD 3 -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card border-0 shadow card-hover h-100">
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
@@ -133,7 +133,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- CARD 4 -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card border-0 shadow card-hover h-100">
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
@@ -157,7 +157,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- CARD 5 -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card border-0 shadow card-hover h-100">
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
@@ -174,30 +174,6 @@ require_once __DIR__ . '/includes/header.php';
                         <a href="#" class="list-group-item">PELAPORAN UASA TINGKATAN 1</a>
                         <a href="#" class="list-group-item">PELAPORAN UASA TINGKATAN 2</a>
                         <a href="#" class="list-group-item">PELAPORAN UASA TINGKATAN 3</a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- CARD 6 -->
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
-            <div class="card-body text-center p-4">
-
-                <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
-                <h5 class="mb-3">RANKING</h5>
-
-                <button class="btn btn-outline-primary"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapse6">
-                    Lihat Bahagian
-                </button>
-
-                <div class="collapse mt-4" id="collapse6">
-                    <div class="list-group text-start">
-                        <a href="#" class="list-group-item">2025</a>
                     </div>
                 </div>
 

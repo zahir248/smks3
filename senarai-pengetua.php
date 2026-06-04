@@ -13,27 +13,17 @@ $pengetua_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $pengetua_list = array_reverse($pengetua_list);
 require_once __DIR__ . '/includes/header.php';
 ?>
-<!-- Timeline Section -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <h2 class="text-center fw-bold mb-5">Garis Masa Pengetua SMK Seremban 3</h2>
-        <div class="timeline">
-            <?php foreach ($pengetua_list as $index => $p) : ?>
-                <div class="timeline-item <?= $index % 2 == 0 ? 'left' : 'right' ?>">
-                    <div class="timeline-icon"><i class="bi bi-person-circle"></i></div>
-                    <div class="timeline-content">
-                        <h5 class="fw-bold"><?= htmlspecialchars($p['name']) ?></h5>
-                        <p class="text-muted mb-0"><?= htmlspecialchars($p['start_year']) ?> – <?= htmlspecialchars($p['end_year']) ?></p>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-
-<?php require_once __DIR__ . '/includes/footer.php'; ?>
 
 <style>
+.pengetua-img {
+    width: 150px;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 2px solid #fff;
+    display: block;
+    margin: 0 auto;
+}
 /* Timeline container */
 .timeline {
     position: relative;
@@ -113,3 +103,39 @@ require_once __DIR__ . '/includes/header.php';
     .timeline-item.left .timeline-icon, .timeline-item.right .timeline-icon { left: 0; right: auto; }
 }
 </style>
+
+<!-- Timeline Section -->
+<section class="py-5" style="background:#d8f9ff;">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5">Garis Masa Pengetua SMK Seremban 3</h2>
+        <div class="timeline">
+            <?php foreach ($pengetua_list as $index => $p) : ?>
+                <div class="timeline-item <?= $index % 2 == 0 ? 'left' : 'right' ?>">
+                    <div class="timeline-icon"><i class="bi bi-person-circle"></i></div>
+                    <div class="timeline-content">
+                    
+                        <?php if (!empty($p['photo'])): ?>
+                            <div class="mb-2 text-center">
+                                <img src="<?= htmlspecialchars($p['photo']) ?>"
+                                     alt="<?= htmlspecialchars($p['name']) ?>"
+                                     class="pengetua-img">
+                            </div>
+                        <?php endif; ?>
+                    
+                        <h5 class="fw-bold">
+                            <?= htmlspecialchars($p['name']) ?>
+                        </h5>
+                    
+                        <p class="text-muted mb-0">
+                            <?= htmlspecialchars($p['start_year']) ?> – 
+                            <?= !empty($p['end_year']) ? htmlspecialchars($p['end_year']) : 'Kini' ?>
+                        </p>
+                    
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

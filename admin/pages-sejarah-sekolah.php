@@ -1,34 +1,40 @@
 <?php
-session_start();
-require '../config/database.php';
-
-if(!isset($_SESSION['username'])){
-    header("Location: login.php");
-    exit();
-}
-
+require_once __DIR__ . '/../config/database.php';
 $pdo = getConnection();
 
-// UPDATE
-if(isset($_POST['save_changes'])){
-    foreach($_POST['id'] as $index => $id){
-        $tarikh = $_POST['tarikh'][$index];
-        $tajuk = $_POST['tajuk'][$index];
-        $content = $_POST['content'][$index];
+/**
+ * FETCH DATA
+ */
+$stmt = $pdo->query("SELECT * FROM sejarah_sekolah ORDER BY id ASC");
+$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $stmt = $pdo->prepare("UPDATE sejarah_sekolah SET tarikh=?, tajuk=?, content=? WHERE id=?");
-        $stmt->execute([$tarikh, $tajuk, $content, $id]);
+/**
+ * UPDATE DATA
+ */
+if (isset($_POST['save_changes'])) {
+
+    $stmt = $pdo->prepare("
+        UPDATE sejarah_sekolah
+        SET tarikh = :tarikh,
+            tajuk = :tajuk,
+            content = :content
+        WHERE id = :id
+    ");
+
+    foreach ($_POST['id'] as $i => $id) {
+
+        $stmt->execute([
+            ':id' => $id,
+            ':tarikh' => $_POST['tarikh'][$i] ?? null,
+            ':tajuk' => $_POST['tajuk'][$i] ?? null,
+            ':content' => $_POST['content'][$i] ?? null
+        ]);
     }
 
-    header("Location: pages-sejarah-sekolah.php");
-    exit();
+    header("Location: " . $_SERVER['PHP_SELF'] . "?success=1");
+    exit;
 }
-
-// FETCH
-$stmt = $pdo->query("SELECT * FROM sejarah_sekolah ORDER BY id DESC");
-$data = $stmt->fetchAll();
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>

@@ -1,20 +1,54 @@
 <?php
 $page_title = 'Laman Utama';
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/config/database.php';
+
+$pdo = getConnection();
+
 $settings = getSettings();
-$news_list = smks3_fetch_published_news();
-if ($news_list === []) {
-    $news_list = [
-        ['id' => 1, 'title' => 'Kemasukan Pelajar Baru 2025', 'slug' => 'ppdb-2025', 'excerpt' => 'Pendaftaran kemasukan tahun persekolahan 2025/2026 dibuka bermula 1 April 2025.', 'content' => '<p>Pendaftaran kemasukan pelajar baharu bagi sesi persekolahan 2025/2026 akan dibuka secara rasmi bermula 1 April 2025. Ibu bapa dan penjaga digalakkan membuat semakan dokumen asas awal supaya proses permohonan berjalan lancar.</p><p>Maklumat lengkap mengenai syarat kelayakan, borang, dan tarikh penting akan diumumkan melalui laman web sekolah, papan notis, serta media sosial rasmi. Sebarang pertanyaan boleh dibuat melalui pejabat sekolah pada waktu pejabat.</p>', 'published_at' => '2025-02-10 09:00:00'],
-        ['id' => 2, 'title' => 'Aktiviti Latihan Industri', 'slug' => 'pkl-2025', 'excerpt' => 'Pelajar tingkatan lima menjalani latihan industri di pelbagai syarikat rakan.', 'content' => '<p>Program latihan industri (PKL) dijalankan bagi tempoh tiga bulan untuk melengkapkan komponen vokasional pelajar tingkatan lima. Pelajar ditempatkan di syarikat rakan industri yang telah dipersetujui bersama pihak sekolah.</p><p>Semasa PKL, pelajar mempraktikkan kemahiran teknikal dan kerja berpasukan di persekitaran sebenar. Penilaian dan lawatan penyeliaan akan dijalankan bagi memastikan objektif pembelajaran tercapai.</p>', 'published_at' => '2025-03-05 10:30:00'],
-        ['id' => 3, 'title' => 'Program Kokurikulum 2025', 'slug' => 'kokurikulum-2025', 'excerpt' => 'Pelbagai aktiviti kokurikulum dijadualkan untuk pembangunan holistik pelajar sepanjang tahun.', 'content' => '<p>Sekolah merancang pelbagai aktiviti kokurikulum sepanjang tahun 2025 bagi memupuk kepimpinan, kerjasama, dan kesihatan mental serta fizikal pelajar. Kelab dan unit beruniform akan meneruskan sesi latihan dan pertandingan mengikut takwim.</p><p>Senarai aktiviti, tarikh, dan sebarang perubahan akan dikemas kini dari semasa ke semasa melalui papan notis sekolah dan saluran rasmi. Pelajar dinasihatkan merujuk guru penyelaras masing-masing untuk maklumat terperinci.</p>', 'published_at' => '2025-04-18 14:00:00'],
-    ];
+
+// pastikan function ni memang wujud dalam functions.php
+$news_list = getLatestNewsByYear($pdo);
+
+if (!is_array($news_list)) {
+    $news_list = [];
 }
+
 $news_list = smks3_sort_news_by_published_desc($news_list);
 $news_latest = array_slice($news_list, 0, 3);
 require_once __DIR__ . '/includes/header.php';
 ?>
 <style>
+body {
+    overflow-x: hidden;
+}
+.hero-school-name {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 1.2;
+}
+
+.hero-home-logo-img {
+    max-width: 100%;
+    height: auto;
+}
+.icon-section {
+    background: #d8f9ff;
+}
+.berita-section {
+    background: #d8f9ff;
+}
+@media (max-width: 576px) {
+    .hero-home-enter-text {
+        text-align: center !important;
+    }
+    .hero-home-enter-logo {
+        text-align: center !important;
+    }
+}
     @keyframes hero-home-enter-left {
         from {
             opacity: 0;
@@ -44,6 +78,9 @@ require_once __DIR__ . '/includes/header.php';
         opacity: 0;
         animation: hero-home-enter-right 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         animation-delay: 0.22s;
+        background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     }
     @media (prefers-reduced-motion: reduce) {
         .hero-home-enter-text,
@@ -51,6 +88,9 @@ require_once __DIR__ . '/includes/header.php';
             animation: none;
             opacity: 1;
             transform: none;
+            background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
         }
         .home-reveal,
         .home-reveal--from-right,
@@ -119,10 +159,10 @@ require_once __DIR__ . '/includes/header.php';
     }
     .home-news-feed__post {
         position: relative;
-        background: #fff;
+        background: #fff;  /* card berita*/
         border-radius: 10px;
         box-shadow: 0 1px 3px rgba(11, 60, 93, 0.08);
-        border: 1px solid var(--school-border, #e2e8f0);
+        border: none;
         margin-bottom: 1.25rem;
         transition: box-shadow 0.25s ease, transform 0.28s ease, border-color 0.2s ease;
     }
@@ -136,7 +176,7 @@ require_once __DIR__ . '/includes/header.php';
     .home-news-feed__title {
         color: var(--school-primary-dark, #082a42);
         font-weight: 700;
-        font-size: 1.2rem;
+        font-size: font-size: clamp(1.3rem, 3vw, 1.6rem);;
         line-height: 1.35;
     }
     .home-news-feed__title:hover {
@@ -147,6 +187,99 @@ require_once __DIR__ . '/includes/header.php';
         font-size: 0.95rem;
         line-height: 1.65;
     }
+    .feature-box {
+        background: #fff;
+        border: 1px solid #eee;
+        transition: all 0.25s ease;
+        cursor: pointer;
+    
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .feature-box:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    }
+    
+    .feature-box i {
+        font-size: 2rem;
+    }
+    
+    /* bagi container nampak center & tak melebar sangat */
+    .container {
+        max-width: 1140px;
+    }
+    .news-image img {
+        width: 100%;
+        height: auto;
+        max-height: 260px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    @media (max-width: 991px) {
+        .maklumat-sekolah-sidebar {
+            margin-top: 2rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .news-image img {
+            max-height: 200px;
+        }
+        .btn {
+        width: 100%;
+    }
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    }
+.slideshow-section {
+    background: #d8f9ff;
+}
+
+/* gambar slideshow */
+.slideshow-img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 16px;
+    background: #000; /* elak nampak kosong putih */
+}
+
+/* control arrow lebih nampak */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-size: 60% 60%;
+    filter: invert(1); /* bagi putih */
+}
+
+/* indicator (dot) */
+.carousel-indicators button {
+    background-color: #0B3C5D;
+    opacity: 0.5;
+}
+
+.carousel-indicators .active {
+    opacity: 1;
+}
+.pdf-thumb {
+    width: 100%;
+    max-height: 260px;
+    border-radius: 10px;
+    background: #f1f1f1;
+}
+.news-image a {
+    display: block;
+    cursor: pointer;
+}
+
+.news-image a:hover {
+    opacity: 0.9;
+    transition: 0.2s;
+}
 </style>
 
 <section class="hero hero-home-image text-white py-5">
@@ -161,14 +294,175 @@ require_once __DIR__ . '/includes/header.php';
                 </h1>
             </div>
             <div class="col-lg-5 col-xl-6 text-center text-lg-end hero-home-enter-logo">
-                <img src="images/logosmks3.jpg" alt="<?= htmlspecialchars($settings['school_name']) ?>" class="hero-home-logo-img img-fluid" width="320" height="120" decoding="async">
+                <img src="images/logosmks3 new.png" alt="<?= htmlspecialchars($settings['school_name']) ?>" class="hero-home-logo-img img-fluid" width="320" height="120" decoding="async">
             </div>
         </div>
     </div>
 </section>
 
+<section class="py-5 icon-section border-bottom">
+    <div class="container">
+        <div class="row text-center g-4 justify-content-center">
+
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="profil-sekolah.php" class="text-decoration-none text-dark">
+                    <div class="feature-box p-3 rounded-3 h-100">
+                        <i class="bi bi-diagram-3 fs-2 text-primary"></i>
+                        <h6 class="mt-3 mb-1">Pengurusan</h6>
+                        <small class="text-muted">Pentadbiran</small>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="pentaksiran-peperiksaan.php" class="text-decoration-none text-dark">
+                    <div class="feature-box p-3 rounded-3 h-100">
+                        <i class="bi bi-book fs-2 text-success"></i>
+                        <h6 class="mt-3 mb-1">Kurikulum</h6>
+                        <small class="text-muted">Akademik</small>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="enrolmen-murid.php" class="text-decoration-none text-dark">
+                    <div class="feature-box p-3 rounded-3 h-100">
+                        <i class="bi bi-people-fill fs-2 text-danger"></i>
+                        <h6 class="mt-3 mb-1">Hal Ehwal</h6>
+                        <small class="text-muted">Murid</small>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="unit-badan-beruniform.php" class="text-decoration-none text-dark">
+                    <div class="feature-box p-3 rounded-3 h-100">
+                        <i class="bi bi-trophy fs-2 text-warning"></i>
+                        <h6 class="mt-3 mb-1">Kokurikulum</h6>
+                        <small class="text-muted">Aktiviti</small>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="jawatankuasa-pibg.php" class="text-decoration-none text-dark">
+                    <div class="feature-box p-3 rounded-3 h-100">
+                        <i class="bi bi-bank fs-2 text-info"></i>
+                        <h6 class="mt-3 mb-1">PIBG</h6>
+                        <small class="text-muted">Kerjasama</small>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="https://www.tiktok.com/@smkseremban3?lang=en" target="_blank" class="text-decoration-none text-dark">
+                    <div class="feature-box p-3 rounded-3 h-100">
+                        <i class="bi bi-camera-video fs-2 text-secondary"></i>
+                        <h6 class="mt-3 mb-1">Media</h6>
+                        <small class="text-muted">Sekolah</small>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- NILAM -->
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="pusat-sumber.php" class="text-decoration-none text-dark" target=_blank>
+                    <div class="feature-box p-3 rounded-3 h-100">
+                        <i class="bi bi-book-half fs-2 text-primary"></i>
+                        <h6 class="mt-3 mb-1">NILAM</h6>
+                        <small class="text-muted">Bacaan</small>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- DELIMA -->
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="https://delima.moe-dl.edu.my/" class="text-decoration-none text-dark" target=_blank>
+                    <div class="feature-box p-3 rounded-3 h-100">
+                        <i class="bi bi-award fs-2 text-warning"></i>
+                        <h6 class="mt-3 mb-1">DELIMA</h6>
+                        <small class="text-muted">Digital</small>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- SUKAN -->
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="https://laporan-sukan-permainan-s3.my.canva.site/" class="text-decoration-none text-dark">
+                    <div class="feature-box p-3 rounded-3 h-100">
+                        <i class="bi bi-trophy-fill fs-2 text-success"></i>
+                        <h6 class="mt-3 mb-1">Sukan</h6>
+                        <small class="text-muted">Aktiviti</small>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- IDME -->
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="#" class="text-decoration-none text-dark">
+                    <div class="feature-box p-3 rounded-3 h-100">
+                        <i class="bi bi-person-badge fs-2 text-info"></i>
+                        <h6 class="mt-3 mb-1">IDME</h6>
+                        <small class="text-muted">Sistem</small>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="py-5 slideshow-section">
+    <div class="container">
+        
+        <div id="homeSlideshow" class="carousel slide" data-bs-ride="carousel">
+
+            <!-- indicators (dot bawah) -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#homeSlideshow" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#homeSlideshow" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#homeSlideshow" data-bs-slide-to="2"></button>
+            </div>
+
+            <div class="carousel-inner rounded-4 shadow">
+            
+                <div class="carousel-item active">
+                    <a href="https://sites.google.com/moe-dl.edu.my/vfr/kategori?authuser=0" target="_blank">
+                        <img src="images/POSTER FUN RUN 2026.jpg" class="d-block w-100 slideshow-img" alt="Slide 1">
+                    </a>
+                </div>
+            
+                <div class="carousel-item">
+                    <a href="https://example.com/link2" target="_blank">
+                        <img src="images/slide2.jpg" class="d-block w-100 slideshow-img" alt="Slide 2">
+                    </a>
+                </div>
+            
+                <div class="carousel-item">
+                    <a href="https://example.com/link3" target="_blank">
+                        <img src="images/slide3.jpg" class="d-block w-100 slideshow-img" alt="Slide 3">
+                    </a>
+                </div>
+            
+            </div>
+
+            <!-- button kiri -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#homeSlideshow" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+
+            <!-- button kanan -->
+            <button class="carousel-control-next" type="button" data-bs-target="#homeSlideshow" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+
+        </div>
+
+    </div>
+</section>
+
 <?php if (!empty($news_list)) : ?>
-<section class="py-5 bg-light home-berita-layout">
+<section class="py-5 berita-section home-berita-layout">
     <div class="container">
         <div class="row mb-0">
             <div class="col-12 col-lg-9">
@@ -182,10 +476,20 @@ require_once __DIR__ . '/includes/header.php';
                     <?php foreach ($news_latest as $idx => $n) : ?>
                     <article class="home-news-feed__post home-reveal-fade" style="--home-reveal-delay: <?= (int) $idx * 85 ?>ms">
                         <div class="card-body p-4">
-                            <time class="text-muted small d-block mb-2" datetime="<?= date('Y-m-d', strtotime($n['published_at'])) ?>"><?= date('d F Y', strtotime($n['published_at'])) ?></time>
                             <h3 class="home-news-feed__title mb-3">
-                                <a href="<?= htmlspecialchars(smks3_news_article_url($n), ENT_QUOTES, 'UTF-8') ?>" class="text-decoration-none"><?= htmlspecialchars($n['title']) ?></a>
+                            <a href="<?= htmlspecialchars('news-details.php?id=' . $n['id'], ENT_QUOTES, 'UTF-8') ?>" class="text-decoration-none">
+                                <?= htmlspecialchars($n['title']) ?>
+                            </a>
                             </h3>
+<?php if (!empty($n['pdf_file']) && file_exists(__DIR__ . '/uploads/pdf/' . $n['pdf_file'])): ?>
+    <div class="news-image mb-3">
+        <a href="<?= htmlspecialchars('news-details.php?id=' . $n['id'], ENT_QUOTES, 'UTF-8') ?>">
+            <canvas class="pdf-thumb"
+                    data-pdf="/smks3/uploads/pdf/<?= htmlspecialchars($n['pdf_file']) ?>">
+            </canvas>
+        </a>
+    </div>
+<?php endif; ?>
                             <div class="home-news-feed__body news-article-content mb-0">
                                 <?= smks3_news_body_html($n['content'] ?? '', $n['excerpt'] ?? '') ?>
                             </div>
@@ -205,7 +509,6 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="card maklumat-sekolah-sidebar__body border-0 shadow-sm">
                         <div class="card-body text-center text-lg-start">
                             <h3 class="h6 fw-bold text-primary mb-3"><?= htmlspecialchars($settings['school_name']) ?></h3>
-                            <p class="small text-muted mb-3"><?= htmlspecialchars($settings['about_summary'] ?? '') ?></p>
                             <ul class="list-unstyled small mb-0">
                                 <li class="mb-2 d-flex gap-2">
                                     <i class="bi bi-geo-alt text-primary flex-shrink-0 mt-1"></i>
@@ -230,7 +533,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 <?php endif; ?>
 
-<section class="py-5" style="background: linear-gradient(180deg, var(--school-bg-subtle) 0%, #fff 100%);">
+<section class="py-5" style="background: #d8f9ff;">
     <div class="container text-center">
         <h2 class="fw-bold mb-3">Sedia Menyertai?</h2>
         <p class="text-muted mb-4">Daftar sekarang dan capai impian anda di <?= htmlspecialchars($settings['school_name']) ?>.</p>
@@ -238,6 +541,7 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </section>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script>
 (function () {
     var nodes = document.querySelectorAll('.home-reveal, .home-reveal-fade');
@@ -260,5 +564,29 @@ require_once __DIR__ . '/includes/header.php';
     nodes.forEach(function (el) { obs.observe(el); });
 })();
 </script>
+<script>
+document.querySelectorAll('.pdf-thumb').forEach(canvas => {
+    const url = canvas.getAttribute('data-pdf');
 
+    pdfjsLib.getDocument(url).promise.then(pdf => {
+        pdf.getPage(1).then(page => {
+
+            const context = canvas.getContext('2d');
+            const viewport = page.getViewport({ scale: 1 });
+
+            // scale ikut container width
+            const scale = canvas.parentElement.offsetWidth / viewport.width;
+            const scaledViewport = page.getViewport({ scale: scale });
+
+            canvas.height = scaledViewport.height;
+            canvas.width = scaledViewport.width;
+
+            page.render({
+                canvasContext: context,
+                viewport: scaledViewport
+            });
+        });
+    });
+});
+</script>
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

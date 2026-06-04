@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Unit Peperiksaan Dalaman -->
-<section class="py-5">
+<section class="py-5" style="background:#d8f9ff;">
     <div class="container">
         <p class="text-center text-muted lead mb-4">
             
@@ -24,7 +24,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- CARD 1 -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card border-0 shadow card-hover h-100">
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
@@ -38,11 +38,7 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="collapse mt-4" id="collapse1">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">ANALISIS TINGKATAN 1</a>
-                        <a href="#" class="list-group-item">ANALISIS TINGKATAN 2</a>
-                        <a href="#" class="list-group-item">ANALISIS TINGKATAN 3</a>
-                        <a href="#" class="list-group-item">ANALISIS TINGKATAN 4</a>
-                        <a href="#" class="list-group-item">ANALISIS TINGKATAN 5</a>
+                        <a href="https://drive.google.com/drive/folders/1ab5SLC3HTikGtauJ5uvqgvMgaGBWNh6h" target="_blank" class="list-group-item">UPSA T5 2024</a>
                     </div>
                 </div>
 
@@ -52,7 +48,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- CARD 2 -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card border-0 shadow card-hover h-100">
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
@@ -66,11 +62,13 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="collapse mt-4" id="collapse2">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">TINGKATAN 1</a>
-                        <a href="#" class="list-group-item">TINGKATAN 2</a>
-                        <a href="#" class="list-group-item">TINGKATAN 3</a>
-                        <a href="#" class="list-group-item">TINGKATAN 4</a>
-                        <a href="#" class="list-group-item">TINGKATAN 5</a>
+                        <a href="#" class="list-group-item">BI FORM 4</a>
+                        <a href="#" class="list-group-item">BM FORM 4</a>
+                        <a href="#" class="list-group-item">MATEMATIK FORM 4</a>
+                        <a href="#" class="list-group-item">PEND MORAL FORM 4</a>
+                        <a href="#" class="list-group-item">PAI FORM 4</a>
+                        <a href="#" class="list-group-item">SAINS FORM 4</a>
+                        <a href="#" class="list-group-item">SEJARAH FORM 4</a>
                     </div>
                 </div>
 
@@ -80,7 +78,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- CARD 3 -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card border-0 shadow card-hover h-100">
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
@@ -94,11 +92,7 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="collapse mt-4" id="collapse3">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">TINGKATAN 1</a>
-                        <a href="#" class="list-group-item">TINGKATAN 2</a>
-                        <a href="#" class="list-group-item">TINGKATAN 3</a>
-                        <a href="#" class="list-group-item">TINGKATAN 4</a>
-                        <a href="#" class="list-group-item">TINGKATAN 5</a>
+                        <a href="#" class="list-group-item">BCK</a>
                     </div>
                 </div>
 
@@ -108,7 +102,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- CARD 4 -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card border-0 shadow card-hover h-100">
             <div class="card-body text-center p-4">
 
                 <i class="bi bi-folder2-open text-primary display-5 mb-3"></i>
@@ -122,9 +116,7 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div class="collapse mt-4" id="collapse4">
                     <div class="list-group text-start">
-                        <a href="#" class="list-group-item">ANALISA LMS T4 2025</a>
-                        <a href="#" class="list-group-item">ANALISA LMS T5 2025</a>
-                        <a href="#" class="list-group-item">SENARAI NAMA PELAJAR GAGAL BM SEJ</a>
+                        <a href="#" class="list-group-item">Empty</a>
                     </div>
                 </div>
 

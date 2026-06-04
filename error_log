@@ -1,0 +1,658 @@
+[07-Apr-2026 00:25:51 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:26:05 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:26:11 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.fpk_misi_visi' doesn't exist in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 10
+[07-Apr-2026 00:26:13 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.sejarah_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:11
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/sejarah-sekolah.php(11): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 11
+[07-Apr-2026 00:26:20 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.sejarah_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:11
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/sejarah-sekolah.php(11): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 11
+[07-Apr-2026 00:26:28 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.sejarah_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:11
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/sejarah-sekolah.php(11): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 11
+[07-Apr-2026 00:26:30 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:26:32 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.fpk_misi_visi' doesn't exist in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 10
+[07-Apr-2026 00:26:37 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pengetua' doesn't exist in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/senarai-pengetua.php(9): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 9
+[07-Apr-2026 00:26:54 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:27:02 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pages' doesn't exist in /home/iesbcomm/public_html/smks3/kalendar-akademik.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/kalendar-akademik.php(9): PDOStatement->execute()
+#1 /home/iesbcomm/public_html/smks3/kalendar-akademik.php(12): getPage()
+#2 {main}
+  thrown in /home/iesbcomm/public_html/smks3/kalendar-akademik.php on line 9
+[07-Apr-2026 00:31:46 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:31:47 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pengetua' doesn't exist in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/senarai-pengetua.php(9): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 9
+[07-Apr-2026 00:31:54 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pengetua' doesn't exist in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/senarai-pengetua.php(9): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 9
+[07-Apr-2026 00:31:58 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pengetua' doesn't exist in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/senarai-pengetua.php(9): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 9
+[07-Apr-2026 00:32:01 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pengetua' doesn't exist in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/senarai-pengetua.php(9): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 9
+[07-Apr-2026 00:32:04 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.fpk_misi_visi' doesn't exist in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 10
+[07-Apr-2026 00:38:17 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:38:29 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:38:36 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.sejarah_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:11
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/sejarah-sekolah.php(11): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 11
+[07-Apr-2026 00:39:01 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.fpk_misi_visi' doesn't exist in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 10
+[07-Apr-2026 00:50:23 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:50:31 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:50:35 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.fpk_misi_visi' doesn't exist in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 10
+[07-Apr-2026 00:50:37 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.sejarah_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:11
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/sejarah-sekolah.php(11): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 11
+[07-Apr-2026 00:50:40 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pengetua' doesn't exist in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/senarai-pengetua.php(9): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 9
+[07-Apr-2026 00:50:44 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pengetua' doesn't exist in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/senarai-pengetua.php(9): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 9
+[07-Apr-2026 00:50:51 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:50:54 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pengetua' doesn't exist in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/senarai-pengetua.php(9): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 9
+[07-Apr-2026 00:51:06 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pengurusan' doesn't exist in /home/iesbcomm/public_html/smks3/pengurusan-tertinggi.php:12
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/pengurusan-tertinggi.php(12): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/pengurusan-tertinggi.php on line 12
+[07-Apr-2026 00:51:08 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'iesbcomm_smks3.guru' doesn't exist in /home/iesbcomm/public_html/smks3/guru-apk.php:12
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/guru-apk.php(12): mysqli_query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/guru-apk.php on line 12
+[07-Apr-2026 00:51:11 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pages' doesn't exist in /home/iesbcomm/public_html/smks3/kalendar-akademik.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/kalendar-akademik.php(9): PDOStatement->execute()
+#1 /home/iesbcomm/public_html/smks3/kalendar-akademik.php(12): getPage()
+#2 {main}
+  thrown in /home/iesbcomm/public_html/smks3/kalendar-akademik.php on line 9
+[07-Apr-2026 00:52:47 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.fpk_misi_visi' doesn't exist in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 10
+[07-Apr-2026 00:52:49 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.sejarah_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:11
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/sejarah-sekolah.php(11): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 11
+[07-Apr-2026 00:52:51 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.pengetua' doesn't exist in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:9
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/senarai-pengetua.php(9): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 9
+[07-Apr-2026 00:52:55 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[07-Apr-2026 00:55:02 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iesbcomm_smks3.profil_sekolah' doesn't exist in /home/iesbcomm/public_html/smks3/profil-sekolah.php:10
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/profil-sekolah.php(10): PDO->query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 10
+[16-Apr-2026 01:20:43 UTC] PHP Warning:  Undefined variable $conn in /home/iesbcomm/public_html/smks3/test-db.php on line 7
+[17-Apr-2026 01:22:37 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/profil-sekolah.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 7
+[17-Apr-2026 01:22:42 UTC] PHP Warning:  Constant DB_HOST already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 2
+[17-Apr-2026 01:22:42 UTC] PHP Warning:  Constant DB_NAME already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 3
+[17-Apr-2026 01:22:42 UTC] PHP Warning:  Constant DB_USER already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 4
+[17-Apr-2026 01:22:42 UTC] PHP Warning:  Constant DB_PASS already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 5
+[17-Apr-2026 01:22:42 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 9
+[17-Apr-2026 01:22:44 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 9
+[17-Apr-2026 01:22:46 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 7
+[17-Apr-2026 01:22:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/pengurusan-tertinggi.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/pengurusan-tertinggi.php on line 9
+[17-Apr-2026 01:23:46 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/kalendar-akademik.php:7
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/kalendar-akademik.php(12): getPage()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/kalendar-akademik.php on line 7
+[17-Apr-2026 01:23:53 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/pengurusan-tertinggi.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/pengurusan-tertinggi.php on line 9
+[17-Apr-2026 01:24:05 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 7
+[17-Apr-2026 01:24:09 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 9
+[17-Apr-2026 01:24:12 UTC] PHP Warning:  Constant DB_HOST already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 2
+[17-Apr-2026 01:24:12 UTC] PHP Warning:  Constant DB_NAME already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 3
+[17-Apr-2026 01:24:12 UTC] PHP Warning:  Constant DB_USER already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 4
+[17-Apr-2026 01:24:12 UTC] PHP Warning:  Constant DB_PASS already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 5
+[17-Apr-2026 01:24:12 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 9
+[17-Apr-2026 01:24:13 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/profil-sekolah.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 7
+[17-Apr-2026 01:25:18 UTC] PHP Warning:  Constant DB_HOST already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 2
+[17-Apr-2026 01:25:18 UTC] PHP Warning:  Constant DB_NAME already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 3
+[17-Apr-2026 01:25:18 UTC] PHP Warning:  Constant DB_USER already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 4
+[17-Apr-2026 01:25:18 UTC] PHP Warning:  Constant DB_PASS already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 5
+[17-Apr-2026 01:25:18 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 9
+[17-Apr-2026 01:25:19 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/profil-sekolah.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 7
+[17-Apr-2026 01:25:21 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 9
+[17-Apr-2026 01:25:23 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 7
+[17-Apr-2026 01:26:57 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/profil-sekolah.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 7
+[17-Apr-2026 01:28:25 UTC] PHP Warning:  require_once(/home/iesbcomm/public_html/smks3includes/functions.php): Failed to open stream: No such file or directory in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:25 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iesbcomm/public_html/smks3includes/functions.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iesbcomm/public_html/smks3/profil-sekolah.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:28 UTC] PHP Warning:  require_once(/home/iesbcomm/public_html/smks3includes/functions.php): Failed to open stream: No such file or directory in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:28 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iesbcomm/public_html/smks3includes/functions.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iesbcomm/public_html/smks3/profil-sekolah.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:31 UTC] PHP Warning:  require_once(/home/iesbcomm/public_html/smks3includes/functions.php): Failed to open stream: No such file or directory in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:31 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iesbcomm/public_html/smks3includes/functions.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iesbcomm/public_html/smks3/profil-sekolah.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:32 UTC] PHP Warning:  require_once(/home/iesbcomm/public_html/smks3includes/functions.php): Failed to open stream: No such file or directory in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:32 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iesbcomm/public_html/smks3includes/functions.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iesbcomm/public_html/smks3/profil-sekolah.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:32 UTC] PHP Warning:  require_once(/home/iesbcomm/public_html/smks3includes/functions.php): Failed to open stream: No such file or directory in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:32 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iesbcomm/public_html/smks3includes/functions.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iesbcomm/public_html/smks3/profil-sekolah.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:32 UTC] PHP Warning:  require_once(/home/iesbcomm/public_html/smks3includes/functions.php): Failed to open stream: No such file or directory in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:32 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iesbcomm/public_html/smks3includes/functions.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iesbcomm/public_html/smks3/profil-sekolah.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:39 UTC] PHP Warning:  require_once(/home/iesbcomm/public_html/smks3includes/functions.php): Failed to open stream: No such file or directory in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:28:39 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iesbcomm/public_html/smks3includes/functions.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iesbcomm/public_html/smks3/profil-sekolah.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:38:35 UTC] PHP Warning:  require_once(/home/iesbcomm/public_html/smks3includes/functions.php): Failed to open stream: No such file or directory in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:38:35 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iesbcomm/public_html/smks3includes/functions.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iesbcomm/public_html/smks3/profil-sekolah.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:38:39 UTC] PHP Warning:  Constant DB_HOST already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 2
+[17-Apr-2026 01:38:39 UTC] PHP Warning:  Constant DB_NAME already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 3
+[17-Apr-2026 01:38:39 UTC] PHP Warning:  Constant DB_USER already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 4
+[17-Apr-2026 01:38:39 UTC] PHP Warning:  Constant DB_PASS already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 5
+[17-Apr-2026 01:38:39 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 9
+[17-Apr-2026 01:38:40 UTC] PHP Warning:  require_once(/home/iesbcomm/public_html/smks3includes/functions.php): Failed to open stream: No such file or directory in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:38:40 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iesbcomm/public_html/smks3includes/functions.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iesbcomm/public_html/smks3/profil-sekolah.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:38:42 UTC] PHP Warning:  Constant DB_HOST already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 2
+[17-Apr-2026 01:38:42 UTC] PHP Warning:  Constant DB_NAME already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 3
+[17-Apr-2026 01:38:42 UTC] PHP Warning:  Constant DB_USER already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 4
+[17-Apr-2026 01:38:42 UTC] PHP Warning:  Constant DB_PASS already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 5
+[17-Apr-2026 01:38:42 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 9
+[17-Apr-2026 01:38:44 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 9
+[17-Apr-2026 01:38:46 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 7
+[17-Apr-2026 01:38:52 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/pengurusan-tertinggi.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/pengurusan-tertinggi.php on line 9
+[17-Apr-2026 01:38:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/kalendar-akademik.php:7
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/kalendar-akademik.php(12): getPage()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/kalendar-akademik.php on line 7
+[17-Apr-2026 01:40:20 UTC] PHP Warning:  require_once(/home/iesbcomm/public_html/smks3includes/functions.php): Failed to open stream: No such file or directory in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:40:20 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/iesbcomm/public_html/smks3includes/functions.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/iesbcomm/public_html/smks3/profil-sekolah.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 3
+[17-Apr-2026 01:44:06 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/profil-sekolah.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 8
+[17-Apr-2026 01:44:08 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/profil-sekolah.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 8
+[17-Apr-2026 01:44:09 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/profil-sekolah.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 8
+[17-Apr-2026 01:44:10 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/profil-sekolah.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 8
+[17-Apr-2026 01:44:10 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/profil-sekolah.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/profil-sekolah.php on line 8
+[17-Apr-2026 01:44:54 UTC] PHP Warning:  Constant DB_HOST already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 2
+[17-Apr-2026 01:44:54 UTC] PHP Warning:  Constant DB_NAME already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 3
+[17-Apr-2026 01:44:54 UTC] PHP Warning:  Constant DB_USER already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 4
+[17-Apr-2026 01:44:54 UTC] PHP Warning:  Constant DB_PASS already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 5
+[17-Apr-2026 01:44:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 9
+[17-Apr-2026 01:44:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 9
+[17-Apr-2026 01:44:56 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 7
+[17-Apr-2026 01:47:14 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 3
+[17-Apr-2026 01:47:15 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 3
+[17-Apr-2026 01:47:18 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/sejarah-sekolah.php on line 9
+[17-Apr-2026 01:47:20 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 3
+[17-Apr-2026 01:47:23 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 3
+[17-Apr-2026 01:51:03 UTC] PHP Warning:  Constant DB_HOST already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 2
+[17-Apr-2026 01:51:03 UTC] PHP Warning:  Constant DB_NAME already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 3
+[17-Apr-2026 01:51:03 UTC] PHP Warning:  Constant DB_USER already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 4
+[17-Apr-2026 01:51:03 UTC] PHP Warning:  Constant DB_PASS already defined in /home/iesbcomm/public_html/smks3/config/database.php on line 5
+[17-Apr-2026 01:51:03 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/misi-visi-sekolah.php on line 9
+[17-Apr-2026 01:51:16 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 7
+[17-Apr-2026 01:51:22 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getConnection() in /home/iesbcomm/public_html/smks3/senarai-pengetua.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/senarai-pengetua.php on line 7
+[20-Apr-2026 00:50:21 UTC] PHP Fatal error:  Uncaught TypeError: mysqli_query(): Argument #1 ($mysql) must be of type mysqli, null given in /home/iesbcomm/public_html/smks3/guru-apk.php:12
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/guru-apk.php(12): mysqli_query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/guru-apk.php on line 12
+[20-Apr-2026 00:50:25 UTC] PHP Fatal error:  Uncaught TypeError: mysqli_query(): Argument #1 ($mysql) must be of type mysqli, null given in /home/iesbcomm/public_html/smks3/guru-apk.php:12
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/guru-apk.php(12): mysqli_query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/guru-apk.php on line 12
+[20-Apr-2026 00:51:47 UTC] PHP Fatal error:  Uncaught TypeError: mysqli_query(): Argument #1 ($mysql) must be of type mysqli, null given in /home/iesbcomm/public_html/smks3/guru-apk.php:12
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/guru-apk.php(12): mysqli_query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/guru-apk.php on line 12
+[20-Apr-2026 00:53:01 UTC] PHP Fatal error:  Uncaught TypeError: mysqli_query(): Argument #1 ($mysql) must be of type mysqli, null given in /home/iesbcomm/public_html/smks3/guru-apk.php:12
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/guru-apk.php(12): mysqli_query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/guru-apk.php on line 12
+[20-Apr-2026 00:53:03 UTC] PHP Fatal error:  Uncaught TypeError: mysqli_query(): Argument #1 ($mysql) must be of type mysqli, null given in /home/iesbcomm/public_html/smks3/guru-apk.php:12
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/guru-apk.php(12): mysqli_query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/guru-apk.php on line 12
+[20-Apr-2026 01:11:07 UTC] PHP Warning:  Undefined variable $conn in /home/iesbcomm/public_html/smks3/guru-apk.php on line 12
+[20-Apr-2026 01:11:07 UTC] PHP Fatal error:  Uncaught TypeError: mysqli_query(): Argument #1 ($mysql) must be of type mysqli, null given in /home/iesbcomm/public_html/smks3/guru-apk.php:12
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/guru-apk.php(12): mysqli_query()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/guru-apk.php on line 12
+[20-Apr-2026 02:48:17 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:48:18 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:48:40 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:48:41 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:49:12 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:49:13 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:49:13 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:49:13 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:49:18 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:49:19 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:06 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:07 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:19 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:20 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:23 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:24 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:26 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:28 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:29 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:29 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:36 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:38 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:38 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:38 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:51:38 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:18 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:18 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:19 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:19 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:19 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:19 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:20 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:46 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:49 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:49 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:49 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:52:50 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:53:12 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:53:18 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:15 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:17 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:34 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:36 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:36 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:36 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:37 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:37 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:57 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:58 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:54:58 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:55:38 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:55:48 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:55:54 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:55:57 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:55:58 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:55:59 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 02:55:59 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 179
+[20-Apr-2026 04:01:10 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/index.php:9) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 81
+[20-Apr-2026 04:01:28 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 178
+[20-Apr-2026 04:01:29 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 178
+[20-Apr-2026 04:01:30 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 178
+[20-Apr-2026 04:01:30 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 178
+[22-Apr-2026 01:56:10 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:56:12 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:56:15 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:56:17 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:56:33 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:16 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:17 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:17 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:18 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:18 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:18 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:19 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:23 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:24 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:58:51 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 5
+[22-Apr-2026 01:59:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 7
+[22-Apr-2026 01:59:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 7
+[22-Apr-2026 01:59:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 7
+[22-Apr-2026 02:01:57 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 7
+[22-Apr-2026 02:03:49 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getLatestNewsByYear() in /home/iesbcomm/public_html/smks3/index.php:15
+Stack trace:
+#0 {main}
+  thrown in /home/iesbcomm/public_html/smks3/index.php on line 15
+[22-Apr-2026 02:26:50 UTC] PHP Warning:  Undefined variable $pdo in /home/iesbcomm/public_html/smks3/news.php on line 5
+[22-Apr-2026 02:26:50 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in /home/iesbcomm/public_html/smks3/includes/functions.php:199
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/news.php(5): getLatestNewsByYear()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/includes/functions.php on line 199
+[22-Apr-2026 02:26:52 UTC] PHP Warning:  Undefined variable $pdo in /home/iesbcomm/public_html/smks3/news.php on line 5
+[22-Apr-2026 02:26:52 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in /home/iesbcomm/public_html/smks3/includes/functions.php:199
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/news.php(5): getLatestNewsByYear()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/includes/functions.php on line 199
+[22-Apr-2026 02:26:53 UTC] PHP Warning:  Undefined variable $pdo in /home/iesbcomm/public_html/smks3/news.php on line 5
+[22-Apr-2026 02:26:53 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in /home/iesbcomm/public_html/smks3/includes/functions.php:199
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/news.php(5): getLatestNewsByYear()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/includes/functions.php on line 199
+[22-Apr-2026 02:49:53 UTC] PHP Fatal error:  Cannot redeclare smks3_fetch_published_news_paginated() (previously declared in /home/iesbcomm/public_html/smks3/includes/functions.php:81) in /home/iesbcomm/public_html/smks3/includes/functions.php on line 156
+[22-Apr-2026 03:22:50 UTC] PHP Warning:  Undefined variable $listPage in /home/iesbcomm/public_html/smks3/news.php on line 12
+[22-Apr-2026 03:22:50 UTC] PHP Warning:  Undefined variable $news_per_page in /home/iesbcomm/public_html/smks3/news.php on line 12
+[22-Apr-2026 03:22:50 UTC] PHP Warning:  Undefined variable $yearFilter in /home/iesbcomm/public_html/smks3/news.php on line 12
+[22-Apr-2026 03:22:50 UTC] PHP Fatal error:  Uncaught TypeError: smks3_fetch_published_news_paginated(): Argument #1 ($page) must be of type int, null given, called in /home/iesbcomm/public_html/smks3/news.php on line 12 and defined in /home/iesbcomm/public_html/smks3/includes/functions.php:81
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/news.php(12): smks3_fetch_published_news_paginated()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/includes/functions.php on line 81
+[22-Apr-2026 03:24:24 UTC] PHP Warning:  Undefined variable $listPage in /home/iesbcomm/public_html/smks3/news.php on line 47
+[22-Apr-2026 03:24:24 UTC] PHP Fatal error:  Uncaught TypeError: smks3_fetch_published_news_paginated(): Argument #1 ($page) must be of type int, null given, called in /home/iesbcomm/public_html/smks3/news.php on line 47 and defined in /home/iesbcomm/public_html/smks3/includes/functions.php:81
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/news.php(47): smks3_fetch_published_news_paginated()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/includes/functions.php on line 81
+[22-Apr-2026 03:30:57 UTC] PHP Warning:  Undefined variable $listPage in /home/iesbcomm/public_html/smks3/news.php on line 1
+[22-Apr-2026 03:30:57 UTC] PHP Warning:  Undefined variable $news_per_page in /home/iesbcomm/public_html/smks3/news.php on line 1
+[22-Apr-2026 03:30:57 UTC] PHP Warning:  Undefined variable $yearFilter in /home/iesbcomm/public_html/smks3/news.php on line 1
+[22-Apr-2026 03:30:57 UTC] PHP Fatal error:  Uncaught TypeError: smks3_fetch_published_news_paginated(): Argument #1 ($page) must be of type int, null given, called in /home/iesbcomm/public_html/smks3/news.php on line 1 and defined in /home/iesbcomm/public_html/smks3/includes/functions.php:81
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/news.php(1): smks3_fetch_published_news_paginated()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/includes/functions.php on line 81
+[22-Apr-2026 03:31:09 UTC] PHP Warning:  Undefined variable $listPage in /home/iesbcomm/public_html/smks3/news.php on line 1
+[22-Apr-2026 03:31:09 UTC] PHP Warning:  Undefined variable $news_per_page in /home/iesbcomm/public_html/smks3/news.php on line 1
+[22-Apr-2026 03:31:09 UTC] PHP Warning:  Undefined variable $yearFilter in /home/iesbcomm/public_html/smks3/news.php on line 1
+[22-Apr-2026 03:31:09 UTC] PHP Fatal error:  Uncaught TypeError: smks3_fetch_published_news_paginated(): Argument #1 ($page) must be of type int, null given, called in /home/iesbcomm/public_html/smks3/news.php on line 1 and defined in /home/iesbcomm/public_html/smks3/includes/functions.php:81
+Stack trace:
+#0 /home/iesbcomm/public_html/smks3/news.php(1): smks3_fetch_published_news_paginated()
+#1 {main}
+  thrown in /home/iesbcomm/public_html/smks3/includes/functions.php on line 81
+[22-Apr-2026 03:44:03 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/news.php on line 203
+[22-Apr-2026 03:44:03 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/news.php on line 203
+[22-Apr-2026 03:44:03 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/news.php on line 203
+[22-Apr-2026 03:46:30 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/news.php on line 203
+[22-Apr-2026 03:46:30 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/news.php on line 203
+[22-Apr-2026 03:46:30 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/news.php on line 203
+[22-Apr-2026 03:46:56 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/news.php on line 203
+[22-Apr-2026 03:46:58 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/news.php on line 203
+[22-Apr-2026 03:46:58 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/news.php on line 203
+[22-Apr-2026 03:46:58 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/news.php on line 203
+[12-May-2026 02:59:46 UTC] PHP Warning:  Undefined variable $row in /home/iesbcomm/public_html/smks3/kalendar-akademik.php on line 144
+[12-May-2026 02:59:46 UTC] PHP Warning:  Trying to access array offset on null in /home/iesbcomm/public_html/smks3/kalendar-akademik.php on line 144

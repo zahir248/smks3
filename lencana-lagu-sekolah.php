@@ -1,65 +1,117 @@
 <?php
 $page_title = 'Lencana & Lagu Sekolah';
+
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/config/database.php';
+
 $settings = getSettings();
+$pdo = getConnection();
+
+/**
+ * FETCH DATA FROM DB
+ */
+$stmt = $pdo->query("SELECT * FROM lencana_lagu_sekolah WHERE id = 1");
+$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Lencana Sekolah Section -->
-<section class="py-5 bg-light">
+<style>
+.lencana-img {
+    max-width: 220px;
+    width: 100%;
+    height: auto;
+}
+
+@media (max-width: 768px) {
+    .lencana-img {
+        max-width: 180px;
+    }
+}
+
+.lagu-sekolah {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    line-height: 1.8;
+    border: 1px solid #eee;
+}
+</style>
+
+<!-- ================= LENCANA ================= -->
+
+<section class="py-5" style="background:#d8f9ff;">
+
     <div class="container">
-        
+
         <h2 class="text-center fw-bold mb-5">Lencana Sekolah</h2>
-        <div class="row align-items-center g-4">
-            <div class="col-md-4 text-center">
-                <img src="images/logosmks3.jpg" alt="Lencana Sekolah SMK Seremban 3" class="img-fluid shadow rounded">
+
+        <div class="row align-items-center g-4 bg-white">
+
+            <!-- IMAGE -->
+            <div class="col-12 col-md-4 text-center">
+                <img 
+                    src="images/<?= htmlspecialchars($data['image']) ?>" 
+                    class="img-fluid shadow rounded lencana-img"
+                >
             </div>
-            <div class="col-md-8">
-                <p><strong>Moto:</strong> "Berilmu, Berdisiplin, Berbakti"</p>
-                <ul>
-                    <li><strong>Warna biru tua:</strong> Perpaduan semua warga sekolah yang terdiri daripada pelbagai kaum.</li>
-                    <li><strong>Warna merah:</strong> Keberanian dan bersedia menghadapi cabaran semasa dan yang akan datang.</li>
-                    <li><strong>Warna putih:</strong> Kesucian dan keikhlasan untuk meningkatkan nama baik sekolah.</li>
-                    <li><strong>Empat gelung (hijau, merah, kuning, biru):</strong> Semangat untuk meningkatkan nama sekolah dalam aktiviti kokurikulum dan melambangkan empat buah rumah sukan.</li>
-                    <li><strong>Anak bulan & bintang:</strong> Melambangkan raja berperlembagaan dan Islam sebagai agama rasmi negara.</li>
-                    <li><strong>Buku:</strong> SMK Seremban 3 sebagai pusat ilmu.</li>
+
+            <!-- CONTENT -->
+            <div class="col-12 col-md-8">
+
+                <p class="mb-3">
+                    <strong>Moto:</strong> <?= htmlspecialchars($data['moto']) ?>
+                </p>
+
+                <ul class="ps-3">
+                    <?php
+                    $stmt = $pdo->query("SELECT * FROM lencana_item");
+                    while($row = $stmt->fetch(PDO::FETCH_ASSOC)):
+                    ?>
+                        <li>
+                            <strong><?= htmlspecialchars($row['title']) ?>:</strong>
+                            <?= htmlspecialchars($row['description']) ?>
+                        </li>
+                    <?php endwhile; ?>
                 </ul>
+
             </div>
+
         </div>
+
     </div>
+
 </section>
 
-<!-- Lagu Sekolah Section -->
-<section class="py-5">
+<!-- ================= LAGU ================= -->
+
+<section class="py-5" style="background:#d8f9ff;">
+
     <div class="container">
+
         <h2 class="text-center fw-bold mb-5">Lagu Sekolah</h2>
+
         <div class="row justify-content-center">
+
             <div class="col-lg-8">
-                <pre class="p-4 bg-light rounded shadow text-center" style="white-space: pre-wrap; font-family: 'Plus Jakarta Sans', sans-serif;">
-SMK Seremban 3
-Puncak ilmu abadi
-Tersergam pesona
-Menuju cita
 
-SMK Seremban 3
-Gedung wawasan kita
-Berjanji Bersatu
-Demi negara
+                <div class="p-4 bg-light rounded shadow text-center lagu-sekolah">
 
-Kami kan berusaha
-Hingga berjaya
-Tanpa rasa jemu
-Kami berusaha
+                    <?= nl2br(htmlspecialchars($data['lirik'])) ?>
 
-SMK Seremban 3
-Puncak ilmu abadi
-Tersergam pesona
-Menuju cita
-                </pre>
-                <p class="text-center mt-2"><small>Lagu: Samsudin Ahmad | Lirik: Jamaluddin Ahmad</small></p>
+                </div>
+
+                <p class="text-center mt-2">
+                    <small>
+                        Lagu: <?= htmlspecialchars($data['lirik_penggubah']) ?> |
+                        Lirik: <?= htmlspecialchars($data['lirik_penulis']) ?>
+                    </small>
+                </p>
+
             </div>
+
         </div>
+
     </div>
+
 </section>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
