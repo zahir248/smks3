@@ -83,7 +83,7 @@ require_once __DIR__ . '/includes/header.php';
 }
 </style>
 <!-- ENROLMENT SECTION -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container text-center">
         <p class="text-muted lead mb-3">Susun atur kelas mengikut blok dan aras di SMK Seremban 3.</p>
         <div class="mb-4">
@@ -158,7 +158,7 @@ $enrolments = $pdo->query("
     </div>
 </section>
 
-<section class="py-5" style="background:#d8f9ff;" id="blok-a">
+<section class="page-section" id="blok-a">
 <div class="container">
     <div class="text-center mb-4">
         <h2 class="fw-bold">Blok Akademik A</h2>
@@ -215,7 +215,7 @@ $enrolments = $pdo->query("
 </section>
 
 
-<section class="py-5" style="background:#d8f9ff;" id="blok-b">
+<section class="page-section" id="blok-b">
 <div class="container">
     <div class="text-center mb-4">
         <h2 class="fw-bold">Blok Akademik B</h2>
@@ -271,7 +271,7 @@ $enrolments = $pdo->query("
 
 
 <!-- BILANGAN KELAS -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <div class="text-center mb-4">
 <h2 class="fw-bold bilangan-kelas-title">

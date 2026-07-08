@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- SECTION NILAM -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <p class="text-center text-muted lead mb-4">Pusat sumber menyediakan bahan bacaan, maklumat digital dan aktiviti literasi untuk meningkatkan budaya membaca dalam kalangan pelajar. <a href="contact.php" class="text-decoration-none fw-semibold">Hubungi kami</a> untuk pertanyaan.</p>
 
@@ -47,7 +47,7 @@ require_once __DIR__ . '/includes/header.php';
 
 
 <!-- SECTION BULETIN SEKOLAH -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
 
         <div class="text-center mb-5">

@@ -18,7 +18,7 @@ $data = $stmt->fetch();
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
 <div class="container">
 
     <h2 class="text-center fw-bold mb-4">

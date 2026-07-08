@@ -72,7 +72,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <!-- ================= PELAN SEKOLAH ================= -->
 
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
 
     <div class="container">
 

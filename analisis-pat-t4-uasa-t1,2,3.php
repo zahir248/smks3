@@ -6,7 +6,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Unit Peperiksaan Dalaman -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <p class="text-center text-muted lead mb-4">
             Paparan analisis pencapaian pelajar bagi Peperiksaan Akhir Tahun (PAT) Tingkatan 4 serta Ujian Akhir Sesi Akademik (UASA) bagi Tingkatan 1, 2 dan 3.

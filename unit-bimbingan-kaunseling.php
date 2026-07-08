@@ -6,7 +6,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Pengenalan -->
-<section class="py-5" style="background:#d8f9ff;" id=pengenalan"">
+<section class="page-section" id=pengenalan"">
     <div class="container">
         <p class="text-center text-muted lead mb-3">Perkhidmatan bimbingan menyeluruh untuk pembangunan akademik, kerjaya, psikologi, kepimpinan, dan kesihatan mental pelajar.</p>
         <div class="text-center mb-4">
@@ -21,7 +21,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Visi & Misi -->
-<section class="py-5" style="background:#d8f9ff;" id="visi-misi">
+<section class="page-section" id="visi-misi">
     <div class="container">
         <div class="row g-4">
             <div class="col-md-6">
@@ -37,7 +37,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Falsafah -->
-<section class="py-5" style="background:#d8f9ff;" id="falsafah">
+<section class="page-section" id="falsafah">
     <div class="container">
         <h3 class="fw-bold text-center mb-4">Falsafah</h3>
         <p>Bahawasanya setiap pelajar mempunyai potensi yang boleh digembleng secara optimum menerusi pengurusan menyeluruh perkhidmatan bimbingan dan kaunseling yang cekap, berkesan dan beramanah berteraskan sumber dalaman dan luaran bagi melahirkan pelajar yang seimbang dari aspek intelektual, jasmani, emosi dan rohani serta beriman dan beramal soleh.</p>
@@ -45,7 +45,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Objektif / Tujuan -->
-<section class="py-5" style="background:#d8f9ff;" id="objektif">
+<section class="page-section" id="objektif">
     <div class="container">
         <h3 class="fw-bold text-center mb-4">Objektif / Tujuan</h3>
         <ul>
@@ -55,7 +55,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Fungsi Unit -->
-<section class="py-5" style="background:#d8f9ff;" id="fungsi">
+<section class="page-section" id="fungsi">
     <div class="container">
         <h3 class="fw-bold text-center mb-4">Fungsi Unit Bimbingan & Kaunseling</h3>
         <ul>
@@ -84,7 +84,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Carta Organisasi -->
-<section class="py-5" style="background:#d8f9ff;" id="carta">
+<section class="page-section" id="carta">
     <div class="container">
         <h3 class="fw-bold text-center mb-4">Carta Organisasi</h3>
         <div class="text-center">
@@ -96,7 +96,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Proses Perkhidmatan -->
-<section class="py-5" style="background:#d8f9ff;" id="proses">
+<section class="page-section" id="proses">
     <div class="container">
         <h3 class="fw-bold text-center mb-4">Proses Perkhidmatan Bimbingan & Kaunseling/Komponen Perkhidmatan</h3>
         <div class="text-center">
@@ -113,7 +113,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Aktiviti Unit -->
-<section class="py-5" style="background:#d8f9ff;" id="aktiviti">
+<section class="page-section" id="aktiviti">
     <div class="container">
         <h3 class="fw-bold text-center mb-4">Aktiviti Unit Bimbingan & Kaunseling</h3>
         <p class="text-center">[Rujuk Google Drive / dokumen aktiviti]</p>

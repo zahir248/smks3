@@ -24,7 +24,7 @@ function getIcon($kategori) {
 ?>
 
 <!-- Falsafah Pendidikan Kebangsaan -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <h2 class="text-center fw-bold mb-4">Falsafah Pendidikan Kebangsaan</h2>
         <div class="card card-hover border-0 shadow-sm p-5 fade-in">
@@ -39,7 +39,7 @@ function getIcon($kategori) {
 </section>
 
 <!-- Visi, Misi, Motto, Pelan -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <div class="row g-4">
             <?php foreach($fpk_rows as $row): 
@@ -60,11 +60,11 @@ function getIcon($kategori) {
 
 <style>
 body{
-    background: #d8f9ff;
+    
 }
 
 section{
-    background: #d8f9ff;
+    
 }
 .card{
     background: #ffffff;

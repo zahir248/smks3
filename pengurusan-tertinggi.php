@@ -30,7 +30,7 @@ foreach ($pengurusan as $p) {
 $placeholderImage = '/smks3/images/placeholder.png';
 ?>
 
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
 
         <style>

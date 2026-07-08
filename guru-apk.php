@@ -31,7 +31,7 @@ try {
 ========================= -->
 <style>
 .background-page{
-    background:#d8f9ff;
+    
 }
 .staff-card {
     text-align: center;
@@ -90,7 +90,7 @@ try {
 <!-- =========================
     SECTION GURU
 ========================= -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
 <div class="container">
 
 <h3 class="text-center fw-bold mb-4">Barisan Guru</h3>
@@ -125,7 +125,7 @@ try {
 <!-- =========================
     SECTION AKP
 ========================= -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
 <div class="container">
 
 <h3 class="text-center fw-bold mb-4">Barisan AKP</h3>

@@ -1,5 +1,6 @@
 <?php
-$page_title = 'Hubungi';
+$page_title = 'Hubungi Kami';
+$page_lead = 'Hantar mesej atau hubungi sekolah secara langsung.';
 require_once __DIR__ . '/includes/functions.php';
 $settings = getSettings();
 $message = '';
@@ -14,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Alamat e-mel tidak sah.';
     } else {
-        // No database: show success message only (message not stored)
         $message = 'Mesej anda telah dihantar. Terima kasih!';
         $_POST = [];
     }
@@ -22,24 +22,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<section class="py-5 bg-light">
+<section class="page-section page-section--muted">
     <div class="container">
-        <p class="text-muted lead mb-4">Hubungi kami untuk maklumat lanjut.</p>
-        <div class="row g-4 mt-4">
+        <div class="row g-4">
             <div class="col-lg-5">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <h6 class="text-uppercase text-muted mb-3">Alamat & Hubungi</h6>
-                        <p class="mb-3"><i class="bi bi-geo-alt text-primary me-2"></i><?= htmlspecialchars($settings['address'] ?? '') ?></p>
-                        <p class="mb-3"><i class="bi bi-telephone text-primary me-2"></i><?= htmlspecialchars($settings['phone'] ?? '') ?></p>
-                        <p class="mb-0"><i class="bi bi-envelope text-primary me-2"></i><?= htmlspecialchars($settings['email'] ?? '') ?></p>
+                <div class="panel-card">
+                    <h2 class="panel-card__head h6 mb-0">Alamat &amp; Hubungi</h2>
+                    <div class="panel-card__body">
+                        <p class="mb-3 d-flex gap-2">
+                            <i class="bi bi-geo-alt text-primary flex-shrink-0 mt-1"></i>
+                            <span><?= nl2br(htmlspecialchars($settings['address'] ?? '')) ?></span>
+                        </p>
+                        <p class="mb-3">
+                            <i class="bi bi-telephone text-primary me-2"></i>
+                            <a href="tel:<?= preg_replace('/\s+/', '', (string)($settings['phone'] ?? '')) ?>"><?= htmlspecialchars($settings['phone'] ?? '') ?></a>
+                        </p>
+                        <p class="mb-0">
+                            <i class="bi bi-envelope text-primary me-2"></i>
+                            <a href="mailto:<?= htmlspecialchars($settings['email'] ?? '') ?>"><?= htmlspecialchars($settings['email'] ?? '') ?></a>
+                        </p>
                     </div>
                 </div>
             </div>
             <div class="col-lg-7">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <h5 class="mb-4">Hantar Mesej</h5>
+                <div class="panel-card">
+                    <h2 class="panel-card__head h6 mb-0">Hantar Mesej</h2>
+                    <div class="panel-card__body">
                         <?php if ($message) : ?>
                         <div class="alert alert-success"><?= htmlspecialchars($message) ?></div>
                         <?php endif; ?>

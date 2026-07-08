@@ -105,7 +105,7 @@ require_once __DIR__ . '/includes/header.php';
 </style>
 
 <!-- Timeline Section -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <h2 class="text-center fw-bold mb-5">Garis Masa Pengetua SMK Seremban 3</h2>
         <div class="timeline">

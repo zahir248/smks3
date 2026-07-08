@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- PROGRAM AKADEMIK -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <p class="text-center text-muted lead mb-4">Pelbagai program akademik dijalankan bagi meningkatkan prestasi dan kecemerlangan pelajar SMK Seremban 3.</p>
 

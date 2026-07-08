@@ -18,7 +18,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Carta Organisasi -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
 
         <div class="text-center mb-5">
@@ -44,7 +44,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Galeri Murid -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
 
         <div class="text-center mb-5">

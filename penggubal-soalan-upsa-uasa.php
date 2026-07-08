@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Unit Peperiksaan Dalaman -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <p class="text-center text-muted lead mb-4">
             

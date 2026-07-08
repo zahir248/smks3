@@ -1,8 +1,8 @@
 <?php
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'iesbcomm_smks3');
-define('DB_USER', 'iesbcomm_smks3');
-define('DB_PASS', 'D)(mBlY+o9_{+d+p');
+define('DB_USER', 'root');
+define('DB_PASS', '');
 
 function getConnection() {
     try {

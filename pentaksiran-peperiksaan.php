@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Unit Peperiksaan Dalaman -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <p class="text-center text-muted lead mb-4">Maklumat berkaitan pentaksiran pelajar termasuk peperiksaan dalaman, peperiksaan awam dan Pentaksiran Bilik Darjah (PBD). <a href="contact.php" class="text-decoration-none fw-semibold">Hubungi kami</a> untuk pertanyaan lanjut.</p>
 
@@ -69,7 +69,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Peperiksaan Umum / SPM -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="fw-bold">Peperiksaan Umum / SPM</h2>
@@ -100,7 +100,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Pentaksiran Bilik Darjah -->
-<section class="py-5" style="background:#d8f9ff;">
+<section class="page-section">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="fw-bold">Pentaksiran Bilik Darjah (PBD)</h2>
