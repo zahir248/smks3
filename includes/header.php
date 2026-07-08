@@ -491,7 +491,7 @@ smks3_record_visit();
         .hero-home-image {
             background:
                 linear-gradient(90deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.68) 38%, rgba(0, 0, 0, 0.58) 58%, rgba(0, 0, 0, 0.5) 100%),
-                url("images/smk seremban 3 hero section.jpg") center / cover no-repeat;
+                url("images/smk-seremban-3-hero.jpg") center / cover no-repeat;
             background-attachment: scroll, fixed;
         }
         .hero.hero-home-image {

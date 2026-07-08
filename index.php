@@ -61,8 +61,44 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 <style>
 /* ── Hero ── */
-.hero.hero-home-image > .container {
+.hero.hero-home-image > .container.hero-home-shell {
     width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.hero-home-cluster {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    max-width: 100%;
+}
+.hero-home-cluster .hero-home-enter-text {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 36rem;
+}
+.hero-home-cluster .hero-home-enter-logo {
+    flex: 0 0 auto;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+@media (min-width: 1200px) {
+    .hero-home-cluster {
+        gap: clamp(2.5rem, 5vw, 4.5rem);
+    }
+    .hero-home-cluster .hero-home-enter-logo {
+        display: flex;
+    }
+    .hero-home-cluster .hero-home-subtitle {
+        max-width: 30rem;
+    }
+    .hero-home-cluster .hero-home-logo-img {
+        margin-left: 0;
+        max-height: clamp(8.5rem, 20vh, 12.5rem);
+        width: auto;
+    }
 }
 .hero-school-name {
     font-size: clamp(1.2rem, 2.4vw + 0.5rem, 2.25rem);
@@ -123,23 +159,16 @@ require_once __DIR__ . '/includes/header.php';
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
 }
-@media (min-width: 1200px) {
-    .hero-home-enter-logo .hero-home-logo-img {
-        margin-left: auto;
-    }
-}
 .hero-home-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.65rem;
-    justify-content: center;
-}
-@media (min-width: 1200px) {
-    .hero-home-actions {
-        justify-content: flex-start;
-    }
+    justify-content: flex-start;
 }
 @media (max-width: 1199.98px) {
+    .hero-home-cluster {
+        width: 100%;
+    }
     .hero-home-enter-logo {
         display: none !important;
     }
@@ -165,25 +194,46 @@ require_once __DIR__ . '/includes/header.php';
     transform: translateY(-1px);
 }
 
-@keyframes hero-home-enter-left {
-    from { opacity: 0; transform: translateX(-2rem); }
-    to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes hero-home-enter-right {
-    from { opacity: 0; transform: translateX(2rem) scale(0.96); }
-    to   { opacity: 1; transform: translateX(0) scale(1); }
+.hero-home-enter-text,
+.hero-home-enter-logo {
+    opacity: 0;
+    will-change: transform, opacity;
+    transition:
+        opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hero-home-enter-text {
-    opacity: 0;
-    animation: hero-home-enter-left 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    animation-delay: 0.08s;
+    transform: translateX(-2.5rem);
+    transition-delay: 0.08s;
     min-width: 0;
     overflow-wrap: break-word;
 }
 .hero-home-enter-logo {
+    transform: translateX(2.5rem) scale(0.96);
+    transition-delay: 0.2s;
+}
+.hero-home-enter-text.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+.hero-home-enter-logo.is-visible {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+.hero-home-enter-text.is-scroll-out {
     opacity: 0;
-    animation: hero-home-enter-right 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    animation-delay: 0.2s;
+    transform: translateX(-2.5rem);
+    transition-delay: 0s;
+    pointer-events: none;
+}
+.hero-home-enter-logo.is-scroll-out {
+    opacity: 0;
+    transform: translateX(2.5rem) scale(0.96);
+    transition-delay: 0s;
+    pointer-events: none;
+}
+.hero-home-enter-logo.is-scroll-out .hero-home-logo-img {
+    animation: none;
 }
 @media (max-width: 767.98px) {
     .hero-home-enter-text {
@@ -205,7 +255,11 @@ require_once __DIR__ . '/includes/header.php';
 }
 @media (prefers-reduced-motion: reduce) {
     .hero-home-enter-text,
-    .hero-home-enter-logo,
+    .hero-home-enter-logo {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
     .home-reveal,
     .home-reveal--from-right,
     .home-reveal-fade {
@@ -660,9 +714,9 @@ require_once __DIR__ . '/includes/header.php';
 
 <!-- ═══ HERO ═══ -->
 <section class="hero hero-home-image text-white">
-    <div class="container">
-        <div class="row align-items-center gy-4">
-            <div class="col-12 col-xl-6 hero-home-enter-text text-center text-xl-start">
+    <div class="container hero-home-shell">
+        <div class="hero-home-cluster">
+            <div class="hero-home-enter-text text-center text-xl-start">
                 <h1 class="fw-bold mb-0 hero-school-name">
                     <span class="hero-school-line d-md-none">Selamat Datang</span>
                     <span class="hero-school-line d-md-none">Ke Portal</span>
@@ -681,7 +735,7 @@ require_once __DIR__ . '/includes/header.php';
                     </a>
                 </div>
             </div>
-            <div class="col-xl-6 d-none d-xl-block text-center text-xl-end hero-home-enter-logo">
+            <div class="hero-home-enter-logo">
                 <img src="images/hero-logo.png" alt="<?= htmlspecialchars($settings['school_name']) ?>" class="hero-home-logo-img img-fluid" width="320" height="286" decoding="async">
             </div>
         </div>
@@ -873,6 +927,74 @@ require_once __DIR__ . '/includes/header.php';
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script>
+(function () {
+    var hero = document.querySelector('.hero-home-image');
+    var cluster = document.querySelector('.hero-home-cluster');
+    var text = document.querySelector('.hero-home-enter-text');
+    var logo = document.querySelector('.hero-home-enter-logo');
+    if (!hero || !text) return;
+
+    function showHeroContent() {
+        text.classList.add('is-visible');
+        text.classList.remove('is-scroll-out');
+        if (logo) {
+            logo.classList.add('is-visible');
+            logo.classList.remove('is-scroll-out');
+        }
+    }
+
+    function hideHeroContent() {
+        text.classList.add('is-scroll-out');
+        if (logo) logo.classList.add('is-scroll-out');
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        showHeroContent();
+        return;
+    }
+
+    var inHero = false;
+
+    function updateHeroState(entering) {
+        if (entering === inHero) return;
+        inHero = entering;
+        if (entering) {
+            showHeroContent();
+        } else {
+            hideHeroContent();
+        }
+    }
+
+    if ('IntersectionObserver' in window) {
+        var navHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--site-navbar-height')) || 76;
+        var target = cluster || hero;
+
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                var entering = entry.isIntersecting && entry.intersectionRatio >= 0.18;
+                updateHeroState(entering);
+            });
+        }, {
+            root: null,
+            rootMargin: '-' + navHeight + 'px 0px -45% 0px',
+            threshold: [0, 0.12, 0.18, 0.35, 0.55, 0.75]
+        });
+
+        observer.observe(target);
+
+        requestAnimationFrame(function () {
+            var rect = target.getBoundingClientRect();
+            var viewHeight = window.innerHeight - navHeight;
+            var visibleHeight = Math.min(rect.bottom, viewHeight + navHeight) - Math.max(rect.top, navHeight);
+            if (visibleHeight > rect.height * 0.18) {
+                updateHeroState(true);
+            }
+        });
+    } else {
+        showHeroContent();
+    }
+})();
+
 (function () {
     var nodes = document.querySelectorAll('.home-reveal, .home-reveal-fade');
     if (!nodes.length) return;
