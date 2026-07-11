@@ -17,17 +17,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy to cPanel via FTPS
+      - name: Deploy to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
+          # Must be the cPanel server IP (110.4.45.113), NOT iesb.com.my
+          # (domain is behind Cloudflare — FTP to the domain will time out)
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          # Path for https://iesb.com.my/smks3
-          # If FTP already lands in public_html, change to: smks3/
-          # Or set secret FTP_SERVER_DIR and use: ${{ secrets.FTP_SERVER_DIR }}
-          server-dir: public_html/smks3/
+          protocol: ftp
+          # FTP account Directory is already /home/iesbcomm/public_html/smks3
+          server-dir: ./
           local-dir: ./
           timeout: 600000
           exclude: |
