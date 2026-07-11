@@ -8,6 +8,8 @@ use App\Core\Router;
 
 /** @var Router $router */
 
+$router->get('/robots.txt', [PageController::class, 'robots']);
+$router->get('/sitemap.xml', [PageController::class, 'sitemap']);
 $router->get('/pengurusan-akses', [RbacController::class, 'index']);
 $router->get('/about', [PageController::class, 'page_about']);
 $router->get('/analisis-pat-t4-uasa-t1,2,3', [PageController::class, 'page_analisis_pat_t4_uasa_t1_2_3']);

@@ -55,6 +55,11 @@ smks3_record_visit();
 $settings = is_array($settings ?? null) ? $settings : getSettings();
 $layout = is_array($layout ?? null) ? $layout : smks3_get_layout_content();
 $navbar_logo = smks3_layout_asset_src((string) ($layout['navbar_logo'] ?? 'images/hero-logo.png'));
+
+if (!function_exists('smks3_resolve_seo')) {
+    require_once (defined('APP_PATH') ? APP_PATH : (__DIR__ . '/../../')) . '/Support/seo.php';
+}
+$seo = smks3_resolve_seo(get_defined_vars());
 ?>
 <!DOCTYPE html>
 <html lang="ms">
@@ -62,8 +67,39 @@ $navbar_logo = smks3_layout_asset_src((string) ($layout['navbar_logo'] ?? 'image
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?= htmlspecialchars(smks3_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
-    <title><?= htmlspecialchars($page_title) ?> | SMK S3</title>
+    <title><?= htmlspecialchars($seo['title'], ENT_QUOTES, 'UTF-8') ?></title>
+    <meta name="description" content="<?= htmlspecialchars($seo['description'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="keywords" content="<?= htmlspecialchars($seo['keywords'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="author" content="<?= htmlspecialchars($seo['school_name'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="robots" content="<?= htmlspecialchars($seo['robots'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="googlebot" content="<?= htmlspecialchars($seo['robots'], ENT_QUOTES, 'UTF-8') ?>">
+    <link rel="canonical" href="<?= htmlspecialchars($seo['canonical'], ENT_QUOTES, 'UTF-8') ?>">
+
+    <meta property="og:locale" content="ms_MY">
+    <meta property="og:type" content="<?= htmlspecialchars($seo['og_type'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:site_name" content="<?= htmlspecialchars(smks3_brand_aliases(), ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:title" content="<?= htmlspecialchars($seo['title'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($seo['description'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:url" content="<?= htmlspecialchars($seo['canonical'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:image" content="<?= htmlspecialchars($seo['og_image'], ENT_QUOTES, 'UTF-8') ?>">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= htmlspecialchars($seo['title'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:description" content="<?= htmlspecialchars($seo['description'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:image" content="<?= htmlspecialchars($seo['og_image'], ENT_QUOTES, 'UTF-8') ?>">
+
+    <meta name="geo.region" content="MY-05">
+    <meta name="geo.placename" content="Seremban">
+<?php
+$googleVerification = trim((string) (smks3_env('GOOGLE_SITE_VERIFICATION') ?? ''));
+if ($googleVerification !== '') :
+?>
+    <meta name="google-site-verification" content="<?= htmlspecialchars($googleVerification, ENT_QUOTES, 'UTF-8') ?>">
+<?php endif; ?>
     <link rel="icon" href="images/favicon-smks3.ico">
+<?php foreach ($seo['json_ld'] as $seoBlock) : ?>
+    <script type="application/ld+json"><?= json_encode($seoBlock, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
+<?php endforeach; ?>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">

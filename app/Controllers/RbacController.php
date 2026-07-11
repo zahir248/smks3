@@ -23,6 +23,7 @@ final class RbacController extends Controller
         $page_title = 'Pengurusan Akses (RBAC)';
         $page_lead = 'Cipta unit, daftar admin, tetapkan kebenaran, dan tetapan lain.';
         $current_page = 'pengurusan-akses';
+        $meta_robots = 'noindex, nofollow';
         $units = smks3_rbac_list_units($pdo);
         $admins = smks3_rbac_list_admins($pdo);
         $catalog = smks3_rbac_permission_catalog();

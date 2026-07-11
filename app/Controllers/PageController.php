@@ -291,12 +291,28 @@ final class PageController extends Controller
         if (!$news_item) {
             http_response_code(404);
             $page_title = 'Berita tidak dijumpai';
+            $meta_robots = 'noindex, follow';
             $pdfPath = null;
             $this->render('pages/news-details', get_defined_vars());
             return;
         }
 
         $page_title = (string) ($news_item['title'] ?? 'Butiran Berita');
+        $meta_title = $page_title . ' | SMK Seremban 3 (SMKS3)';
+        $excerpt = trim((string) ($news_item['excerpt'] ?? ''));
+        if ($excerpt === '') {
+            $excerpt = (string) ($news_item['content'] ?? '');
+        }
+        if ($excerpt !== '') {
+            $meta_description = smks3_seo_plain_text($excerpt, 160);
+        }
+        $og_type = 'article';
+        $rawImage = trim((string) ($news_item['image'] ?? $news_item['image_url'] ?? ''));
+        if ($rawImage !== '') {
+            $og_image = str_starts_with($rawImage, 'uploads/') || str_starts_with($rawImage, 'images/') || preg_match('#^https?://#i', $rawImage)
+                ? $rawImage
+                : 'uploads/' . ltrim($rawImage, '/');
+        }
         $pdfPath = null;
         if (!empty($news_item['pdf_file'])) {
             $candidate = 'uploads/pdf/' . basename((string) $news_item['pdf_file']);
@@ -649,10 +665,15 @@ final class PageController extends Controller
     public function home(): void
     {
         $page_title = 'Laman Utama';
+        $meta_title = 'SMK Seremban 3 (SMKS3) | Portal Rasmi Sekolah Menengah Kebangsaan Seremban 3';
         
         $pdo = getConnection();
         
         $settings = getSettings();
+        $meta_description = trim((string) ($settings['about_summary'] ?? ''));
+        if ($meta_description === '') {
+            $meta_description = 'Portal rasmi SMK Seremban 3 (SMKS3), Seremban, Negeri Sembilan. Berita sekolah, akademik, kokurikulum dan maklumat rasmi SMKS3.';
+        }
         $home_content = smks3_get_home_content();
         $is_editor = smks3_can_edit_page();
         smks3_ensure_home_media_seed(BASE_PATH);
@@ -670,6 +691,16 @@ final class PageController extends Controller
         
         $body_class = 'page-home';
         $this->render('home/index', get_defined_vars());
+    }
+
+    public function sitemap(): void
+    {
+        smks3_seo_render_sitemap_xml();
+    }
+
+    public function robots(): void
+    {
+        smks3_seo_render_robots_txt();
     }
 
 }

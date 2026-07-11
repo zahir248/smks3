@@ -10,6 +10,7 @@ define('VIEW_PATH', APP_PATH . '/Views');
 require_once APP_PATH . '/Support/security.php';
 require_once CONFIG_PATH . '/database.php';
 require_once APP_PATH . '/Support/helpers.php';
+require_once APP_PATH . '/Support/seo.php';
 require_once APP_PATH . '/Support/rbac.php';
 require_once APP_PATH . '/Support/kurikulum.php';
 require_once APP_PATH . '/Support/hal-ehwal.php';
