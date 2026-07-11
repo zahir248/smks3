@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . "/../config/database.php";
-
-$pdo = getConnection();
-echo "DATABASE OK";
+http_response_code(403);
+header('Content-Type: text/plain; charset=utf-8');
+exit('Akses ditolak.');

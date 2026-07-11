@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS news (
     image_url VARCHAR(500) DEFAULT NULL,
     published_at DATETIME DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_news_published_at (published_at)
 );
 
 -- Daily page views (footer statistik kunjungan)

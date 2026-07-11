@@ -1,0 +1,15 @@
+# Legacy superadmin panel locked — use portal login + Pengurusan Akses.
+# Only logout.php remains reachable.
+
+<IfModule mod_authz_core.c>
+    <FilesMatch "^(?!logout\.php$).*\.php$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+    <FilesMatch "^(?!logout\.php$).*\.php$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>

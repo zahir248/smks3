@@ -1,0 +1,44 @@
+DirectoryIndex index.php
+
+Options -Indexes
+
+# Custom error pages
+ErrorDocument 401 /smks3/errors/401.php
+ErrorDocument 403 /smks3/errors/403.php
+ErrorDocument 404 /smks3/errors/404.php
+ErrorDocument 500 /smks3/errors/500.php
+ErrorDocument 503 /smks3/errors/503.php
+
+<IfModule mod_rewrite.c>
+    Options -MultiViews -Indexes
+    RewriteEngine On
+    RewriteBase /smks3/
+
+    # Block direct access to app internals + secrets
+    RewriteRule ^(config|app|sql|routes|storage)/ - [F,L]
+    RewriteRule ^\.env - [F,L]
+
+    # Leave API + error pages as real .php files
+    RewriteRule ^api/ - [L]
+    RewriteRule ^errors/ - [L]
+    RewriteRule ^admin/ - [L]
+    RewriteRule ^superadmin/ - [L]
+
+    # Redirect /smks3/index.php → /smks3/
+    RewriteCond %{REQUEST_METHOD} !=POST
+    RewriteCond %{THE_REQUEST} \s/+smks3/index\.php[\s?] [NC]
+    RewriteRule ^index\.php$ /smks3/ [R=301,L]
+
+    # Redirect legacy /smks3/page.php → /smks3/page
+    RewriteCond %{REQUEST_METHOD} !=POST
+    RewriteCond %{THE_REQUEST} \s/+smks3/[^\s]*\.php[\s?] [NC]
+    RewriteRule ^(.+)\.php$ /smks3/$1 [R=301,L,QSA]
+
+    # Existing static files and folders (images, uploads, css…)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Front controller (MVC)
+    RewriteRule ^ index.php [L,QSA]
+</IfModule>
