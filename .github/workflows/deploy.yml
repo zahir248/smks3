@@ -41,5 +41,3 @@ jobs:
             app/README.md
             **/.DS_Store
             **/Thumbs.db
-            storage/rate_limit/**
-            !storage/rate_limit/.gitkeep
