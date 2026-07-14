@@ -116,9 +116,10 @@ body.smks3-is-editor [data-edit-list] li[data-edit-block] {
             <button type="button" class="btn btn-outline-primary"
                     data-edit-block="cuti_pdf_add"
                     data-edit-label="Tambah PDF cuti"
-                    data-edit-hint="Muat naik fail PDF cuti perayaan.">
+                    data-edit-hint="Tambah PDF baharu. PDF yang sedia ada kekal (tidak diganti).">
                 <i class="bi bi-plus-lg me-1"></i> Tambah PDF
             </button>
+            <p class="small text-muted mt-2 mb-0">Boleh ada lebih dari satu PDF. Muat naik baharu tidak menggantikan yang lama.</p>
         </div>
         <?php endif; ?>
     </div>

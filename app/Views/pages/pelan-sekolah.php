@@ -107,7 +107,7 @@
              <?php if ($is_editor): ?>
              data-edit-block="pelan_image"
              data-edit-label="Ganti gambar pelan"
-             data-edit-hint="Muat naik gambar pelan bangunan sekolah."
+             data-edit-hint="Muat naik gambar baharu. Gambar pelan semasa akan diganti."
              <?php endif; ?>>
             <img
                 id="pelanThumb"
@@ -117,6 +117,10 @@
                 style="max-width:100%; height:auto;"
             >
         </div>
+
+        <?php if ($is_editor): ?>
+        <p class="text-center small text-muted mt-3 mb-0">Halaman ini hanya menyimpan satu gambar pelan. Muat naik baharu akan menggantikan yang sedia ada.</p>
+        <?php endif; ?>
 
         <p class="text-center mt-4 text-muted">
             Klik gambar untuk lihat lebih jelas.

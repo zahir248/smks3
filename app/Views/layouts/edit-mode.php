@@ -103,6 +103,29 @@ body.smks3-is-editor.smks3-panel-open {
 .smks3-edit-panel.is-wide {
     width: min(520px, 94vw);
 }
+.smks3-edit-panel.is-wide.is-news-editor {
+    width: min(680px, 96vw);
+}
+.smks3-quill-wrap .ql-toolbar.ql-snow {
+    border-color: #dbe3ee;
+    border-radius: 8px 8px 0 0;
+    background: #f8fafc;
+}
+.smks3-quill-wrap .ql-container.ql-snow {
+    border-color: #dbe3ee;
+    border-radius: 0 0 8px 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    min-height: 200px;
+}
+.smks3-quill-wrap .ql-editor {
+    min-height: 200px;
+    line-height: 1.6;
+}
+.smks3-quill-wrap .ql-editor.ql-blank::before {
+    font-style: normal;
+    color: #94a3b8;
+}
 .smks3-edit-panel.is-open {
     transform: translateX(0);
 }
@@ -270,6 +293,92 @@ body.smks3-is-editor.smks3-panel-open {
 }
 .smks3-edit-status.is-error { color: #b91c1c; }
 .smks3-edit-status.is-ok { color: #15803d; }
+.smks3-current-file {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.45rem;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid #dbe3ee;
+    border-radius: 8px;
+    background: #f8fafc;
+    font-size: 0.82rem;
+    color: #0f172a;
+}
+.smks3-current-file > .bi {
+    color: #0B3C5D;
+    font-size: 1rem;
+    flex: 0 0 auto;
+}
+.smks3-current-file__name {
+    display: flex;
+    align-items: baseline;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    font-weight: 600;
+}
+.smks3-current-file__stem {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.smks3-current-file__ext {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-weight: 700;
+    color: #0B3C5D;
+}
+.smks3-current-file__label {
+    margin-left: auto;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+.smks3-news-images {
+    display: grid;
+    gap: 0.55rem;
+    margin-bottom: 0.55rem;
+}
+.smks3-news-images__item {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid #dbe3ee;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+.smks3-news-images__thumb {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #e2e8f0;
+    flex: 0 0 auto;
+}
+.smks3-news-images__meta {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+.smks3-news-images__name {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0f172a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.smks3-news-images__remove {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0;
+}
 </style>
 
 <script>
@@ -317,6 +426,9 @@ body.smks3-is-editor.smks3-panel-open {
         document.body.classList.toggle('smks3-edit-preview', !editingOn);
         if (toggle) toggle.checked = editingOn;
         syncEditBarHeight();
+        if (typeof window.smks3SyncEditCarousels === 'function') {
+            window.smks3SyncEditCarousels(editingOn);
+        }
         fetch(prefApi, {
             method: 'POST',
             credentials: 'same-origin',
@@ -396,6 +508,8 @@ body.smks3-is-editor.smks3-panel-open {
         'bi-lightbulb', 'bi-star', 'bi-heart', 'bi-shield-check', 'bi-clipboard-check', 'bi-journal-text',
         'bi-camera-video', 'bi-image', 'bi-music-note-beamed', 'bi-flag', 'bi-link-45deg', 'bi-pencil-square'
     ];
+    var PAGE_HREF_OPTIONS = <?= json_encode(smks3_site_page_options(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+    if (!Array.isArray(PAGE_HREF_OPTIONS)) PAGE_HREF_OPTIONS = [];
     var panel = document.getElementById('smks3EditPanel');
     var backdrop = document.getElementById('smks3EditBackdrop');
     var form = document.getElementById('smks3EditForm');
@@ -406,18 +520,46 @@ body.smks3-is-editor.smks3-panel-open {
     var activeEl = null;
     var currentBlock = null;
     var deleteBlock = null;
+    var quillInstance = null;
+    var quillLoading = null;
 
-    // Pause Bootstrap carousels so edit clicks never advance slides.
-    document.querySelectorAll('.carousel').forEach(function (el) {
-        el.removeAttribute('data-bs-ride');
-        el.setAttribute('data-bs-interval', 'false');
-        try {
-            if (window.bootstrap && bootstrap.Carousel) {
-                var inst = bootstrap.Carousel.getOrCreateInstance(el, { interval: false, ride: false, wrap: false });
-                inst.pause();
+    // Pause carousels while editing; resume autoplay in preview (visitor-like).
+    window.smks3SyncEditCarousels = function (editingOn) {
+        document.querySelectorAll('.carousel').forEach(function (el) {
+            if (!window.bootstrap || !bootstrap.Carousel) return;
+            try {
+                var existing = bootstrap.Carousel.getInstance(el);
+                if (existing) existing.dispose();
+            } catch (err) {}
+
+            var slideCount = el.querySelectorAll('.carousel-item').length;
+            if (editingOn || slideCount < 2) {
+                el.removeAttribute('data-bs-ride');
+                el.setAttribute('data-bs-interval', 'false');
+                try {
+                    var paused = bootstrap.Carousel.getOrCreateInstance(el, {
+                        interval: false,
+                        ride: false,
+                        wrap: false
+                    });
+                    paused.pause();
+                } catch (err) {}
+                return;
             }
-        } catch (err) {}
-    });
+
+            el.setAttribute('data-bs-ride', 'carousel');
+            el.setAttribute('data-bs-interval', '5500');
+            try {
+                var live = bootstrap.Carousel.getOrCreateInstance(el, {
+                    interval: 5500,
+                    ride: 'carousel',
+                    wrap: true
+                });
+                live.cycle();
+            } catch (err) {}
+        });
+    };
+    window.smks3SyncEditCarousels(!document.body.classList.contains('smks3-edit-preview'));
 
     function setStatus(msg, ok) {
         statusEl.textContent = msg || '';
@@ -425,8 +567,10 @@ body.smks3-is-editor.smks3-panel-open {
     }
 
     function closePanel() {
+        destroyRichTextEditor();
         panel.classList.remove('is-open');
         panel.classList.remove('is-wide');
+        panel.classList.remove('is-news-editor');
         backdrop.classList.remove('is-open');
         backdrop.hidden = true;
         panel.setAttribute('aria-hidden', 'true');
@@ -447,12 +591,17 @@ body.smks3-is-editor.smks3-panel-open {
         currentBlock = el.getAttribute('data-edit-block');
         titleEl.textContent = el.getAttribute('data-edit-label') || 'Sunting kandungan';
         hintEl.textContent = el.getAttribute('data-edit-hint') || 'Ubah teks kemudian simpan.';
+        destroyRichTextEditor();
         form.innerHTML = buildFields(el);
         bindIconPicker(form);
         bindLinksEditor(form);
         bindSocialEditor(form);
         bindKurikulumCardKind(form);
-        panel.classList.toggle('is-wide', currentBlock === 'lencana_lagu' || currentBlock === 'cuti_kumpulan' || currentBlock === 'kurikulum_card' || currentBlock === 'kurikulum_card_add' || currentBlock === 'kurikulum_meta' || currentBlock === 'footer_social');
+        bindPageHrefField(form);
+        bindRichTextEditor(form);
+        var isNewsEditor = currentBlock === 'news_item' || currentBlock === 'news_add';
+        panel.classList.toggle('is-wide', isNewsEditor || currentBlock === 'lencana_lagu' || currentBlock === 'cuti_kumpulan' || currentBlock === 'kurikulum_card' || currentBlock === 'kurikulum_card_add' || currentBlock === 'kurikulum_meta' || currentBlock === 'footer_social');
+        panel.classList.toggle('is-news-editor', isNewsEditor);
         deleteBlock = null;
         var deletable = {
             quick_link: 'quick_link_delete',
@@ -536,29 +685,29 @@ body.smks3-is-editor.smks3-panel-open {
             return hidden('id', attr(el, 'data-news-id') || attr(el, 'data-id'))
                 + field('title', 'Tajuk', attr(el, 'data-title'))
                 + field('year', 'Tahun', attr(el, 'data-year') || new Date().getFullYear(), false, false)
-                + field('content', 'Kandungan (pilihan)', attr(el, 'data-content'), true, false)
-                + fileField('image', 'Gambar (pilihan)')
-                + fileField('pdf_file', 'PDF (pilihan)', false, 'application/pdf,.pdf');
+                + richTextField('content', 'Kandungan (pilihan)', attr(el, 'data-content'), false)
+                + newsImagesField(el)
+                + fileField('pdf_file', 'PDF (pilihan)', false, 'application/pdf,.pdf', findCurrentPdfPath(el));
         }
         if (block === 'news_add') {
             return field('title', 'Tajuk', '')
                 + field('year', 'Tahun', String(new Date().getFullYear()), false, false)
-                + field('content', 'Kandungan (pilihan)', '', true, false)
-                + fileField('image', 'Gambar (pilihan)')
+                + richTextField('content', 'Kandungan (pilihan)', '', false)
+                + newsImagesField(null)
                 + fileField('pdf_file', 'PDF (pilihan)', false, 'application/pdf,.pdf');
         }
         if (block === 'quick_link') {
             return hidden('index', attr(el, 'data-index'))
                 + field('title', 'Tajuk', attr(el, 'data-title'))
                 + field('subtitle', 'Subtajuk', attr(el, 'data-subtitle'), false, false)
-                + field('href', 'Pautan (URL)', attr(el, 'data-href'))
+                + pageHrefField(attr(el, 'data-href'))
                 + iconPicker('icon', 'Pilih ikon', attr(el, 'data-icon') || 'bi-link-45deg')
                 + check('external', 'Pautan luaran (buka tab baharu)', attr(el, 'data-external') === '1');
         }
         if (block === 'quick_link_add') {
             return field('title', 'Tajuk', 'Pautan Baharu')
                 + field('subtitle', 'Subtajuk', '', false, false)
-                + field('href', 'Pautan (URL)', '#')
+                + pageHrefField('./')
                 + iconPicker('icon', 'Pilih ikon', 'bi-link-45deg')
                 + check('external', 'Pautan luaran', false);
         }
@@ -573,7 +722,8 @@ body.smks3-is-editor.smks3-panel-open {
             return field('alt', 'Teks alt', 'Slaid baharu')
                 + field('href', 'Pautan (pilihan)', '', false, false)
                 + check('external', 'Pautan luaran', false)
-                + fileField('image', 'Gambar slaid', true);
+                + fileField('image', 'Gambar slaid', true)
+                + '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Slaid baharu akan ditambah. Slaid sedia ada kekal.</p>';
         }
         if (block === 'profil_item' || block === 'profil_item_add') {
             var isAddProfil = block === 'profil_item_add';
@@ -609,7 +759,7 @@ body.smks3-is-editor.smks3-panel-open {
                 + field('name', 'Nama', isAddP ? '' : attr(el, 'data-name'))
                 + field('start_year', 'Tahun mula', isAddP ? '' : attr(el, 'data-start-year'), false, false)
                 + field('end_year', 'Tahun akhir (kosong = Kini)', isAddP ? '' : attr(el, 'data-end-year'), false, false)
-                + fileField('photo', isAddP ? 'Gambar' : 'Ganti gambar (pilihan)', isAddP);
+                + fileField('photo', 'Gambar (pilihan)', false, 'image/*', undefined, !isAddP);
         }
         if (block === 'pengurusan_item' || block === 'pengurusan_add') {
             var isAddPg = block === 'pengurusan_add';
@@ -617,8 +767,13 @@ body.smks3-is-editor.smks3-panel-open {
                 + field('nama', 'Nama', isAddPg ? '' : attr(el, 'data-nama'))
                 + field('gred', 'Gred', isAddPg ? '' : attr(el, 'data-gred'), false, false)
                 + field('jawatan', 'Jawatan', isAddPg ? '' : attr(el, 'data-jawatan'))
-                + field('kategori', 'Kategori (pengetua/pk/gkmp/kaunselor)', isAddPg ? 'pk' : (attr(el, 'data-kategori') || 'pk'), false, false)
-                + fileField('gambar', isAddPg ? 'Gambar' : 'Ganti gambar (pilihan)', isAddPg);
+                + selectField('kategori', 'Kategori', isAddPg ? 'pk' : (attr(el, 'data-kategori') || 'pk'), [
+                    { value: 'pengetua', label: 'Pengetua' },
+                    { value: 'pk', label: 'Penolong Kanan (PK)' },
+                    { value: 'gkmp', label: 'GKMP' },
+                    { value: 'kaunselor', label: 'Kaunselor' }
+                ])
+                + fileField('gambar', 'Gambar (pilihan)', false, 'image/*', undefined, !isAddPg);
         }
         if (block === 'guru_item' || block === 'guru_add' || block === 'akp_item' || block === 'akp_add') {
             var isAddG = block.indexOf('_add') !== -1;
@@ -626,7 +781,7 @@ body.smks3-is-editor.smks3-panel-open {
                 + field('nama', 'Nama', isAddG ? '' : attr(el, 'data-nama'))
                 + field('jawatan', 'Jawatan', isAddG ? '' : attr(el, 'data-jawatan'), false, false)
                 + field('dg', 'DG', isAddG ? '' : attr(el, 'data-dg'), false, false)
-                + fileField('image', isAddG ? 'Gambar' : 'Ganti gambar (pilihan)', isAddG);
+                + fileField('image', 'Gambar (pilihan)', false, 'image/*', undefined, !isAddG);
         }
         if (block === 'kalendar_title') {
             return field('value', 'Tajuk halaman', attr(el, 'data-value'));
@@ -651,22 +806,37 @@ body.smks3-is-editor.smks3-panel-open {
                 + '<p class="small text-muted mb-0">Tekan Enter untuk item baharu.</p>';
         }
         if (block === 'ubk_carta_image' || block === 'ubk_pamplet1' || block === 'ubk_pamplet2') {
-            return fileField('image', 'Gambar', true);
+            var ubkPath = findCurrentImagePath(el);
+            var ubkLabel = block === 'ubk_carta_image'
+                ? (ubkPath ? 'Gambar carta baharu (ganti semasa)' : 'Gambar carta organisasi')
+                : (ubkPath ? 'Gambar pamplet baharu (ganti semasa)' : 'Gambar pamplet');
+            return fileField('image', ubkLabel, true, 'image/*', ubkPath)
+                + (ubkPath ? '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>Gambar semasa akan diganti.</p>' : '');
         }
         if (block === 'kurikulum_meta') {
-            var sectionsRaw = attr(el, 'data-sections') || '{}';
+            var sectionsRaw = attr(el, 'data-sections');
             var sectionsHtml = '';
-            try {
-                var sectionsObj = JSON.parse(sectionsRaw);
-                Object.keys(sectionsObj || {}).forEach(function (key) {
-                    var sec = sectionsObj[key] || {};
-                    sectionsHtml += field('section_' + key + '_title', 'Tajuk bahagian (' + key + ')', sec.title || '', false, false);
-                    sectionsHtml += field('section_' + key + '_subtitle', 'Subtajuk bahagian (' + key + ')', sec.subtitle || '', true, false);
-                });
-            } catch (err) {}
+            if (sectionsRaw) {
+                try {
+                    var sectionsObj = JSON.parse(sectionsRaw);
+                    Object.keys(sectionsObj || {}).forEach(function (key) {
+                        var sec = sectionsObj[key] || {};
+                        sectionsHtml += field('section_' + key + '_title', 'Tajuk bahagian (' + key + ')', sec.title || '', false, false);
+                        sectionsHtml += field('section_' + key + '_subtitle', 'Subtajuk bahagian (' + key + ')', sec.subtitle || '', true, false);
+                    });
+                } catch (err) {}
+            }
+            var showIntro = el.hasAttribute('data-intro');
             return hidden('page_key', attr(el, 'data-page-key'))
-                + field('intro', 'Pengenalan halaman', attr(el, 'data-intro'), true, false)
+                + (showIntro ? field('intro', 'Pengenalan halaman', attr(el, 'data-intro'), true, false) : '')
                 + sectionsHtml;
+        }
+        if (block === 'kurikulum_section') {
+            var showSubtitle = el.hasAttribute('data-subtitle');
+            return hidden('page_key', attr(el, 'data-page-key'))
+                + hidden('section_key', attr(el, 'data-section-key') || 'main')
+                + field('title', 'Tajuk bahagian', attr(el, 'data-title'), false, false)
+                + (showSubtitle ? field('subtitle', 'Subtajuk bahagian', attr(el, 'data-subtitle'), true, false) : '');
         }
         if (block === 'kurikulum_card' || block === 'kurikulum_card_add') {
             var isAddK = block === 'kurikulum_card_add';
@@ -793,26 +963,84 @@ body.smks3-is-editor.smks3-panel-open {
             return field('value', 'Teks', attr(el, 'data-value'), true, false);
         }
         if (block === 'kalendar_pdf_add' || block === 'cuti_pdf_add' || block === 'pilihan_pdf_add') {
-            return fileField('pdf', 'Fail PDF', true, 'application/pdf,.pdf');
+            // Pass '' so add forms never show another PDF on the page as "Fail semasa".
+            var pilihanReplace = block === 'pilihan_pdf_add';
+            return fileField(
+                'pdf',
+                pilihanReplace ? 'Fail PDF baharu (ganti semasa)' : 'Fail PDF baharu',
+                true,
+                'application/pdf,.pdf',
+                ''
+            ) + (pilihanReplace
+                ? '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>PDF semasa akan diganti, bukan ditambah sebagai fail baharu.</p>'
+                : '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>PDF baharu akan ditambah. PDF sedia ada kekal.</p>');
         }
         if (block === 'kalendar_pdf' || block === 'cuti_pdf' || block === 'pilihan_pdf') {
             return hidden('id', attr(el, 'data-id'))
+                + currentFileBadge(findCurrentPdfPath(el), true)
                 + '<p class="small text-muted mb-0">Guna butang Padam untuk buang PDF ini.</p>';
         }
         if (block === 'enrolmen_add') {
-            return field('title', 'Tajuk', 'Enrolmen', false, false) + fileField('image', 'Gambar', true);
+            var slides = [];
+            try { slides = JSON.parse(attr(el, 'data-slides') || '[]') || []; } catch (err) { slides = []; }
+            if (!Array.isArray(slides)) slides = [];
+            var posOpts = [{ value: 'start', label: 'Di awal (slaid pertama)' }];
+            slides.forEach(function (s) {
+                if (!s || !s.id) return;
+                var label = String(s.title || ('Slaid #' + s.id)).trim() || ('Slaid #' + s.id);
+                posOpts.push({ value: 'after:' + s.id, label: 'Selepas “' + label + '”' });
+            });
+            posOpts.push({ value: 'end', label: 'Di akhir (slaid terakhir)' });
+            return field('title', 'Tajuk', 'Enrolmen', false, false)
+                + selectField('position', 'Kedudukan dalam slaid', 'end', posOpts)
+                + fileField('image', 'Gambar', true)
+                + '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Gambar baharu akan ditambah ke karusel. Gambar sedia ada kekal.</p>';
         }
         if (block === 'peraturan_add' || block === 'pemimpin_add') {
-            return fileField('image', 'Gambar', true);
+            return fileField('image', 'Gambar', true)
+                + '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Gambar baharu akan ditambah. Gambar sedia ada kekal.</p>';
         }
         if (block === 'bil_kelas_add') {
-            return field('tingkatan', 'Tingkatan', '', false, false)
+            var tingkatanPreset = attr(el, 'data-tingkatan') || '';
+            var positionHtml = '';
+            if (!tingkatanPreset) {
+                var existingTings = [];
+                try {
+                    existingTings = JSON.parse(attr(el, 'data-tingkatan-options') || '[]') || [];
+                } catch (err) { existingTings = []; }
+                if (!Array.isArray(existingTings)) existingTings = [];
+                var posOptsBk = [{ value: 'start', label: 'Di awal (paling atas)' }];
+                existingTings.forEach(function (t) {
+                    t = String(t || '').trim();
+                    if (!t) return;
+                    posOptsBk.push({ value: 'after:' + t, label: 'Selepas “' + t + '”' });
+                });
+                posOptsBk.push({ value: 'end', label: 'Di akhir (paling bawah)' });
+                positionHtml = selectField('position', 'Kedudukan paparan', 'end', posOptsBk);
+            }
+            return (tingkatanPreset
+                    ? (hidden('tingkatan', tingkatanPreset)
+                        + '<p class="small text-muted mb-3">Tambah gambar untuk <strong>' + esc(tingkatanPreset) + '</strong>.</p>')
+                    : (field('tingkatan', 'Tingkatan baharu', '', false, false) + positionHtml))
                 + field('title', 'Tajuk', '', false, false)
-                + fileField('image', 'Gambar', true);
+                + fileField('image', 'Gambar', true)
+                + '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Gambar baharu akan ditambah. Gambar sedia ada kekal.</p>';
         }
         if (block === 'enrolmen_item') {
+            var slidesEdit = [];
+            try { slidesEdit = JSON.parse(attr(el, 'data-slides') || '[]') || []; } catch (err2) { slidesEdit = []; }
+            if (!Array.isArray(slidesEdit)) slidesEdit = [];
+            var curId = String(attr(el, 'data-id') || '');
+            var posOptsEdit = [{ value: 'keep', label: 'Kekalkan kedudukan semasa' }, { value: 'start', label: 'Pindah ke awal' }];
+            slidesEdit.forEach(function (s) {
+                if (!s || !s.id || String(s.id) === curId) return;
+                var label = String(s.title || ('Slaid #' + s.id)).trim() || ('Slaid #' + s.id);
+                posOptsEdit.push({ value: 'after:' + s.id, label: 'Selepas “' + label + '”' });
+            });
+            posOptsEdit.push({ value: 'end', label: 'Pindah ke akhir' });
             return hidden('id', attr(el, 'data-id'))
                 + field('title', 'Tajuk', attr(el, 'data-title'), false, false)
+                + selectField('position', 'Kedudukan dalam slaid', 'keep', posOptsEdit)
                 + fileField('image', 'Ganti gambar (pilihan)')
                 + '<p class="small text-muted mb-0">Guna Padam untuk buang item ini.</p>';
         }
@@ -825,6 +1053,7 @@ body.smks3-is-editor.smks3-panel-open {
         }
         if (block === 'peraturan_item' || block === 'pemimpin_item') {
             return hidden('id', attr(el, 'data-id'))
+                + currentFileBadge(findCurrentImagePath(el), false)
                 + '<p class="small text-muted mb-0">Guna Padam untuk buang item ini.</p>';
         }
         if (block === 'enrolmen_feb') {
@@ -837,7 +1066,17 @@ body.smks3-is-editor.smks3-panel-open {
                 + field('button_label', 'Teks butang PDF', attr(el, 'data-button-label'), false, false);
         }
         if (block === 'pibg_pdf') {
-            return fileField('pdf', 'Fail PDF', true, 'application/pdf,.pdf');
+            var pibgCurrent = findCurrentPdfPath(el) || attr(el, 'data-file') || '';
+            var pibgHasFile = !!fileBasename(pibgCurrent);
+            return fileField(
+                'pdf',
+                pibgHasFile ? 'Fail PDF baharu (ganti semasa)' : 'Fail PDF',
+                true,
+                'application/pdf,.pdf',
+                pibgCurrent || ''
+            ) + (pibgHasFile
+                ? '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>PDF semasa akan diganti, bukan ditambah sebagai fail baharu.</p>'
+                : '');
         }
         if (block === 'enrolmen_summary') {
             return field('title', 'Tajuk bahagian', attr(el, 'data-title'), false, false)
@@ -869,17 +1108,29 @@ body.smks3-is-editor.smks3-panel-open {
                 ]);
         }
         if (block === 'pelan_image') {
-            return fileField('image', 'Gambar pelan sekolah', true);
+            return fileField('image', 'Gambar pelan baharu (ganti semasa)', true)
+                + '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>Gambar pelan semasa akan diganti.</p>';
         }
         if (block === 'pra_sekolah' || block === 'pra_sekolah_carta' || block === 'pra_sekolah_galeri') {
             if (block === 'pra_sekolah_carta') {
-                return fileField('gambar_carta', 'Gambar carta organisasi', true);
+                var cartaPath = findCurrentImagePath(el);
+                return fileField('gambar_carta', cartaPath ? 'Gambar carta baharu (ganti semasa)' : 'Gambar carta organisasi', true, 'image/*', cartaPath)
+                    + (cartaPath ? '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>Gambar carta semasa akan diganti.</p>' : '');
             }
             if (block === 'pra_sekolah_galeri') {
-                return fileField('gambar_galeri', 'Gambar galeri murid', true);
+                var galeriPath = findCurrentImagePath(el);
+                return fileField('gambar_galeri', galeriPath ? 'Gambar galeri baharu (ganti semasa)' : 'Gambar galeri murid', true, 'image/*', galeriPath)
+                    + (galeriPath ? '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>Gambar galeri semasa akan diganti.</p>' : '');
             }
-            return fileField('gambar_carta', 'Gambar carta (pilihan)')
-                + fileField('gambar_galeri', 'Gambar galeri (pilihan)');
+            var praImgs = el.querySelectorAll('img[src]');
+            var cartaSrc = praImgs[0] && !isPlaceholderMedia(praImgs[0].getAttribute('src') || '')
+                ? (praImgs[0].getAttribute('src') || '')
+                : '';
+            var galeriSrc = praImgs[1] && !isPlaceholderMedia(praImgs[1].getAttribute('src') || '')
+                ? (praImgs[1].getAttribute('src') || '')
+                : '';
+            return fileField('gambar_carta', 'Gambar carta (pilihan)', false, 'image/*', cartaSrc)
+                + fileField('gambar_galeri', 'Gambar galeri (pilihan)', false, 'image/*', galeriSrc);
         }
         if (block === 'lencana_moto') {
             return field('moto', 'Moto', attr(el, 'data-moto'), false);
@@ -917,9 +1168,33 @@ body.smks3-is-editor.smks3-panel-open {
                 + field('content', 'Nota / pengenalan ringkas', attr(el, 'data-content'), true, false)
                 + '<p class="small text-muted mb-0">Tulis seperti biasa. Untuk jadual penuh, muat naik PDF di bawah.</p>';
         }
+        if (block === 'cta_text') {
+            var ctaSchool = resolveSchoolName();
+            var ctaRaw = attr(el, 'data-value') || attr(el, 'data-display') || '';
+            var ctaDisplay = resolveContentPlaceholders(ctaRaw, ctaSchool);
+            return field('value', 'Teks', ctaDisplay, true)
+                + '<p class="form-text mb-0">Tulis nama sekolah seperti biasa. Sistem akan kekalkan pautan automatik ke Maklumat Sekolah.</p>';
+        }
         var value = el.getAttribute('data-value');
         if (value === null) value = (el.textContent || '').trim();
         return field('value', 'Teks', value, block.indexOf('subtitle') !== -1 || block.indexOf('text') !== -1 || block === 'cta_text');
+    }
+
+    function resolveSchoolName() {
+        var node = document.querySelector('[data-bind="school_name"]');
+        var name = node ? String(node.textContent || '').trim() : '';
+        if (name) return name;
+        var dataNode = document.querySelector('[data-school-name]');
+        if (dataNode) {
+            name = String(dataNode.getAttribute('data-school-name') || '').trim();
+            if (name) return name;
+        }
+        return 'Sekolah Menengah Kebangsaan Seremban 3';
+    }
+
+    function resolveContentPlaceholders(text, schoolName) {
+        schoolName = schoolName || resolveSchoolName();
+        return String(text == null ? '' : text).replace(/\{\s*school_name\s*\}/gi, schoolName);
     }
 
     function hidden(name, value) {
@@ -940,6 +1215,236 @@ body.smks3-is-editor.smks3-panel-open {
         }
         return '<div class="mb-3"><label class="form-label" for="' + id + '">' + esc(label) + requiredMark(required) + '</label>'
             + '<input type="text" class="form-control" id="' + id + '" name="' + esc(name) + '" value="' + esc(value) + '"' + req + '></div>';
+    }
+
+    function normalizePageHref(href) {
+        href = String(href == null ? '' : href).trim();
+        if (!href || href === '#' || href === '/' || href === './' || href === 'index' || href === 'index.php') {
+            return './';
+        }
+        if (/^https?:\/\//i.test(href) || href.indexOf('://') !== -1) {
+            return href;
+        }
+        href = href.split('#')[0].split('?')[0];
+        href = href.replace(/^\.\//, '').replace(/^\/+/, '');
+        href = href.replace(/\.php$/i, '');
+        return href || './';
+    }
+
+    function pageHrefField(currentHref) {
+        var raw = String(currentHref == null ? '' : currentHref).trim();
+        var normalized = normalizePageHref(raw);
+        var known = {};
+        PAGE_HREF_OPTIONS.forEach(function (opt) { known[opt.value] = true; });
+        var isKnown = !!known[normalized];
+        var pickValue = isKnown ? normalized : '__custom__';
+        var customValue = isKnown ? '' : raw;
+
+        var groups = {};
+        var groupOrder = [];
+        PAGE_HREF_OPTIONS.forEach(function (opt) {
+            var g = opt.group || 'Lain';
+            if (!groups[g]) {
+                groups[g] = [];
+                groupOrder.push(g);
+            }
+            groups[g].push(opt);
+        });
+
+        var optsHtml = groupOrder.map(function (g) {
+            return '<optgroup label="' + esc(g) + '">'
+                + groups[g].map(function (opt) {
+                    var selected = String(opt.value) === String(pickValue) ? ' selected' : '';
+                    return '<option value="' + esc(opt.value) + '"' + selected + '>' + esc(opt.label) + '</option>';
+                }).join('')
+                + '</optgroup>';
+        }).join('');
+        optsHtml += '<option value="__custom__"' + (pickValue === '__custom__' ? ' selected' : '') + '>Lain — taip URL sendiri</option>';
+
+        return '<div class="mb-3" data-page-href-field>'
+            + '<label class="form-label" for="smks3_f_href_pick">Halaman / pautan' + requiredMark(true) + '</label>'
+            + '<select class="form-select" id="smks3_f_href_pick" aria-describedby="smks3_f_href_hint">' + optsHtml + '</select>'
+            + '<div class="mt-2' + (pickValue === '__custom__' ? '' : ' d-none') + '" data-page-href-custom>'
+            + '<label class="form-label" for="smks3_f_href_custom">URL tersuai</label>'
+            + '<input type="text" class="form-control" id="smks3_f_href_custom" value="' + esc(customValue) + '" placeholder="https://… atau nama-halaman" autocomplete="off">'
+            + '</div>'
+            + '<input type="hidden" name="href" id="smks3_f_href" value="' + esc(isKnown ? normalized : raw) + '" required>'
+            + '<p class="form-text mb-0 mt-1" id="smks3_f_href_hint">Pilih halaman dalam laman web, atau gunakan URL tersuai untuk pautan luar.</p>'
+            + '</div>';
+    }
+
+    function bindPageHrefField(root) {
+        var wrap = root.querySelector('[data-page-href-field]');
+        if (!wrap) return;
+        var pick = wrap.querySelector('#smks3_f_href_pick');
+        var customWrap = wrap.querySelector('[data-page-href-custom]');
+        var custom = wrap.querySelector('#smks3_f_href_custom');
+        var hidden = wrap.querySelector('#smks3_f_href');
+        var external = root.querySelector('#smks3_f_external');
+        if (!pick || !hidden) return;
+
+        function sync(fromUser) {
+            var isCustom = pick.value === '__custom__';
+            if (customWrap) customWrap.classList.toggle('d-none', !isCustom);
+            if (isCustom) {
+                hidden.value = (custom && custom.value) ? custom.value.trim() : '';
+                if (fromUser && external && custom && /^https?:\/\//i.test(custom.value.trim())) {
+                    external.checked = true;
+                }
+            } else {
+                hidden.value = pick.value;
+                if (fromUser && external) external.checked = false;
+            }
+        }
+
+        pick.addEventListener('change', function () { sync(true); });
+        if (custom) {
+            custom.addEventListener('input', function () { sync(true); });
+        }
+        sync(false);
+    }
+
+    function richTextField(name, label, html, required) {
+        if (required === undefined) required = false;
+        return '<div class="mb-3 smks3-quill-wrap" data-rich-text-field data-rich-name="' + esc(name) + '">'
+            + '<label class="form-label">' + esc(label) + requiredMark(!!required) + '</label>'
+            + '<input type="hidden" name="' + esc(name) + '" id="smks3_f_' + esc(name) + '" value="">'
+            + '<div class="smks3-quill-editor" data-initial-html="' + esc(html || '') + '"></div>'
+            + '<p class="form-text mb-0 mt-1">Gunakan bar alat untuk tebal, senarai, pautan dan tajuk.</p>'
+            + '</div>';
+    }
+
+    function newsImagesField(el) {
+        var images = [];
+        if (el) {
+            try {
+                images = JSON.parse(el.getAttribute('data-images-json') || '[]') || [];
+            } catch (err) {
+                images = [];
+            }
+            if (!Array.isArray(images) || !images.length) {
+                var fallback = findCurrentImagePath(el);
+                if (fallback) images = [fallback];
+            }
+        }
+        var listHtml = '';
+        if (images.length) {
+            listHtml = '<div class="smks3-news-images">' + images.map(function (src, idx) {
+                src = String(src || '').trim();
+                if (!src) return '';
+                var name = fileBasename(src);
+                var parts = splitFileName(name, false);
+                var label = (parts.stem || name) + (parts.ext || '');
+                var fileKey = name || ('image-' + idx);
+                return '<div class="smks3-news-images__item">'
+                    + '<img class="smks3-news-images__thumb" src="' + esc(src) + '" alt="">'
+                    + '<div class="smks3-news-images__meta">'
+                    + '<span class="smks3-news-images__name" title="' + esc(label) + '">'
+                    + '<span class="smks3-current-file__stem">' + esc(parts.stem || label) + '</span>'
+                    + (parts.ext ? '<span class="smks3-current-file__ext">' + esc(parts.ext) + '</span>' : '')
+                    + '</span>'
+                    + '<label class="smks3-news-images__remove form-check">'
+                    + '<input class="form-check-input me-1" type="checkbox" name="remove_images[]" value="' + esc(fileKey) + '">'
+                    + 'Buang'
+                    + '</label>'
+                    + '</div></div>';
+            }).join('') + '</div>';
+        }
+        return '<div class="mb-3">'
+            + '<label class="form-label" for="smks3_f_images">Gambar (boleh lebih daripada satu)</label>'
+            + listHtml
+            + '<input type="file" class="form-control" id="smks3_f_images" name="images[]" accept="image/*" multiple>'
+            + '<p class="form-text mb-0">Pilih beberapa fail sekali gus. Tandai “Buang” untuk padam gambar sedia ada.</p>'
+            + '</div>';
+    }
+
+    function ensureQuillLoaded(done) {
+        if (window.Quill) {
+            done();
+            return;
+        }
+        if (quillLoading) {
+            quillLoading.then(done).catch(function () { done(); });
+            return;
+        }
+        quillLoading = new Promise(function (resolve, reject) {
+            if (!document.querySelector('link[data-smks3-quill]')) {
+                var css = document.createElement('link');
+                css.rel = 'stylesheet';
+                css.href = 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css';
+                css.setAttribute('data-smks3-quill', '1');
+                document.head.appendChild(css);
+            }
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js';
+            script.async = true;
+            script.onload = function () { resolve(); };
+            script.onerror = function () { reject(new Error('Quill gagal dimuat.')); };
+            document.head.appendChild(script);
+        });
+        quillLoading.then(done).catch(function () {
+            setStatus('Editor teks gagal dimuat. Cuba muat semula halaman.', false);
+            done();
+        });
+    }
+
+    function plainTextToQuillHtml(text) {
+        text = String(text == null ? '' : text).trim();
+        if (!text) return '';
+        if (/<[a-z][\s\S]*>/i.test(text)) return text;
+        return text.split(/\n\s*\n/).map(function (part) {
+            var t = String(part || '').trim();
+            if (!t) return '';
+            return '<p>' + esc(t).replace(/\n/g, '<br>') + '</p>';
+        }).filter(Boolean).join('');
+    }
+
+    function syncRichTextEditor() {
+        if (!quillInstance || !form) return;
+        var wrap = form.querySelector('[data-rich-text-field]');
+        if (!wrap) return;
+        var name = wrap.getAttribute('data-rich-name') || 'content';
+        var hidden = form.querySelector('#smks3_f_' + name) || form.querySelector('[name="' + name + '"]');
+        if (!hidden) return;
+        var html = String(quillInstance.root.innerHTML || '').trim();
+        if (html === '<p><br></p>' || html === '<p></p>') html = '';
+        hidden.value = html;
+    }
+
+    function destroyRichTextEditor() {
+        syncRichTextEditor();
+        quillInstance = null;
+    }
+
+    function bindRichTextEditor(root) {
+        var wrap = root.querySelector('[data-rich-text-field]');
+        if (!wrap) return;
+        var holder = wrap.querySelector('.smks3-quill-editor');
+        var name = wrap.getAttribute('data-rich-name') || 'content';
+        var hidden = root.querySelector('#smks3_f_' + name) || root.querySelector('[name="' + name + '"]');
+        if (!holder || !hidden) return;
+        var initialHtml = plainTextToQuillHtml(holder.getAttribute('data-initial-html') || '');
+        ensureQuillLoaded(function () {
+            if (!window.Quill || !holder.isConnected) return;
+            quillInstance = new Quill(holder, {
+                theme: 'snow',
+                placeholder: 'Tulis kandungan berita…',
+                modules: {
+                    toolbar: [
+                        [{ header: [2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ list: 'ordered' }, { list: 'bullet' }],
+                        ['link'],
+                        ['clean']
+                    ]
+                }
+            });
+            if (initialHtml) {
+                quillInstance.clipboard.dangerouslyPasteHTML(initialHtml);
+            }
+            syncRichTextEditor();
+            quillInstance.on('text-change', syncRichTextEditor);
+        });
     }
 
     function selectField(name, label, value, options) {
@@ -1287,10 +1792,139 @@ body.smks3-is-editor.smks3-panel-open {
             + '<label class="form-check-label" for="smks3_f_' + esc(name) + '">' + esc(label) + '</label></div>';
     }
 
-    function fileField(name, label, required, accept) {
+    function fileBasename(path) {
+        path = String(path == null ? '' : path).trim().split('?')[0].split('#')[0];
+        if (!path) return '';
+        try {
+            if (/^https?:\/\//i.test(path) || path.indexOf('/') === 0) {
+                var u = new URL(path, window.location.href);
+                path = u.pathname;
+            }
+        } catch (err) {}
+        path = path.replace(/\\/g, '/');
+        var parts = path.split('/').filter(Boolean);
+        if (!parts.length) return '';
+        try {
+            return decodeURIComponent(parts[parts.length - 1]);
+        } catch (err2) {
+            return parts[parts.length - 1];
+        }
+    }
+
+    function splitFileName(name, preferPdf) {
+        name = String(name == null ? '' : name).trim();
+        if (!name) return { stem: '', ext: '' };
+        var match = name.match(/^(.*?)(\.[a-z0-9]{2,8})$/i);
+        if (match) {
+            return { stem: match[1] || name, ext: match[2].toLowerCase() };
+        }
+        // Path/name without extension — still show type clearly.
+        if (preferPdf) return { stem: name, ext: '.pdf' };
+        return { stem: name, ext: '' };
+    }
+
+    function guessImageExtFromPath(path) {
+        var fromName = splitFileName(fileBasename(path), false).ext;
+        if (fromName) return fromName;
+        var lower = String(path || '').toLowerCase();
+        if (lower.indexOf('image/png') !== -1 || /\.png(?:$|[?#])/i.test(lower)) return '.png';
+        if (lower.indexOf('image/webp') !== -1 || /\.webp(?:$|[?#])/i.test(lower)) return '.webp';
+        if (lower.indexOf('image/gif') !== -1 || /\.gif(?:$|[?#])/i.test(lower)) return '.gif';
+        if (lower.indexOf('image/jpeg') !== -1 || /\.jpe?g(?:$|[?#])/i.test(lower)) return '.jpg';
+        return '';
+    }
+
+    function isPlaceholderMedia(src) {
+        src = String(src || '').trim().toLowerCase();
+        return !src
+            || src.indexOf('data:') === 0
+            || /placeholder|default-avatar|no[-_]?image|via\.placeholder|blank\.png|blank\.jpg/i.test(src);
+    }
+
+    function findCurrentImagePath(el) {
+        if (!el) return '';
+        var dataFile = el.getAttribute('data-image') || el.getAttribute('data-file') || el.getAttribute('data-photo') || '';
+        if (dataFile && !/\.pdf$/i.test(dataFile) && !isPlaceholderMedia(dataFile)) return dataFile;
+        var imgs = el.querySelectorAll('img[src]');
+        for (var i = 0; i < imgs.length; i++) {
+            var src = imgs[i].getAttribute('src') || '';
+            if (!isPlaceholderMedia(src)) return src;
+        }
+        return '';
+    }
+
+    function findCurrentPdfPath(el) {
+        if (!el) return '';
+        var dataFile = el.getAttribute('data-pdf') || el.getAttribute('data-file') || '';
+        if (dataFile && (/\.pdf$/i.test(dataFile) || /pdf/i.test(el.getAttribute('data-edit-block') || ''))) {
+            return dataFile;
+        }
+        var pdf = el.querySelector('[data-pdf-src]');
+        if (pdf && pdf.getAttribute('data-pdf-src')) return pdf.getAttribute('data-pdf-src');
+        var canvas = el.querySelector('canvas[data-pdf]');
+        if (canvas && canvas.getAttribute('data-pdf')) return canvas.getAttribute('data-pdf');
+        var link = el.querySelector('a[href*=".pdf"], a[href$=".PDF"], a[download]');
+        if (link && link.getAttribute('href')) return link.getAttribute('href');
+        var block = el.getAttribute('data-edit-block') || '';
+        // Do not borrow the first PDF on the page for "Tambah" panels.
+        if (/pdf/i.test(block) && block.indexOf('_add') === -1) {
+            var pagePdf = document.querySelector('.smks3-pdf-pages[data-pdf-src], [data-pdf-src]');
+            if (pagePdf && pagePdf.getAttribute('data-pdf-src')) {
+                return pagePdf.getAttribute('data-pdf-src');
+            }
+        }
+        return '';
+    }
+
+    function currentFileBadge(path, preferPdf) {
+        var name = fileBasename(path);
+        if (!name && !path) return '';
+        if (!name) name = String(path);
+        var parts = splitFileName(name, !!preferPdf);
+        if (!parts.ext && !preferPdf) {
+            parts.ext = guessImageExtFromPath(path);
+        }
+        if (!parts.stem && !parts.ext) return '';
+        var fullName = parts.stem + parts.ext;
+        var isPdf = preferPdf || parts.ext === '.pdf';
+        return '<div class="smks3-current-file">'
+            + '<i class="bi ' + (isPdf ? 'bi-file-earmark-pdf' : 'bi-file-earmark-image') + '" aria-hidden="true"></i>'
+            + '<span class="smks3-current-file__name" title="' + esc(fullName) + '">'
+            + '<span class="smks3-current-file__stem">' + esc(parts.stem || fullName) + '</span>'
+            + (parts.ext ? '<span class="smks3-current-file__ext">' + esc(parts.ext) + '</span>' : '')
+            + '</span>'
+            + '<span class="smks3-current-file__label">Fail semasa</span>'
+            + '</div>';
+    }
+
+    function fileField(name, label, required, accept, currentPath, allowRemove) {
         accept = accept || 'image/*';
-        return '<div class="mb-3"><label class="form-label" for="smks3_f_' + esc(name) + '">' + esc(label) + requiredMark(!!required) + '</label>'
-            + '<input type="file" class="form-control" id="smks3_f_' + esc(name) + '" name="' + esc(name) + '" accept="' + esc(accept) + '"' + (required ? ' required' : '') + '></div>';
+        var isPdf = /pdf/i.test(String(accept || ''));
+        if (currentPath === undefined) {
+            currentPath = isPdf ? findCurrentPdfPath(activeEl) : findCurrentImagePath(activeEl);
+        }
+        var parts = splitFileName(fileBasename(currentPath), isPdf);
+        if (!parts.ext && !isPdf) parts.ext = guessImageExtFromPath(currentPath);
+        var fileName = (parts.stem || '') + (parts.ext || '');
+        var mustUpload = !!required && !fileName;
+        var removeName = 'remove_' + name;
+        var removeHtml = '';
+        if (allowRemove && fileName) {
+            removeHtml = '<div class="form-check mb-2">'
+                + '<input class="form-check-input" type="checkbox" value="1" id="smks3_f_' + esc(removeName) + '" name="' + esc(removeName) + '">'
+                + '<label class="form-check-label" for="smks3_f_' + esc(removeName) + '">Buang gambar semasa</label>'
+                + '</div>';
+        }
+        return '<div class="mb-3"><label class="form-label" for="smks3_f_' + esc(name) + '">' + esc(label) + requiredMark(mustUpload) + '</label>'
+            + currentFileBadge(currentPath, isPdf)
+            + removeHtml
+            + '<input type="file" class="form-control" id="smks3_f_' + esc(name) + '" name="' + esc(name) + '" accept="' + esc(accept) + '"' + (mustUpload ? ' required' : '') + '>'
+            + (fileName && !mustUpload
+                ? ('<p class="form-text mb-0">' + (allowRemove
+                    ? 'Biarkan kosong untuk kekalkan fail semasa, atau tandakan “Buang” untuk padam.'
+                    : 'Biarkan kosong untuk kekalkan fail semasa.') + '</p>')
+                : '')
+            + '</div>';
     }
 
     function esc(s) {
@@ -1318,6 +1952,13 @@ body.smks3-is-editor.smks3-panel-open {
             if (phone) { phone.textContent = f.phone || ''; phone.setAttribute('href', 'tel:' + String(f.phone || '').replace(/\s+/g, '')); }
             var email = activeEl.querySelector('[data-bind="email"]');
             if (email) { email.textContent = f.email || ''; email.setAttribute('href', 'mailto:' + (f.email || '')); }
+            document.querySelectorAll('[data-edit-block="cta_text"]').forEach(function (cta) {
+                var raw = cta.getAttribute('data-value') || '';
+                var resolved = resolveContentPlaceholders(raw, f.school_name || '');
+                cta.setAttribute('data-display', resolved);
+                var ctaBind = cta.querySelector('[data-bind="text"]');
+                if (ctaBind) ctaBind.textContent = resolved;
+            });
             return;
         }
         if (block === 'quick_link') {
@@ -1422,7 +2063,9 @@ body.smks3-is-editor.smks3-panel-open {
             activeEl.setAttribute('data-value', f.value);
             var bind = activeEl.querySelector('[data-bind="text"]') || activeEl;
             if (block === 'cta_text') {
-                bind.textContent = f.value.replace('{school_name}', (document.querySelector('[data-bind="school_name"]') || {}).textContent || '');
+                var resolved = resolveContentPlaceholders(f.value);
+                activeEl.setAttribute('data-display', resolved);
+                bind.textContent = resolved;
             } else {
                 bind.textContent = f.value;
             }
@@ -1430,6 +2073,7 @@ body.smks3-is-editor.smks3-panel-open {
     }
 
     function postForm(blockName) {
+        syncRichTextEditor();
         var fd = new FormData(form);
         fd.set('block', blockName);
         if (!fd.has('external') && form.querySelector('[name="external"]')) {
@@ -1457,13 +2101,12 @@ body.smks3-is-editor.smks3-panel-open {
         }
 
         // Let real nav/collapse controls inside an editable block work.
-        // Linked whole-cards (slideshow / quick links) still open the panel.
+        // Slideshow slides still open the panel (poster edit), not follow links.
         var interactive = e.target.closest('a[href], button, input, select, textarea, label, summary, [data-bs-toggle], [data-bs-target]');
         if (interactive && interactive !== el && el.contains(interactive)) {
             var blockName = el.getAttribute('data-edit-block') || '';
             var linkOwnedBlocks = {
-                slideshow_slide: 1,
-                quick_link: 1
+                slideshow_slide: 1
             };
             var isAddBlock = /_add$/.test(blockName);
             var isCarouselNav = interactive.hasAttribute('data-bs-slide')

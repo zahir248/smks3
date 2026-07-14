@@ -252,6 +252,11 @@ if ($googleVerification !== '') :
             border-radius: 6px;
             pointer-events: none;
         }
+        /* Navigasi cards are full-link hits — use Edit badge to open the panel */
+        body.smks3-is-editor:not(.smks3-edit-preview) [data-edit-block="quick_link"]::after {
+            pointer-events: auto;
+            cursor: pointer;
+        }
         body.smks3-is-editor:not(.smks3-edit-preview) footer [data-edit-block] {
             outline-color: rgba(255, 255, 255, 0.55);
         }

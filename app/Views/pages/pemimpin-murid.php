@@ -22,16 +22,26 @@ $infoCards = is_array($kurikulum_by_section['info'] ?? null) ? $kurikulum_by_sec
 
 <section class="page-section" id="barisan">
     <div class="container">
-        <div
+        <div class="text-center mb-2"
+             <?php if (!empty($is_editor)): ?>
+             data-edit-block="kurikulum_section"
+             data-edit-label="Sunting tajuk: Barisan Pemimpin Murid"
+             data-edit-hint="Tajuk bahagian barisan pemimpin sahaja."
+             data-page-key="pemimpin-murid"
+             data-section-key="main"
+             data-title="<?= htmlspecialchars((string) ($mainSec['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             <?php endif; ?>>
+            <h2 class="fw-bold mb-4" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($mainSec['title'] ?? 'Barisan Pemimpin Murid')) ?></h2>
+        </div>
+        <div class="text-center mb-3"
              <?php if (!empty($is_editor)): ?>
              data-edit-block="kurikulum_meta"
-             data-edit-label="Sunting tajuk pemimpin murid"
+             data-edit-label="Sunting pengenalan"
+             data-edit-hint="Teks pengenalan di bahagian atas sahaja."
              data-page-key="pemimpin-murid"
              data-intro="<?= htmlspecialchars((string) ($page_meta['intro'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-             data-sections="<?= htmlspecialchars(json_encode($page_meta['sections'] ?? [], JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
-            <h2 class="fw-bold text-center mb-4"><?= htmlspecialchars((string) ($mainSec['title'] ?? 'Barisan Pemimpin Murid')) ?></h2>
-            <p class="text-center text-muted lead mb-3"><?= htmlspecialchars((string) ($page_meta['intro'] ?? '')) ?></p>
+            <p class="text-muted lead mb-0"><?= htmlspecialchars((string) ($page_meta['intro'] ?? '')) ?></p>
         </div>
 
         <div class="text-center mb-4">
@@ -75,9 +85,10 @@ $infoCards = is_array($kurikulum_by_section['info'] ?? null) ? $kurikulum_by_sec
                 <button type="button" class="btn btn-outline-primary"
                         data-edit-block="pemimpin_add"
                         data-edit-label="Tambah pemimpin murid"
-                        data-edit-hint="Muat naik gambar barisan pemimpin murid.">
+                        data-edit-hint="Tambah gambar baharu. Gambar sedia ada kekal.">
                     <i class="bi bi-plus-lg me-1"></i> Tambah Gambar
                 </button>
+                <p class="small text-muted mt-2 mb-0">Boleh ada lebih dari satu gambar. Muat naik baharu tidak menggantikan yang lama.</p>
             </div>
             <?php endif; ?>
 
@@ -90,7 +101,21 @@ $infoCards = is_array($kurikulum_by_section['info'] ?? null) ? $kurikulum_by_sec
 
 <section class="page-section" id="info">
     <div class="container">
-        <h3 class="fw-bold text-center mb-5"><?= htmlspecialchars((string) ($infoSec['title'] ?? 'Maklumat Berkaitan')) ?></h3>
+        <div class="text-center mb-5"
+             <?php if (!empty($is_editor)): ?>
+             data-edit-block="kurikulum_section"
+             data-edit-label="Sunting tajuk: Maklumat Berkaitan"
+             data-edit-hint="Tajuk bahagian maklumat berkaitan sahaja."
+             data-page-key="pemimpin-murid"
+             data-section-key="info"
+             data-title="<?= htmlspecialchars((string) ($infoSec['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-subtitle="<?= htmlspecialchars((string) ($infoSec['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             <?php endif; ?>>
+            <h3 class="fw-bold" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($infoSec['title'] ?? 'Maklumat Berkaitan')) ?></h3>
+            <?php if (trim((string) ($infoSec['subtitle'] ?? '')) !== ''): ?>
+                <p class="text-muted" data-bind="kurikulum_section_subtitle"><?= htmlspecialchars((string) $infoSec['subtitle']) ?></p>
+            <?php endif; ?>
+        </div>
         <?php
         $kurikulum_page_key = 'pemimpin-murid';
         $section_key = 'info';

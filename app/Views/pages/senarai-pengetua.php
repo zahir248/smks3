@@ -132,7 +132,7 @@
             <button type="button" class="btn btn-outline-primary"
                     data-edit-block="pengetua_add"
                     data-edit-label="Tambah pengetua"
-                    data-edit-hint="Tambah pengetua baharu dengan nama, tahun dan gambar.">
+                    data-edit-hint="Tambah pengetua baharu. Gambar adalah pilihan.">
                 <i class="bi bi-plus-lg me-1"></i> Tambah Pengetua
             </button>
         </div>

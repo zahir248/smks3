@@ -248,15 +248,12 @@ function smks3_resolve_seo(array $vars = []): array
             }
         }
         if (empty($vars['og_image'])) {
-            $rawImage = trim((string) ($newsItem['image'] ?? $newsItem['image_url'] ?? ''));
+            $rawImage = smks3_news_primary_image($newsItem['image'] ?? $newsItem['image_url'] ?? null);
             if ($rawImage !== '') {
                 if (preg_match('#^https?://#i', $rawImage)) {
                     $ogImage = $rawImage;
                 } else {
-                    $img = str_starts_with($rawImage, 'uploads/') || str_starts_with($rawImage, 'images/')
-                        ? $rawImage
-                        : 'uploads/' . ltrim($rawImage, '/');
-                    $ogImage = smks3_absolute_url($img);
+                    $ogImage = smks3_absolute_url(smks3_news_image_src($rawImage));
                 }
             }
         }

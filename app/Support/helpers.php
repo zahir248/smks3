@@ -325,6 +325,34 @@ function smks3_get_home_content(): array
     return $defaults;
 }
 
+/**
+ * Replace editable-content tokens (e.g. {school_name}) for public display.
+ */
+function smks3_resolve_content_placeholders(string $text, ?array $settings = null): string
+{
+    $settings = is_array($settings) ? $settings : getSettings();
+    $schoolName = trim((string) ($settings['school_name'] ?? ''));
+    if ($schoolName === '') {
+        $schoolName = 'Sekolah Menengah Kebangsaan Seremban 3';
+    }
+
+    return (string) preg_replace('/\{\s*school_name\s*\}/iu', $schoolName, $text);
+}
+
+/**
+ * Keep {school_name} token in storage when editors type the real school name.
+ */
+function smks3_tokenize_content_placeholders(string $text, ?array $settings = null): string
+{
+    $settings = is_array($settings) ? $settings : getSettings();
+    $schoolName = trim((string) ($settings['school_name'] ?? ''));
+    if ($schoolName !== '') {
+        $text = str_replace($schoolName, '{school_name}', $text);
+    }
+
+    return $text;
+}
+
 function smks3_save_site_content(string $key, string $value): bool
 {
     if (!smks3_is_safe_content_key($key)) {
@@ -411,8 +439,17 @@ function smks3_default_slideshow(): array
 
 function smks3_normalize_quick_link(array $link): array
 {
+    $href = trim((string) ($link['href'] ?? '#'));
+    if ($href !== '' && $href !== '#' && !preg_match('#^[a-z][a-z0-9+.-]*:#i', $href)) {
+        $href = preg_replace('#\.php$#i', '', $href) ?? $href;
+        $href = ltrim((string) preg_replace('#^\./#', '', $href), '/');
+        if ($href === '' || $href === 'index') {
+            $href = './';
+        }
+    }
+
     return [
-        'href' => trim((string) ($link['href'] ?? '#')),
+        'href' => $href === '' ? '#' : $href,
         'icon' => trim((string) ($link['icon'] ?? 'bi-link-45deg')),
         'title' => trim((string) ($link['title'] ?? '')),
         'subtitle' => trim((string) ($link['subtitle'] ?? '')),
@@ -468,6 +505,56 @@ function smks3_get_quick_links(): array
         $out[] = $n;
     }
     return $out ?: smks3_default_quick_links();
+}
+
+/**
+ * Internal pages for edit-mode "Pautan" pickers — friendly labels, not raw filenames.
+ *
+ * @return list<array{value: string, label: string, group: string}>
+ */
+function smks3_site_page_options(): array
+{
+    $pages = [
+        ['value' => './', 'label' => 'Laman Utama', 'group' => 'Umum'],
+        ['value' => 'news', 'label' => 'Berita', 'group' => 'Umum'],
+        ['value' => 'contact', 'label' => 'Hubungi', 'group' => 'Umum'],
+        ['value' => 'buletin-sekolah', 'label' => 'Buletin Sekolah', 'group' => 'Umum'],
+
+        ['value' => 'profil-sekolah', 'label' => 'Profil Sekolah', 'group' => 'Pengurusan Dan Pentadbiran'],
+        ['value' => 'misi-visi-sekolah', 'label' => 'FPK, Visi, Misi, Motto Sekolah', 'group' => 'Pengurusan Dan Pentadbiran'],
+        ['value' => 'sejarah-sekolah', 'label' => 'Sejarah Sekolah', 'group' => 'Pengurusan Dan Pentadbiran'],
+        ['value' => 'senarai-pengetua', 'label' => 'Senarai Pengetua', 'group' => 'Pengurusan Dan Pentadbiran'],
+        ['value' => 'pelan-sekolah', 'label' => 'Pelan Sekolah', 'group' => 'Pengurusan Dan Pentadbiran'],
+        ['value' => 'lencana-lagu-sekolah', 'label' => 'Lencana & Lagu Sekolah', 'group' => 'Pengurusan Dan Pentadbiran'],
+        ['value' => 'pengurusan-tertinggi', 'label' => 'Pengurusan Tertinggi Sekolah', 'group' => 'Pengurusan Dan Pentadbiran'],
+        ['value' => 'guru-apk', 'label' => 'Barisan Guru Dan AKP', 'group' => 'Pengurusan Dan Pentadbiran'],
+        ['value' => 'kalendar-akademik', 'label' => 'Kalendar Akademik', 'group' => 'Pengurusan Dan Pentadbiran'],
+        ['value' => 'cuti-perayaan', 'label' => 'Cuti Perayaan', 'group' => 'Pengurusan Dan Pentadbiran'],
+
+        ['value' => 'pentaksiran-peperiksaan', 'label' => 'Pentaksiran Dan Peperiksaan', 'group' => 'Kurikulum'],
+        ['value' => 'analisis-pat-t4-uasa-t1,2,3', 'label' => 'Analisis PAT T4 & UASA T1,2,3', 'group' => 'Kurikulum'],
+        ['value' => 'analisis-ppt', 'label' => 'Analisis PPT', 'group' => 'Kurikulum'],
+        ['value' => 'bank-soalan-uasa-ppt-pat-selaras', 'label' => 'Bank Soalan UASA PPT, PAT', 'group' => 'Kurikulum'],
+        ['value' => 'keputusan', 'label' => 'Keputusan 2018-2024', 'group' => 'Kurikulum'],
+        ['value' => 'penggubal-soalan-upsa-uasa', 'label' => 'Penggubal Soalan UPSA & UASA', 'group' => 'Kurikulum'],
+        ['value' => 'pusat-sumber', 'label' => 'Pusat Sumber Sekolah', 'group' => 'Kurikulum'],
+        ['value' => 'pra-sekolah', 'label' => 'Pra Sekolah', 'group' => 'Kurikulum'],
+        ['value' => 'kecemerlangan-program-akademik', 'label' => 'Program Kecemerlangan Akademik', 'group' => 'Kurikulum'],
+        ['value' => 'pilihan-mata-pelajaran', 'label' => 'Pilihan Mata Pelajaran', 'group' => 'Kurikulum'],
+
+        ['value' => 'enrolmen-murid', 'label' => 'Enrolmen Murid', 'group' => 'Hal Ehwal Murid'],
+        ['value' => 'bil-kelas-gambar', 'label' => 'Bilangan Kelas-Gambar', 'group' => 'Hal Ehwal Murid'],
+        ['value' => 'unit-bimbingan-kaunseling', 'label' => 'Unit Bimbingan Dan Kaunseling', 'group' => 'Hal Ehwal Murid'],
+        ['value' => 'peraturan-sekolah', 'label' => 'Peraturan Sekolah', 'group' => 'Hal Ehwal Murid'],
+        ['value' => 'pemimpin-murid', 'label' => 'Pemimpin Murid', 'group' => 'Hal Ehwal Murid'],
+
+        ['value' => 'unit-badan-beruniform', 'label' => 'Unit Badan Beruniform', 'group' => 'Kokurikulum'],
+        ['value' => 'kelab-persatuan', 'label' => 'Kelab Dan Persatuan', 'group' => 'Kokurikulum'],
+
+        ['value' => 'jawatankuasa-pibg', 'label' => 'Jawatankuasa PIBG', 'group' => 'PIBG'],
+    ];
+
+    return $pages;
 }
 
 function smks3_get_slideshow(?string $baseDir = null): array
@@ -766,6 +853,218 @@ function smks3_get_fpk_falsafah(): array
     return $defaults;
 }
 
+/** Ensure fpk_misi_visi.id is usable for INSERTs (PRIMARY KEY + AUTO_INCREMENT). */
+function smks3_ensure_fpk_misi_visi_schema(?PDO $pdo = null): void
+{
+    smks3_ensure_table_auto_id('fpk_misi_visi', $pdo);
+}
+
+/**
+ * Ensure a table's `id` column is PRIMARY KEY + AUTO_INCREMENT (common CMS import gap).
+ */
+function smks3_ensure_table_auto_id(string $table, ?PDO $pdo = null): void
+{
+    static $done = [];
+    $table = trim($table);
+    if ($table === '' || !preg_match('/^[a-zA-Z0-9_]+$/', $table) || isset($done[$table])) {
+        return;
+    }
+    $done[$table] = true;
+    try {
+        $pdo = $pdo ?? getConnection();
+        $col = $pdo->query("SHOW COLUMNS FROM `{$table}` LIKE 'id'")->fetch(PDO::FETCH_ASSOC);
+        if (!$col) {
+            return;
+        }
+        $extra = strtolower((string) ($col['Extra'] ?? ''));
+        $key = strtoupper((string) ($col['Key'] ?? ''));
+        if ($key !== 'PRI') {
+            try {
+                $pdo->exec("ALTER TABLE `{$table}` ADD PRIMARY KEY (id)");
+            } catch (Throwable $e) {
+                // may already exist under another name
+            }
+        }
+        if (!str_contains($extra, 'auto_increment')) {
+            $pdo->exec("ALTER TABLE `{$table}` MODIFY id INT NOT NULL AUTO_INCREMENT");
+        }
+        $maxId = (int) $pdo->query("SELECT COALESCE(MAX(id), 0) FROM `{$table}`")->fetchColumn();
+        if ($maxId > 0) {
+            $pdo->exec("ALTER TABLE `{$table}` AUTO_INCREMENT = " . ($maxId + 1));
+        }
+    } catch (Throwable $e) {
+        // best-effort; callers may still use next-id fallback
+    }
+}
+
+/**
+ * academic_calendar is used as a PDF gallery, but still has legacy event NOT NULL columns.
+ * Soften title/start_date so PDF-only inserts cannot fail with Error 1364.
+ */
+function smks3_ensure_academic_calendar_pdf_columns(?PDO $pdo = null): void
+{
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+    try {
+        $pdo = $pdo ?? getConnection();
+        $title = $pdo->query("SHOW COLUMNS FROM academic_calendar LIKE 'title'")->fetch(PDO::FETCH_ASSOC);
+        if ($title && strtoupper((string) ($title['Null'] ?? '')) === 'NO' && ($title['Default'] === null || $title['Default'] === '')) {
+            // Keep NOT NULL but allow omit/blank via default when only file_pdf is written.
+            $pdo->exec("ALTER TABLE academic_calendar MODIFY title VARCHAR(255) NOT NULL DEFAULT ''");
+        }
+        $start = $pdo->query("SHOW COLUMNS FROM academic_calendar LIKE 'start_date'")->fetch(PDO::FETCH_ASSOC);
+        if ($start && strtoupper((string) ($start['Null'] ?? '')) === 'NO') {
+            $pdo->exec('ALTER TABLE academic_calendar MODIFY start_date DATE NULL');
+        }
+    } catch (Throwable $e) {
+        // best-effort; insert path still supplies values
+    }
+}
+
+/**
+ * Ensure bilangan_kelas has sort_order so tingkatan groups can be positioned.
+ */
+function smks3_ensure_bilangan_kelas_sort(?PDO $pdo = null): void
+{
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+    try {
+        $pdo = $pdo ?? getConnection();
+        $col = $pdo->query("SHOW COLUMNS FROM bilangan_kelas LIKE 'sort_order'")->fetch(PDO::FETCH_ASSOC);
+        if (!$col) {
+            $pdo->exec('ALTER TABLE bilangan_kelas ADD COLUMN sort_order INT NOT NULL DEFAULT 0');
+        }
+        $needsBackfill = (int) $pdo->query(
+            'SELECT COUNT(*) FROM bilangan_kelas WHERE sort_order = 0'
+        )->fetchColumn();
+        $total = (int) $pdo->query('SELECT COUNT(*) FROM bilangan_kelas')->fetchColumn();
+        $distinctZero = (int) $pdo->query(
+            'SELECT COUNT(DISTINCT tingkatan) FROM bilangan_kelas WHERE sort_order = 0'
+        )->fetchColumn();
+        $distinctAll = (int) $pdo->query(
+            'SELECT COUNT(DISTINCT tingkatan) FROM bilangan_kelas'
+        )->fetchColumn();
+        // First run / all zeros: assign order by current tingkatan name.
+        if ($total > 0 && $needsBackfill === $total && $distinctZero === $distinctAll) {
+            $tings = $pdo->query(
+                'SELECT DISTINCT tingkatan FROM bilangan_kelas ORDER BY tingkatan ASC'
+            )->fetchAll(PDO::FETCH_COLUMN);
+            smks3_set_bilangan_kelas_tingkatan_order($pdo, array_map('strval', $tings ?: []));
+        }
+    } catch (Throwable $e) {
+        // best-effort
+    }
+}
+
+/**
+ * @return list<string>
+ */
+function smks3_bilangan_kelas_tingkatan_order(PDO $pdo): array
+{
+    smks3_ensure_bilangan_kelas_sort($pdo);
+    $rows = $pdo->query(
+        'SELECT tingkatan
+         FROM bilangan_kelas
+         GROUP BY tingkatan
+         ORDER BY MIN(sort_order) ASC, tingkatan ASC'
+    )->fetchAll(PDO::FETCH_COLUMN);
+    $out = [];
+    foreach ($rows ?: [] as $t) {
+        $t = trim((string) $t);
+        if ($t !== '') {
+            $out[] = $t;
+        }
+    }
+    return $out;
+}
+
+/**
+ * @param list<string> $orderedTingkatan
+ */
+function smks3_set_bilangan_kelas_tingkatan_order(PDO $pdo, array $orderedTingkatan): void
+{
+    smks3_ensure_bilangan_kelas_sort($pdo);
+    $i = 1;
+    $stmt = $pdo->prepare('UPDATE bilangan_kelas SET sort_order = ? WHERE tingkatan = ?');
+    foreach ($orderedTingkatan as $tingkatan) {
+        $tingkatan = trim((string) $tingkatan);
+        if ($tingkatan === '') {
+            continue;
+        }
+        $stmt->execute([$i * 10, $tingkatan]);
+        $i++;
+    }
+}
+
+/**
+ * Insert a new tingkatan into the display order.
+ *
+ * @param list<string> $existing
+ * @return list<string>
+ */
+function smks3_place_bilangan_kelas_tingkatan(array $existing, string $newTingkatan, string $position): array
+{
+    $newTingkatan = trim($newTingkatan);
+    $list = [];
+    foreach ($existing as $t) {
+        $t = trim((string) $t);
+        if ($t === '' || strcasecmp($t, $newTingkatan) === 0) {
+            continue;
+        }
+        $list[] = $t;
+    }
+    if ($position === 'start') {
+        array_unshift($list, $newTingkatan);
+        return $list;
+    }
+    if (str_starts_with($position, 'after:')) {
+        $after = trim(substr($position, 6));
+        $placed = false;
+        $out = [];
+        foreach ($list as $t) {
+            $out[] = $t;
+            if (!$placed && strcasecmp($t, $after) === 0) {
+                $out[] = $newTingkatan;
+                $placed = true;
+            }
+        }
+        if (!$placed) {
+            $out[] = $newTingkatan;
+        }
+        return $out;
+    }
+    // end (default)
+    $list[] = $newTingkatan;
+    return $list;
+}
+
+/**
+ * Insert a row; if id has no default/AUTO_INCREMENT, assign next id explicitly.
+ *
+ * @param list<mixed> $params
+ */
+function smks3_insert_with_auto_id(PDO $pdo, string $table, string $columnsSql, string $placeholdersSql, array $params): void
+{
+    smks3_ensure_table_auto_id($table, $pdo);
+    try {
+        $pdo->prepare("INSERT INTO `{$table}` ({$columnsSql}) VALUES ({$placeholdersSql})")->execute($params);
+    } catch (Throwable $e) {
+        $msg = $e->getMessage();
+        if (!str_contains($msg, "Field 'id'") && !str_contains($msg, "doesn't have a default value")) {
+            throw $e;
+        }
+        $nextId = (int) $pdo->query("SELECT COALESCE(MAX(id), 0) + 1 FROM `{$table}`")->fetchColumn();
+        $pdo->prepare("INSERT INTO `{$table}` (id, {$columnsSql}) VALUES (?, {$placeholdersSql})")
+            ->execute(array_merge([$nextId], $params));
+    }
+}
+
 function smks3_make_slug(string $title): string
 {
     $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title) ?? ''));
@@ -867,6 +1166,159 @@ function smks3_news_body_html(?string $content, ?string $fallbackExcerpt = ''): 
     return '';
 }
 
+/**
+ * Allowlist sanitize for Quill news HTML before saving.
+ */
+function smks3_sanitize_news_html(string $html): string
+{
+    $html = trim($html);
+    if ($html === '' || $html === '<p><br></p>' || $html === '<p></p>') {
+        return '';
+    }
+
+    $allowed = '<p><br><strong><b><em><i><u><s><ol><ul><li><a><h2><h3><blockquote><span>';
+    $html = strip_tags($html, $allowed);
+    $html = preg_replace('/\son\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/iu', '', $html) ?? $html;
+    $html = preg_replace('/\s(href|style|class)\s*=\s*("\s*javascript:[^"]*"|\'\s*javascript:[^\']*\')/iu', '', $html) ?? $html;
+    $html = preg_replace('/javascript\s*:/iu', '', $html) ?? $html;
+
+    // Keep only safe http(s)/relative/mailto/tel links.
+    $html = preg_replace_callback(
+        '/<a\b([^>]*)>/iu',
+        static function (array $m): string {
+            $attrs = $m[1];
+            if (!preg_match('/\bhref\s*=\s*("([^"]*)"|\'([^\']*)\'|([^\s>]+))/i', $attrs, $hm)) {
+                return '<a>';
+            }
+            $href = html_entity_decode((string) ($hm[2] !== '' ? $hm[2] : ($hm[3] !== '' ? $hm[3] : $hm[4])), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $href = trim($href);
+            if ($href === '' || preg_match('/^\s*javascript:/i', $href)) {
+                return '<a>';
+            }
+            if (!preg_match('#^(https?:|mailto:|tel:|/|\./|#)#i', $href)) {
+                return '<a>';
+            }
+            return '<a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '" rel="noopener noreferrer">';
+        },
+        $html
+    ) ?? $html;
+
+    return trim($html);
+}
+
+/**
+ * Parse news.image (legacy single filename or JSON list) into filename list.
+ *
+ * @return list<string>
+ */
+function smks3_news_parse_images(mixed $raw): array
+{
+    if (is_array($raw)) {
+        $list = $raw;
+    } else {
+        $raw = trim((string) $raw);
+        if ($raw === '') {
+            return [];
+        }
+        if (str_starts_with($raw, '[')) {
+            $decoded = json_decode($raw, true);
+            $list = is_array($decoded) ? $decoded : [$raw];
+        } else {
+            $list = [$raw];
+        }
+    }
+
+    $out = [];
+    $seen = [];
+    foreach ($list as $item) {
+        $name = basename(str_replace('\\', '/', trim((string) $item)));
+        if ($name === '' || str_contains($name, '..') || isset($seen[$name])) {
+            continue;
+        }
+        $seen[$name] = true;
+        $out[] = $name;
+    }
+    return $out;
+}
+
+/**
+ * Encode news image list for DB (single file stays plain string for legacy).
+ */
+function smks3_news_encode_images(array $images): ?string
+{
+    $images = smks3_news_parse_images($images);
+    if ($images === []) {
+        return null;
+    }
+    if (count($images) === 1) {
+        return $images[0];
+    }
+    return json_encode($images, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+}
+
+/** Public path for a news image filename (uploads/…). */
+function smks3_news_image_src(string $filename): string
+{
+    $filename = basename(str_replace('\\', '/', trim($filename)));
+    if ($filename === '') {
+        return '';
+    }
+    if (str_starts_with($filename, 'uploads/') || str_starts_with($filename, 'images/')) {
+        return $filename;
+    }
+    return 'uploads/' . ltrim($filename, '/');
+}
+
+/**
+ * @return list<string> Existing public paths for gallery display.
+ */
+function smks3_news_image_srcs(mixed $raw): array
+{
+    $out = [];
+    foreach (smks3_news_parse_images($raw) as $name) {
+        $src = smks3_news_image_src($name);
+        if ($src !== '' && is_file(BASE_PATH . '/' . $src)) {
+            $out[] = $src;
+        }
+    }
+    return $out;
+}
+
+function smks3_news_primary_image(mixed $raw): string
+{
+    $imgs = smks3_news_parse_images($raw);
+    return $imgs[0] ?? '';
+}
+
+/**
+ * Normalize $_FILES['images'] (single or multi) into a list of file arrays.
+ *
+ * @return list<array<string, mixed>>
+ */
+function smks3_normalize_uploaded_files(mixed $filesField): array
+{
+    if (!is_array($filesField) || empty($filesField['name'])) {
+        return [];
+    }
+    if (!is_array($filesField['name'])) {
+        return [$filesField];
+    }
+    $out = [];
+    foreach ($filesField['name'] as $i => $name) {
+        if (!is_string($name) || trim($name) === '') {
+            continue;
+        }
+        $out[] = [
+            'name' => $name,
+            'type' => $filesField['type'][$i] ?? '',
+            'tmp_name' => $filesField['tmp_name'][$i] ?? '',
+            'error' => $filesField['error'][$i] ?? UPLOAD_ERR_NO_FILE,
+            'size' => $filesField['size'][$i] ?? 0,
+        ];
+    }
+    return $out;
+}
+
 /** Ensure useful indexes on news for list/home queries. */
 function smks3_ensure_news_indexes(?PDO $pdo = null): void
 {
@@ -888,6 +1340,14 @@ function smks3_ensure_news_indexes(?PDO $pdo = null): void
         $yearCol = $pdo->query("SHOW COLUMNS FROM news LIKE 'year'")->fetch(PDO::FETCH_ASSOC);
         if ($yearCol && !isset($names['idx_news_year'])) {
             $pdo->exec('ALTER TABLE news ADD INDEX idx_news_year (year)');
+        }
+        // Multi-image JSON may exceed short VARCHAR — widen when needed.
+        $imageCol = $pdo->query("SHOW COLUMNS FROM news LIKE 'image'")->fetch(PDO::FETCH_ASSOC);
+        if ($imageCol) {
+            $type = strtolower((string) ($imageCol['Type'] ?? ''));
+            if (str_contains($type, 'varchar') || str_starts_with($type, 'char(')) {
+                $pdo->exec('ALTER TABLE news MODIFY image TEXT NULL');
+            }
         }
     } catch (Throwable $e) {
         // best-effort

@@ -26,9 +26,11 @@ $pdfExists = $pdfSrc !== '' && (preg_match('#^https?://#i', $pdfSrc) || is_file(
                 <button type="button" class="btn btn-outline-primary"
                         data-edit-block="pibg_pdf"
                         data-edit-label="Ganti PDF jawatankuasa PIBG"
-                        data-edit-hint="Muat naik PDF baharu untuk menggantikan dokumen semasa.">
-                    <i class="bi bi-upload me-1"></i> Ganti PDF
+                        data-edit-hint="Muat naik PDF baharu. Fail semasa akan diganti (bukan ditambah)."
+                        data-file="<?= htmlspecialchars($pdfSrc, ENT_QUOTES, 'UTF-8') ?>">
+                    <i class="bi bi-arrow-repeat me-1"></i> Ganti PDF
                 </button>
+                <p class="small text-muted mt-2 mb-0">Halaman ini hanya menyimpan satu PDF. Muat naik baharu akan menggantikan yang sedia ada.</p>
                 <?php endif; ?>
             </div>
 

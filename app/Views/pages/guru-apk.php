@@ -104,7 +104,7 @@ try {
                  <?php endif; ?>>
 
                 <div class="image-wrapper mb-2">
-                    <img src="uploads/<?= htmlspecialchars($g['image']) ?>" 
+                    <img src="<?= !empty($g['image']) ? 'uploads/' . htmlspecialchars($g['image']) : htmlspecialchars($placeholderImage ?? '/smks3/images/placeholder.png') ?>"
                          alt="<?= htmlspecialchars($g['nama']) ?>">
                 </div>
 
@@ -125,7 +125,7 @@ try {
     <button type="button" class="btn btn-outline-primary btn-sm"
             data-edit-block="guru_add"
             data-edit-label="Tambah guru"
-            data-edit-hint="Tambah guru baharu dengan gambar.">
+            data-edit-hint="Tambah guru baharu.">
         <i class="bi bi-plus-lg me-1"></i> Tambah Guru
     </button>
 </div>
@@ -157,7 +157,7 @@ try {
                  <?php endif; ?>>
 
                 <div class="image-wrapper mb-2">
-                    <img src="uploads/<?= htmlspecialchars($a['image']) ?>" 
+                    <img src="<?= !empty($a['image']) ? 'uploads/' . htmlspecialchars($a['image']) : htmlspecialchars($placeholderImage ?? '/smks3/images/placeholder.png') ?>"
                          alt="<?= htmlspecialchars($a['nama']) ?>">
                 </div>
 
@@ -178,7 +178,7 @@ try {
     <button type="button" class="btn btn-outline-primary btn-sm"
             data-edit-block="akp_add"
             data-edit-label="Tambah AKP"
-            data-edit-hint="Tambah AKP baharu dengan gambar.">
+            data-edit-hint="Tambah AKP baharu.">
         <i class="bi bi-plus-lg me-1"></i> Tambah AKP
     </button>
 </div>

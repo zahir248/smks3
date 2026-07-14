@@ -4,8 +4,6 @@ $page_meta = is_array($page_meta ?? null) ? $page_meta : smks3_get_page_meta('en
 $enrolmen = is_array($enrolmen ?? null) ? $enrolmen : smks3_get_enrolmen_content();
 $blokA = is_array($enrolmen['blok_a'] ?? null) ? $enrolmen['blok_a'] : [];
 $blokB = is_array($enrolmen['blok_b'] ?? null) ? $enrolmen['blok_b'] : [];
-$feb = is_array($enrolmen['feb'] ?? null) ? $enrolmen['feb'] : ['title' => 'ENROLMENT FEBRUARY', 'image' => ''];
-$febSrc = smks3_enrolmen_img_src((string) ($feb['image'] ?? ''));
 ?>
 <style>
 .enrolmen-hero {
@@ -79,9 +77,62 @@ $febSrc = smks3_enrolmen_img_src((string) ($feb['image'] ?? ''));
 .letter-spacing {
     letter-spacing: 2px;
 }
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    filter: invert(1);
+.enrolmen-carousel-wrap {
+    position: relative;
+}
+.enrolmen-carousel-wrap .carousel-control-prev,
+.enrolmen-carousel-wrap .carousel-control-next {
+    width: 2.75rem;
+    height: 2.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    bottom: auto;
+    opacity: 0;
+    visibility: hidden;
+    border: 0;
+    border-radius: 999px;
+    background: #0b2a4a;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(11, 42, 74, 0.28);
+    transition: background-color 0.2s ease, opacity 0.2s ease, visibility 0.2s ease;
+}
+.enrolmen-carousel-wrap:hover .carousel-control-prev,
+.enrolmen-carousel-wrap:hover .carousel-control-next,
+.enrolmen-carousel-wrap:has(:focus-visible) .carousel-control-prev,
+.enrolmen-carousel-wrap:has(:focus-visible) .carousel-control-next {
+    opacity: 1;
+    visibility: visible;
+}
+.enrolmen-carousel-wrap .carousel-control-prev { left: 0.5rem; }
+.enrolmen-carousel-wrap .carousel-control-next { right: 0.5rem; }
+.enrolmen-carousel-wrap .carousel-control-prev:hover,
+.enrolmen-carousel-wrap .carousel-control-next:hover,
+.enrolmen-carousel-wrap .carousel-control-prev:focus-visible,
+.enrolmen-carousel-wrap .carousel-control-next:focus-visible {
+    background: #143a63;
+    color: #fff;
+    opacity: 1;
+    visibility: visible;
+}
+.enrolmen-carousel-wrap .carousel-control-prev:focus,
+.enrolmen-carousel-wrap .carousel-control-next:focus {
+    outline: none;
+    box-shadow: none;
+}
+.enrolmen-carousel-wrap .carousel-control-prev i,
+.enrolmen-carousel-wrap .carousel-control-next i {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+@media (hover: none) {
+    .enrolmen-carousel-wrap .carousel-control-prev,
+    .enrolmen-carousel-wrap .carousel-control-next {
+        opacity: 0.9;
+        visibility: visible;
+    }
 }
 @media (max-width: 768px) {
     .img-enrolment {
@@ -117,105 +168,95 @@ $febSrc = smks3_enrolmen_img_src((string) ($feb['image'] ?? ''));
              <?php if ($is_editor): ?>
              data-edit-block="kurikulum_meta"
              data-edit-label="Sunting pengenalan enrolmen"
+             data-edit-hint="Teks pengenalan di bahagian atas sahaja."
              data-page-key="enrolmen-murid"
              data-intro="<?= htmlspecialchars((string) ($page_meta['intro'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-             data-sections="<?= htmlspecialchars(json_encode($page_meta['sections'] ?? [], JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
             <p class="text-muted lead mb-0"><?= htmlspecialchars((string) ($page_meta['intro'] ?? 'Susun atur kelas mengikut blok dan aras di SMK Seremban 3.')) ?></p>
         </div>
-        <div class="mb-5">
+        <div class="mb-4">
             <a href="#blok-a" class="btn btn-outline-primary btn-sm me-2">Blok Akademik A</a>
             <a href="#blok-b" class="btn btn-outline-primary btn-sm">Blok Akademik B</a>
         </div>
 
 <?php
-$enrolments = $pdo->query("
+smks3_ensure_enrolmen_sort($pdo);
+$enrolments = $pdo->query('
     SELECT *
     FROM enrolmen_murid
-    ORDER BY id DESC
-")->fetchAll();
+    ORDER BY sort_order ASC, id ASC
+')->fetchAll(PDO::FETCH_ASSOC);
+$slideMeta = [];
+foreach ($enrolments as $row) {
+    $slideMeta[] = [
+        'id' => (int) ($row['id'] ?? 0),
+        'title' => (string) ($row['title'] ?? ''),
+    ];
+}
+$slidesJson = htmlspecialchars(json_encode($slideMeta, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
+$slideCount = count($enrolments);
 ?>
 
 <?php if ($enrolments): ?>
-
 <div id="enrolmentCarousel"
-     class="carousel slide enrolmen-hero"
+     class="carousel slide enrolmen-hero enrolmen-carousel-wrap"
      <?= $is_editor ? 'data-bs-interval="false"' : 'data-bs-ride="carousel"' ?>>
-
     <div class="carousel-inner">
-
-        <?php foreach ($enrolments as $index => $item): ?>
-
-        <div class="carousel-item <?= $index == 0 ? 'active' : '' ?>">
-
+        <?php foreach ($enrolments as $index => $item):
+            $imgSrc = smks3_enrolmen_img_src((string) ($item['image'] ?? ''));
+            ?>
+        <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
             <div class="enrolmen-slide"
                  <?php if ($is_editor): ?>
                  data-edit-block="enrolmen_item"
                  data-edit-label="Sunting enrolmen"
-                 data-edit-hint="Kemaskini tajuk atau gambar. Guna Padam untuk buang."
+                 data-edit-hint="Kemaskini tajuk, gambar, atau kedudukan slaid. Guna Padam untuk buang."
                  data-id="<?= (int) $item['id'] ?>"
                  data-title="<?= htmlspecialchars((string) ($item['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                 data-slides="<?= $slidesJson ?>"
                  <?php endif; ?>>
                 <h3 class="fw-bold enrolmen-slide__title">
-                    <?= htmlspecialchars((string) $item['title']) ?>
+                    <?= htmlspecialchars((string) ($item['title'] ?? '')) ?>
                 </h3>
-                <img src="uploads/enrolmen/<?= htmlspecialchars((string) $item['image']) ?>"
-                     alt="<?= htmlspecialchars((string) $item['title']) ?>"
+                <?php if ($imgSrc !== ''): ?>
+                <img src="<?= htmlspecialchars($imgSrc, ENT_QUOTES, 'UTF-8') ?>"
+                     alt="<?= htmlspecialchars((string) ($item['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
                      class="img-fluid img-enrolment">
+                <?php endif; ?>
             </div>
-
         </div>
-
         <?php endforeach; ?>
-
     </div>
 
-    <?php if (!$is_editor): ?>
-    <button class="carousel-control-prev"
-            type="button"
-            data-bs-target="#enrolmentCarousel"
-            data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
+    <?php if ($slideCount > 1): ?>
+    <button class="carousel-control-prev" type="button"
+            data-bs-target="#enrolmentCarousel" data-bs-slide="prev"
+            aria-label="Gambar sebelumnya">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
     </button>
-
-    <button class="carousel-control-next"
-            type="button"
-            data-bs-target="#enrolmentCarousel"
-            data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
+    <button class="carousel-control-next" type="button"
+            data-bs-target="#enrolmentCarousel" data-bs-slide="next"
+            aria-label="Gambar seterusnya">
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
     </button>
     <?php endif; ?>
-
 </div>
-
+<?php elseif (!$is_editor): ?>
+<p class="text-muted">Tiada gambar enrolmen.</p>
 <?php endif; ?>
 
         <?php if ($is_editor): ?>
         <div class="text-center mb-4">
             <button type="button" class="btn btn-outline-primary"
                     data-edit-block="enrolmen_add"
-                    data-edit-label="Tambah enrolmen"
-                    data-edit-hint="Muat naik gambar enrolmen baharu.">
+                    data-edit-label="Tambah gambar enrolmen"
+                    data-edit-hint="Muat naik gambar dan pilih kedudukan dalam slaid."
+                    data-slides="<?= $slidesJson ?>">
                 <i class="bi bi-plus-lg me-1"></i> Tambah Gambar
             </button>
+            <p class="small text-muted mt-2 mb-0">Gambar dipaparkan sebagai slaid. Anda boleh pilih kedudukan (awal / selepas / akhir) bila menambah atau menyunting.</p>
         </div>
         <?php endif; ?>
-
-        <div class="enrolmen-slide mb-4"
-             <?php if ($is_editor): ?>
-             data-edit-block="enrolmen_feb"
-             data-edit-label="Sunting enrolment February"
-             data-title="<?= htmlspecialchars((string) ($feb['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-             <?php endif; ?>>
-            <h3 class="fw-bold enrolmen-slide__title"><?= htmlspecialchars((string) ($feb['title'] ?? 'ENROLMENT FEBRUARY')) ?></h3>
-            <?php if ($febSrc !== '' && (preg_match('#^https?://#i', $febSrc) || is_file(BASE_PATH . '/' . $febSrc))): ?>
-                <img src="<?= htmlspecialchars($febSrc, ENT_QUOTES, 'UTF-8') ?>"
-                     alt="<?= htmlspecialchars((string) ($feb['title'] ?? 'Enrolment February'), ENT_QUOTES, 'UTF-8') ?>"
-                     class="img-fluid img-enrolment">
-            <?php elseif ($is_editor): ?>
-                <p class="text-muted mb-0">Tiada gambar. Klik untuk muat naik.</p>
-            <?php endif; ?>
-        </div>
 
     </div>
 </section>

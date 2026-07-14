@@ -188,10 +188,10 @@ function smks3_login_rate_limit_clear(?string $ip = null): void
     }
 }
 
-/** Safe site_content / table keys only. */
+/** Safe site_content / table keys only (page keys may include hyphens / commas). */
 function smks3_is_safe_content_key(string $key): bool
 {
-    return (bool) preg_match('/^[a-z][a-z0-9_]{0,119}$/', $key);
+    return (bool) preg_match('/^[a-z][a-z0-9_,-]{0,119}$/', $key);
 }
 
 /**

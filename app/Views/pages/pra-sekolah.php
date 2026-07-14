@@ -31,15 +31,17 @@ $galeriSec = is_array($sections['galeri'] ?? null) ? $sections['galeri'] : ['tit
     <div class="container">
         <div class="text-center mb-5"
              <?php if ($is_editor): ?>
-             data-edit-block="kurikulum_meta"
-             data-edit-label="Sunting tajuk pra sekolah"
+             data-edit-block="kurikulum_section"
+             data-edit-label="Sunting tajuk: Carta Organisasi"
+             data-edit-hint="Tajuk dan subtajuk untuk bahagian carta sahaja."
              data-page-key="<?= htmlspecialchars($pageKey, ENT_QUOTES, 'UTF-8') ?>"
-             data-intro="<?= htmlspecialchars((string) ($meta['intro'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-             data-sections="<?= htmlspecialchars(json_encode($sections, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>"
+             data-section-key="carta"
+             data-title="<?= htmlspecialchars((string) ($cartaSec['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-subtitle="<?= htmlspecialchars((string) ($cartaSec['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
-            <h2 class="fw-bold"><?= htmlspecialchars((string) ($cartaSec['title'] ?? 'Carta Organisasi Sekolah')) ?></h2>
+            <h2 class="fw-bold" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($cartaSec['title'] ?? 'Carta Organisasi Sekolah')) ?></h2>
             <?php if (trim((string) ($cartaSec['subtitle'] ?? '')) !== ''): ?>
-                <p class="text-muted"><?= htmlspecialchars((string) $cartaSec['subtitle']) ?></p>
+                <p class="text-muted" data-bind="kurikulum_section_subtitle"><?= htmlspecialchars((string) $cartaSec['subtitle']) ?></p>
             <?php endif; ?>
         </div>
 
@@ -49,7 +51,7 @@ $galeriSec = is_array($sections['galeri'] ?? null) ? $sections['galeri'] : ['tit
                      <?php if ($is_editor): ?>
                      data-edit-block="pra_sekolah_carta"
                      data-edit-label="Ganti gambar carta"
-                     data-edit-hint="Pilih gambar baharu untuk carta organisasi."
+                     data-edit-hint="Muat naik gambar baharu. Gambar carta semasa akan diganti."
                      <?php else: ?>
                      style="cursor:pointer;"
                      onclick="window.open(this.querySelector('img').src, '_blank')"
@@ -75,15 +77,17 @@ $galeriSec = is_array($sections['galeri'] ?? null) ? $sections['galeri'] : ['tit
     <div class="container">
         <div class="text-center mb-5"
              <?php if ($is_editor): ?>
-             data-edit-block="kurikulum_meta"
-             data-edit-label="Sunting tajuk pra sekolah"
+             data-edit-block="kurikulum_section"
+             data-edit-label="Sunting tajuk: Galeri Murid"
+             data-edit-hint="Tajuk dan subtajuk untuk bahagian galeri sahaja."
              data-page-key="<?= htmlspecialchars($pageKey, ENT_QUOTES, 'UTF-8') ?>"
-             data-intro="<?= htmlspecialchars((string) ($meta['intro'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-             data-sections="<?= htmlspecialchars(json_encode($sections, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>"
+             data-section-key="galeri"
+             data-title="<?= htmlspecialchars((string) ($galeriSec['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-subtitle="<?= htmlspecialchars((string) ($galeriSec['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
-            <h2 class="fw-bold"><?= htmlspecialchars((string) ($galeriSec['title'] ?? 'Galeri Murid')) ?></h2>
+            <h2 class="fw-bold" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($galeriSec['title'] ?? 'Galeri Murid')) ?></h2>
             <?php if (trim((string) ($galeriSec['subtitle'] ?? '')) !== ''): ?>
-                <p class="text-muted"><?= htmlspecialchars((string) $galeriSec['subtitle']) ?></p>
+                <p class="text-muted" data-bind="kurikulum_section_subtitle"><?= htmlspecialchars((string) $galeriSec['subtitle']) ?></p>
             <?php endif; ?>
         </div>
 
@@ -93,7 +97,7 @@ $galeriSec = is_array($sections['galeri'] ?? null) ? $sections['galeri'] : ['tit
                      <?php if ($is_editor): ?>
                      data-edit-block="pra_sekolah_galeri"
                      data-edit-label="Ganti gambar galeri"
-                     data-edit-hint="Pilih gambar baharu untuk galeri murid."
+                     data-edit-hint="Muat naik gambar baharu. Gambar galeri semasa akan diganti."
                      <?php else: ?>
                      style="cursor:pointer;"
                      onclick="window.open(this.querySelector('img').src, '_blank')"

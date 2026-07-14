@@ -157,6 +157,7 @@ final class PageController extends Controller
         $pdo = getConnection();
         $settings = getSettings();
         $is_editor = smks3_can_edit_page();
+        $placeholderImage = '/smks3/images/placeholder.png';
         $this->render('pages/guru-apk', get_defined_vars());
     }
 
@@ -256,6 +257,7 @@ final class PageController extends Controller
         $settings = getSettings();
         $pdo = getConnection();
         $is_editor = smks3_can_edit_page();
+        smks3_ensure_fpk_misi_visi_schema($pdo);
         $fpk_falsafah = smks3_get_fpk_falsafah();
         $stmt = $pdo->query("SELECT * FROM fpk_misi_visi ORDER BY id ASC");
         $fpk_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -307,11 +309,9 @@ final class PageController extends Controller
             $meta_description = smks3_seo_plain_text($excerpt, 160);
         }
         $og_type = 'article';
-        $rawImage = trim((string) ($news_item['image'] ?? $news_item['image_url'] ?? ''));
+        $rawImage = smks3_news_primary_image($news_item['image'] ?? $news_item['image_url'] ?? null);
         if ($rawImage !== '') {
-            $og_image = str_starts_with($rawImage, 'uploads/') || str_starts_with($rawImage, 'images/') || preg_match('#^https?://#i', $rawImage)
-                ? $rawImage
-                : 'uploads/' . ltrim($rawImage, '/');
+            $og_image = smks3_news_image_src($rawImage);
         }
         $pdfPath = null;
         if (!empty($news_item['pdf_file'])) {
@@ -613,6 +613,7 @@ final class PageController extends Controller
         $settings = getSettings();
         $pdo = getConnection();
         $is_editor = smks3_can_edit_page();
+        smks3_ensure_table_auto_id('sejarah_sekolah', $pdo);
         $stmt = $pdo->query("SELECT * FROM sejarah_sekolah ORDER BY id DESC");
         $sejarahList = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $this->render('pages/sejarah-sekolah', get_defined_vars());

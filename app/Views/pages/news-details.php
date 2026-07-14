@@ -15,17 +15,37 @@ if (!$news_item) {
 
 $newsTitle = (string) ($news_item['title'] ?? '');
 $newsContentRaw = (string) ($news_item['content'] ?? '');
-$newsContentPlain = trim(html_entity_decode(strip_tags($newsContentRaw), ENT_QUOTES, 'UTF-8'));
 $newsYear = (string) ($news_item['year'] ?? date('Y', strtotime((string) ($news_item['published_at'] ?? 'now'))));
-$newsImage = trim((string) ($news_item['image'] ?? ''));
-$imageSrc = '';
-if ($newsImage !== '') {
-    $imageSrc = str_starts_with($newsImage, 'uploads/') || str_starts_with($newsImage, 'images/')
-        ? $newsImage
-        : 'uploads/' . ltrim($newsImage, '/');
-}
+$newsImageSrcs = smks3_news_image_srcs($news_item['image'] ?? null);
 $pdfPath = $pdfPath ?? null;
 ?>
+<style>
+.news-gallery {
+    display: grid;
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+@media (min-width: 768px) {
+    .news-gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .news-gallery--single {
+        grid-template-columns: 1fr;
+    }
+}
+.news-gallery__item {
+    margin: 0;
+    text-align: center;
+}
+.news-gallery__item img {
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.5rem rgba(15, 23, 42, 0.08);
+    background: #f8fafc;
+}
+</style>
 <section class="page-section">
 <div class="container">
 
@@ -39,7 +59,8 @@ $pdfPath = $pdfPath ?? null;
          data-id="<?= (int) $news_item['id'] ?>"
          data-title="<?= htmlspecialchars($newsTitle, ENT_QUOTES, 'UTF-8') ?>"
          data-year="<?= htmlspecialchars($newsYear, ENT_QUOTES, 'UTF-8') ?>"
-         data-content="<?= htmlspecialchars($newsContentPlain, ENT_QUOTES, 'UTF-8') ?>"
+         data-content="<?= htmlspecialchars($newsContentRaw, ENT_QUOTES, 'UTF-8') ?>"
+         data-images-json="<?= htmlspecialchars(json_encode($newsImageSrcs, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>"
          <?php endif; ?>>
 
     <h1 class="fw-bold mb-2" data-bind="news_title">
@@ -54,18 +75,25 @@ $pdfPath = $pdfPath ?? null;
 
     <hr>
 
-    <?php if ($imageSrc !== '' && is_file(BASE_PATH . '/' . $imageSrc)): ?>
-        <div class="mb-4 text-center">
-            <img src="<?= htmlspecialchars($imageSrc, ENT_QUOTES, 'UTF-8') ?>"
-                 alt="<?= htmlspecialchars($newsTitle, ENT_QUOTES, 'UTF-8') ?>"
-                 class="img-fluid rounded shadow-sm"
-                 style="max-height: 420px; object-fit: contain;">
+    <?php if ($newsImageSrcs !== []): ?>
+        <div class="news-gallery<?= count($newsImageSrcs) === 1 ? ' news-gallery--single' : '' ?>" data-bind="news_images">
+            <?php foreach ($newsImageSrcs as $imgSrc): ?>
+            <figure class="news-gallery__item">
+                <img src="<?= htmlspecialchars($imgSrc, ENT_QUOTES, 'UTF-8') ?>"
+                     alt="<?= htmlspecialchars($newsTitle, ENT_QUOTES, 'UTF-8') ?>"
+                     loading="lazy"
+                     decoding="async">
+            </figure>
+            <?php endforeach; ?>
         </div>
     <?php endif; ?>
 
-    <?php if ($newsContentRaw !== ''): ?>
+    <?php
+    $newsBodyHtml = smks3_news_body_html($newsContentRaw, (string) ($news_item['excerpt'] ?? ''));
+    if ($newsBodyHtml !== ''):
+    ?>
         <div class="mb-4" data-bind="news_content">
-            <?= $newsContentRaw ?>
+            <?= $newsBodyHtml ?>
         </div>
     <?php elseif ($is_editor): ?>
         <p class="text-muted mb-4">Tiada kandungan teks. Klik untuk sunting.</p>

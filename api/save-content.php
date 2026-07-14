@@ -199,6 +199,9 @@ try {
         if ($value === '') {
             throw new InvalidArgumentException('Kandungan tidak boleh kosong.');
         }
+        if ($block === 'cta_text') {
+            $value = smks3_tokenize_content_placeholders($value);
+        }
         if (!smks3_save_site_content($block, $value)) {
             throw new RuntimeException('Gagal simpan kandungan.');
         }

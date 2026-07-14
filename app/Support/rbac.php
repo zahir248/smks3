@@ -187,6 +187,7 @@ function smks3_rbac_permission_for_block(string $block): ?string
         'cuti_pdf_add' => 'cuti-perayaan',
         'list_item' => 'cuti-perayaan',
         'kurikulum_meta' => 'pentaksiran-peperiksaan',
+        'kurikulum_section' => 'pentaksiran-peperiksaan',
         'kurikulum_card' => 'pentaksiran-peperiksaan',
         'kurikulum_card_add' => 'pentaksiran-peperiksaan',
         'kurikulum_card_delete' => 'pentaksiran-peperiksaan',

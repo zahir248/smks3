@@ -38,13 +38,20 @@
     <?php endif; ?>
 
     <?php if ($is_editor): ?>
+    <?php $hasPilihanPdf = !empty($data['file_pdf']); ?>
     <div class="text-center mt-4">
         <button type="button" class="btn btn-outline-primary"
                 data-edit-block="pilihan_pdf_add"
-                data-edit-label="Tambah / ganti PDF"
-                data-edit-hint="Muat naik fail PDF pilihan mata pelajaran.">
-            <i class="bi bi-plus-lg me-1"></i> Tambah PDF
+                data-edit-label="<?= $hasPilihanPdf ? 'Ganti PDF' : 'Tambah PDF' ?>"
+                data-edit-hint="<?= $hasPilihanPdf
+                    ? 'Muat naik PDF baharu. Fail semasa akan diganti (bukan ditambah).'
+                    : 'Muat naik fail PDF pilihan mata pelajaran.' ?>">
+            <i class="bi bi-<?= $hasPilihanPdf ? 'arrow-repeat' : 'plus-lg' ?> me-1"></i>
+            <?= $hasPilihanPdf ? 'Ganti PDF' : 'Tambah PDF' ?>
         </button>
+        <?php if ($hasPilihanPdf): ?>
+        <p class="small text-muted mt-2 mb-0">Halaman ini hanya menyimpan satu PDF. Muat naik baharu akan menggantikan yang sedia ada.</p>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
 

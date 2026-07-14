@@ -107,9 +107,10 @@ body.smks3-is-editor .akademik-content td[data-edit-block] {
             <button type="button" class="btn btn-outline-primary"
                     data-edit-block="kalendar_pdf_add"
                     data-edit-label="Tambah PDF kalendar"
-                    data-edit-hint="Muat naik fail PDF kalendar akademik.">
+                    data-edit-hint="Tambah PDF baharu. PDF yang sedia ada kekal (tidak diganti).">
                 <i class="bi bi-plus-lg me-1"></i> Tambah PDF
             </button>
+            <p class="small text-muted mt-2 mb-0">Boleh ada lebih dari satu PDF. Muat naik baharu tidak menggantikan yang lama.</p>
         </div>
         <?php endif; ?>
 

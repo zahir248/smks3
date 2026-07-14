@@ -111,12 +111,16 @@ $is_editor = !empty($is_editor);
         <div class="text-center"
              <?php if ($is_editor): ?>
              data-edit-block="ubk_carta_image"
-             data-edit-label="Ganti carta organisasi UBK"
+             data-edit-label="<?= $cartaExists ? 'Ganti carta organisasi UBK' : 'Muat naik carta organisasi UBK' ?>"
+             data-edit-hint="<?= $cartaExists ? 'Muat naik gambar baharu. Carta semasa akan diganti.' : 'Muat naik gambar carta organisasi.' ?>"
              <?php endif; ?>>
             <?php if ($cartaExists): ?>
                 <a href="<?= htmlspecialchars($cartaSrc, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">
                     <img src="<?= htmlspecialchars($cartaSrc, ENT_QUOTES, 'UTF-8') ?>" alt="Carta Organisasi UBK" class="img-fluid rounded shadow">
                 </a>
+                <?php if ($is_editor): ?>
+                <p class="small text-muted mt-2 mb-0">Hanya satu carta. Muat naik baharu akan menggantikan yang sedia ada.</p>
+                <?php endif; ?>
             <?php elseif ($is_editor): ?>
                 <p class="text-muted mb-0">Tiada gambar carta. Klik untuk muat naik.</p>
             <?php endif; ?>
@@ -135,12 +139,16 @@ $is_editor = !empty($is_editor);
         <div class="text-center mb-4"
              <?php if ($is_editor): ?>
              data-edit-block="<?= htmlspecialchars($block, ENT_QUOTES, 'UTF-8') ?>"
-             data-edit-label="Ganti gambar pamplet"
+             data-edit-label="<?= $exists ? 'Ganti gambar pamplet' : 'Muat naik gambar pamplet' ?>"
+             data-edit-hint="<?= $exists ? 'Muat naik gambar baharu. Pamplet semasa akan diganti.' : 'Muat naik gambar pamplet.' ?>"
              <?php endif; ?>>
             <?php if ($exists): ?>
                 <a href="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">
                     <img src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>" alt="Pamplet UBK" class="img-fluid rounded shadow">
                 </a>
+                <?php if ($is_editor): ?>
+                <p class="small text-muted mt-2 mb-0">Slot ini hanya satu gambar. Muat naik baharu akan menggantikan yang sedia ada.</p>
+                <?php endif; ?>
             <?php elseif ($is_editor): ?>
                 <p class="text-muted mb-0">Tiada gambar. Klik untuk muat naik.</p>
             <?php endif; ?>

@@ -485,3 +485,115 @@ function smks3_enrolmen_img_src(string $path): string
     }
     return 'uploads/enrolmen/' . ltrim($path, '/');
 }
+
+/**
+ * Ensure enrolmen_murid.sort_order exists so slides can be reordered.
+ */
+function smks3_ensure_enrolmen_sort(?PDO $pdo = null): void
+{
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+    try {
+        $pdo = $pdo ?? getConnection();
+        $col = $pdo->query("SHOW COLUMNS FROM enrolmen_murid LIKE 'sort_order'")->fetch(PDO::FETCH_ASSOC);
+        if (!$col) {
+            $pdo->exec('ALTER TABLE enrolmen_murid ADD COLUMN sort_order INT NOT NULL DEFAULT 0');
+        }
+        // Keep optional month column if present from earlier work (ignored by UI).
+        $monthCol = $pdo->query("SHOW COLUMNS FROM enrolmen_murid LIKE 'month'")->fetch(PDO::FETCH_ASSOC);
+        if (!$monthCol) {
+            // no-op
+        }
+        $total = (int) $pdo->query('SELECT COUNT(*) FROM enrolmen_murid')->fetchColumn();
+        $zero = (int) $pdo->query('SELECT COUNT(*) FROM enrolmen_murid WHERE sort_order = 0')->fetchColumn();
+        if ($total > 0 && $zero === $total) {
+            $ids = $pdo->query('SELECT id FROM enrolmen_murid ORDER BY id ASC')->fetchAll(PDO::FETCH_COLUMN);
+            smks3_set_enrolmen_slide_order($pdo, array_map('intval', $ids ?: []));
+        }
+    } catch (Throwable $e) {
+        // best-effort
+    }
+}
+
+/**
+ * @return list<array{id:int,title:string,sort_order:int}>
+ */
+function smks3_enrolmen_slide_list(PDO $pdo): array
+{
+    smks3_ensure_enrolmen_sort($pdo);
+    $rows = $pdo->query(
+        'SELECT id, title, sort_order
+         FROM enrolmen_murid
+         ORDER BY sort_order ASC, id ASC'
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $out = [];
+    foreach ($rows ?: [] as $row) {
+        $out[] = [
+            'id' => (int) ($row['id'] ?? 0),
+            'title' => (string) ($row['title'] ?? ''),
+            'sort_order' => (int) ($row['sort_order'] ?? 0),
+        ];
+    }
+    return $out;
+}
+
+/**
+ * @param list<int> $orderedIds
+ */
+function smks3_set_enrolmen_slide_order(PDO $pdo, array $orderedIds): void
+{
+    smks3_ensure_enrolmen_sort($pdo);
+    $stmt = $pdo->prepare('UPDATE enrolmen_murid SET sort_order = ? WHERE id = ?');
+    $i = 1;
+    foreach ($orderedIds as $id) {
+        $id = (int) $id;
+        if ($id < 1) {
+            continue;
+        }
+        $stmt->execute([$i * 10, $id]);
+        $i++;
+    }
+}
+
+/**
+ * Insert slide id into ordered list at position.
+ *
+ * @param list<int> $existingIds
+ * @return list<int>
+ */
+function smks3_place_enrolmen_slide(array $existingIds, int $slideId, string $position): array
+{
+    $list = [];
+    foreach ($existingIds as $id) {
+        $id = (int) $id;
+        if ($id < 1 || $id === $slideId) {
+            continue;
+        }
+        $list[] = $id;
+    }
+    if ($position === 'start') {
+        array_unshift($list, $slideId);
+        return $list;
+    }
+    if (str_starts_with($position, 'after:')) {
+        $afterId = (int) substr($position, 6);
+        $placed = false;
+        $out = [];
+        foreach ($list as $id) {
+            $out[] = $id;
+            if (!$placed && $id === $afterId) {
+                $out[] = $slideId;
+                $placed = true;
+            }
+        }
+        if (!$placed) {
+            $out[] = $slideId;
+        }
+        return $out;
+    }
+    $list[] = $slideId;
+    return $list;
+}

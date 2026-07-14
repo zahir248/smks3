@@ -78,8 +78,9 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
 
     // ── News ──────────────────────────────────────────────
     if ($block === 'news_item') {
+        smks3_ensure_news_indexes($pdo);
         $title = trim((string) ($data['title'] ?? ''));
-        $content = trim((string) ($data['content'] ?? ''));
+        $content = smks3_sanitize_news_html((string) ($data['content'] ?? ''));
         $year = trim((string) ($data['year'] ?? date('Y')));
         if ($id < 1 || $title === '') {
             throw new InvalidArgumentException('Tajuk berita diperlukan.');
@@ -88,45 +89,82 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         $row->execute([$id]);
         $cur = $row->fetch(PDO::FETCH_ASSOC) ?: [];
         $pdf = $cur['pdf_file'] ?? null;
-        $image = $cur['image'] ?? null;
+        $images = smks3_news_parse_images($cur['image'] ?? null);
+
+        $remove = $data['remove_images'] ?? [];
+        if (!is_array($remove)) {
+            $remove = $remove !== '' && $remove !== null ? [(string) $remove] : [];
+        }
+        $removeSet = [];
+        foreach ($remove as $rm) {
+            $base = basename(str_replace('\\', '/', trim((string) $rm)));
+            if ($base !== '') {
+                $removeSet[$base] = true;
+            }
+        }
+        if ($removeSet !== []) {
+            $kept = [];
+            foreach ($images as $img) {
+                if (isset($removeSet[$img])) {
+                    smks3_delete_project_file('uploads/' . ltrim($img, '/'));
+                    continue;
+                }
+                $kept[] = $img;
+            }
+            $images = $kept;
+        }
+
         if (!empty($_FILES['pdf_file']['name'])) {
             if (!empty($pdf)) {
                 smks3_delete_project_file('uploads/pdf/' . $pdf);
             }
             $pdf = smks3_store_upload($_FILES['pdf_file'], 'uploads/pdf', $pdfExt, true);
         }
-        if (!empty($_FILES['image']['name'])) {
-            if (!empty($image)) {
-                smks3_delete_project_file('uploads/' . ltrim((string) $image, '/'));
-            }
-            $image = smks3_store_upload($_FILES['image'], 'uploads', $imgExt, true);
+
+        // Support legacy single `image` plus new multi `images[]`.
+        $uploads = smks3_normalize_uploaded_files($_FILES['images'] ?? null);
+        if ($uploads === [] && !empty($_FILES['image']['name'])) {
+            $uploads = [$_FILES['image']];
         }
+        foreach ($uploads as $file) {
+            $images[] = smks3_store_upload($file, 'uploads', $imgExt, true);
+        }
+        $images = smks3_news_parse_images($images);
+
         $slug = smks3_make_slug($title);
-        $excerpt = mb_substr(strip_tags($content), 0, 150);
+        $excerpt = mb_substr(trim(html_entity_decode(strip_tags($content), ENT_QUOTES | ENT_HTML5, 'UTF-8')), 0, 150);
+        $imageStore = smks3_news_encode_images($images);
         $pdo->prepare('UPDATE news SET title=?, slug=?, excerpt=?, content=?, year=?, pdf_file=?, image=? WHERE id=?')
-            ->execute([$title, $slug, $excerpt, $content, $year, $pdf, $image, $id]);
+            ->execute([$title, $slug, $excerpt, $content, $year, $pdf, $imageStore, $id]);
         return ['ok' => true, 'message' => 'Berita dikemaskini.', 'reload' => true];
     }
 
     if ($block === 'news_add') {
+        smks3_ensure_news_indexes($pdo);
         $title = trim((string) ($data['title'] ?? ''));
-        $content = trim((string) ($data['content'] ?? ''));
+        $content = smks3_sanitize_news_html((string) ($data['content'] ?? ''));
         $year = trim((string) ($data['year'] ?? date('Y')));
         if ($title === '') {
             throw new InvalidArgumentException('Tajuk berita diperlukan.');
         }
         $pdf = null;
-        $image = null;
+        $images = [];
         if (!empty($_FILES['pdf_file']['name'])) {
             $pdf = smks3_store_upload($_FILES['pdf_file'], 'uploads/pdf', $pdfExt, true);
         }
-        if (!empty($_FILES['image']['name'])) {
-            $image = smks3_store_upload($_FILES['image'], 'uploads', $imgExt, true);
+        $uploads = smks3_normalize_uploaded_files($_FILES['images'] ?? null);
+        if ($uploads === [] && !empty($_FILES['image']['name'])) {
+            $uploads = [$_FILES['image']];
         }
+        foreach ($uploads as $file) {
+            $images[] = smks3_store_upload($file, 'uploads', $imgExt, true);
+        }
+        $images = smks3_news_parse_images($images);
         $slug = smks3_make_slug($title);
-        $excerpt = mb_substr(strip_tags($content), 0, 150);
+        $excerpt = mb_substr(trim(html_entity_decode(strip_tags($content), ENT_QUOTES | ENT_HTML5, 'UTF-8')), 0, 150);
+        $imageStore = smks3_news_encode_images($images);
         $pdo->prepare("INSERT INTO news (title, slug, excerpt, content, status, published_at, year, pdf_file, image) VALUES (?,?,?,?, 'published', NOW(), ?, ?, ?)")
-            ->execute([$title, $slug, $excerpt, $content, $year, $pdf, $image]);
+            ->execute([$title, $slug, $excerpt, $content, $year, $pdf, $imageStore]);
         $newId = (int) $pdo->lastInsertId();
         return [
             'ok' => true,
@@ -148,8 +186,8 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
             if (!empty($cur['pdf_file'])) {
                 smks3_delete_project_file('uploads/pdf/' . $cur['pdf_file']);
             }
-            if (!empty($cur['image'])) {
-                smks3_delete_project_file('uploads/' . ltrim((string) $cur['image'], '/'));
+            foreach (smks3_news_parse_images($cur['image'] ?? null) as $img) {
+                smks3_delete_project_file('uploads/' . ltrim($img, '/'));
             }
         }
         $pdo->prepare('DELETE FROM news WHERE id = ?')->execute([$id]);
@@ -167,6 +205,11 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         $photo = $pdo->prepare('SELECT photo FROM pengetua WHERE id = ?');
         $photo->execute([$id]);
         $current = (string) ($photo->fetchColumn() ?: '');
+        $removePhoto = !empty($data['remove_photo']);
+        if ($removePhoto && empty($_FILES['photo']['name'])) {
+            smks3_delete_project_file($current);
+            $current = '';
+        }
         if (!empty($_FILES['photo']['name'])) {
             smks3_delete_project_file($current);
             $current = smks3_store_upload($_FILES['photo'], 'uploads/pengetua', $imgExt);
@@ -185,8 +228,13 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         if (!empty($_FILES['photo']['name'])) {
             $photo = smks3_store_upload($_FILES['photo'], 'uploads/pengetua', $imgExt);
         }
-        $pdo->prepare('INSERT INTO pengetua (name, start_year, end_year, photo) VALUES (?,?,?,?)')
-            ->execute([$name, trim((string) ($data['start_year'] ?? '')), trim((string) ($data['end_year'] ?? '')), $photo]);
+        smks3_insert_with_auto_id(
+            $pdo,
+            'pengetua',
+            'name, start_year, end_year, photo',
+            '?,?,?,?',
+            [$name, trim((string) ($data['start_year'] ?? '')), trim((string) ($data['end_year'] ?? '')), $photo]
+        );
         return ['ok' => true, 'message' => 'Pengetua ditambah.', 'reload' => true];
     }
 
@@ -202,6 +250,7 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
     }
 
     // ── Pengurusan ────────────────────────────────────────
+    $pengurusanKategori = ['pengetua', 'pk', 'gkmp', 'kaunselor'];
     if ($block === 'pengurusan_item') {
         $nama = trim((string) ($data['nama'] ?? ''));
         $gred = trim((string) ($data['gred'] ?? ''));
@@ -214,8 +263,16 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         $cur->execute([$id]);
         $row = $cur->fetch(PDO::FETCH_ASSOC) ?: [];
         $gambar = (string) ($row['gambar'] ?? '');
-        if ($kategori === '') {
+        if ($kategori === '' || !in_array($kategori, $pengurusanKategori, true)) {
             $kategori = (string) ($row['kategori'] ?? 'pengetua');
+        }
+        if (!in_array($kategori, $pengurusanKategori, true)) {
+            $kategori = 'pk';
+        }
+        $removeGambar = !empty($data['remove_gambar']);
+        if ($removeGambar && empty($_FILES['gambar']['name'])) {
+            smks3_delete_project_file($gambar);
+            $gambar = '';
         }
         if (!empty($_FILES['gambar']['name'])) {
             smks3_delete_project_file($gambar);
@@ -231,20 +288,29 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         if ($nama === '') {
             throw new InvalidArgumentException('Nama diperlukan.');
         }
+        $kategori = trim((string) ($data['kategori'] ?? 'pk'));
+        if (!in_array($kategori, $pengurusanKategori, true)) {
+            $kategori = 'pk';
+        }
         $gambar = '';
         if (!empty($_FILES['gambar']['name'])) {
             $gambar = smks3_store_upload($_FILES['gambar'], 'uploads/pengurusan', $imgExt);
         }
         $max = (int) $pdo->query('SELECT COALESCE(MAX(susunan),0) FROM pengurusan')->fetchColumn();
-        $pdo->prepare('INSERT INTO pengurusan (nama, gred, jawatan, kategori, gambar, susunan) VALUES (?,?,?,?,?,?)')
-            ->execute([
+        smks3_insert_with_auto_id(
+            $pdo,
+            'pengurusan',
+            'nama, gred, jawatan, kategori, gambar, susunan',
+            '?,?,?,?,?,?',
+            [
                 $nama,
                 trim((string) ($data['gred'] ?? '')),
                 trim((string) ($data['jawatan'] ?? '')),
-                trim((string) ($data['kategori'] ?? 'pk')),
+                $kategori,
                 $gambar,
                 $max + 1,
-            ]);
+            ]
+        );
         return ['ok' => true, 'message' => 'Pengurusan ditambah.', 'reload' => true];
     }
 
@@ -285,11 +351,21 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
             throw new InvalidArgumentException('Tajuk diperlukan.');
         }
         try {
-            $pdo->prepare('INSERT INTO sejarah_sekolah (tajuk, content, tarikh) VALUES (?,?,?)')
-                ->execute([$tajuk, $content, $tarikh !== '' ? $tarikh : null]);
+            smks3_insert_with_auto_id(
+                $pdo,
+                'sejarah_sekolah',
+                'tajuk, content, tarikh',
+                '?,?,?',
+                [$tajuk, $content, $tarikh !== '' ? $tarikh : null]
+            );
         } catch (Throwable $e) {
-            $pdo->prepare('INSERT INTO sejarah_sekolah (tajuk, content) VALUES (?,?)')
-                ->execute([$tajuk, $content]);
+            smks3_insert_with_auto_id(
+                $pdo,
+                'sejarah_sekolah',
+                'tajuk, content',
+                '?,?',
+                [$tajuk, $content]
+            );
         }
         return ['ok' => true, 'message' => 'Sejarah ditambah.', 'reload' => true];
     }
@@ -328,7 +404,13 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         if ($content === '') {
             throw new InvalidArgumentException('Kandungan diperlukan.');
         }
-        $pdo->prepare('INSERT INTO fpk_misi_visi (kategori, content) VALUES (?,?)')->execute([$kategori, $content]);
+        smks3_insert_with_auto_id(
+            $pdo,
+            'fpk_misi_visi',
+            'kategori, content',
+            '?,?',
+            [$kategori, $content]
+        );
         return ['ok' => true, 'message' => 'Item ditambah.', 'reload' => true];
     }
 
@@ -350,8 +432,17 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
             $cur = $pdo->prepare("SELECT image FROM {$table} WHERE id = ?");
             $cur->execute([$id]);
             $image = (string) ($cur->fetchColumn() ?: '');
+            $removeImage = !empty($data['remove_image']);
+            if ($removeImage && empty($_FILES['image']['name'])) {
+                if ($image !== '') {
+                    smks3_delete_project_file('uploads/' . ltrim($image, '/'));
+                }
+                $image = '';
+            }
             if (!empty($_FILES['image']['name'])) {
-                smks3_delete_project_file('uploads/' . ltrim($image, '/'));
+                if ($image !== '') {
+                    smks3_delete_project_file('uploads/' . ltrim($image, '/'));
+                }
                 $image = smks3_store_upload($_FILES['image'], 'uploads', $imgExt, true);
             }
             $pdo->prepare("UPDATE {$table} SET nama=?, jawatan=?, dg=?, image=? WHERE id=?")
@@ -363,10 +454,10 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
             if ($nama === '') {
                 throw new InvalidArgumentException('Nama diperlukan.');
             }
-            if (empty($_FILES['image']['name'])) {
-                throw new InvalidArgumentException('Sila muat naik gambar.');
+            $image = '';
+            if (!empty($_FILES['image']['name'])) {
+                $image = smks3_store_upload($_FILES['image'], 'uploads', $imgExt, true);
             }
-            $image = smks3_store_upload($_FILES['image'], 'uploads', $imgExt, true);
             $pdo->prepare("INSERT INTO {$table} (nama, jawatan, dg, image) VALUES (?,?,?,?)")
                 ->execute([$nama, trim((string) ($data['jawatan'] ?? '')), trim((string) ($data['dg'] ?? '')), $image]);
             return ['ok' => true, 'message' => 'Rekod ditambah.', 'reload' => true];
@@ -402,8 +493,28 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
                 }
                 $pdo->exec('DELETE FROM pilihan_mata_pelajaran');
             }
-            $pdo->prepare("INSERT INTO {$cfg['table']} ({$cfg['col']}) VALUES (?)")->execute([$file]);
-            return ['ok' => true, 'message' => 'PDF ditambah.', 'reload' => true];
+            if ($prefix === 'kalendar_pdf') {
+                // Table also has legacy event columns (title, start_date) that are NOT NULL.
+                smks3_ensure_academic_calendar_pdf_columns($pdo);
+                $origName = (string) ($_FILES['pdf']['name'] ?? '');
+                $title = trim((string) pathinfo($origName, PATHINFO_FILENAME));
+                if ($title === '') {
+                    $title = 'Kalendar Akademik';
+                }
+                if (function_exists('mb_substr')) {
+                    $title = mb_substr($title, 0, 255);
+                } else {
+                    $title = substr($title, 0, 255);
+                }
+                $sort = (int) $pdo->query('SELECT COALESCE(MAX(sort_order), 0) FROM academic_calendar')->fetchColumn();
+                $pdo->prepare(
+                    'INSERT INTO academic_calendar (title, start_date, file_pdf, sort_order) VALUES (?,?,?,?)'
+                )->execute([$title, date('Y-m-d'), $file, $sort + 1]);
+            } else {
+                $pdo->prepare("INSERT INTO {$cfg['table']} ({$cfg['col']}) VALUES (?)")->execute([$file]);
+            }
+            $msg = $prefix === 'pilihan_pdf' ? 'PDF diganti.' : 'PDF ditambah.';
+            return ['ok' => true, 'message' => $msg, 'reload' => true];
         }
         if ($block === $prefix . '_delete') {
             if ($id < 1) {
@@ -449,11 +560,32 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
     // ── Image galleries ───────────────────────────────────
     if ($block === 'enrolmen_add') {
         $title = trim((string) ($data['title'] ?? 'Enrolmen'));
+        if ($title === '') {
+            $title = 'Enrolmen';
+        }
         if (empty($_FILES['image']['name'])) {
             throw new InvalidArgumentException('Sila muat naik gambar.');
         }
+        smks3_ensure_enrolmen_sort($pdo);
         $image = smks3_store_upload($_FILES['image'], 'uploads/enrolmen', $imgExt, true);
-        $pdo->prepare('INSERT INTO enrolmen_murid (title, image) VALUES (?,?)')->execute([$title, $image]);
+        $existing = smks3_enrolmen_slide_list($pdo);
+        $existingIds = array_column($existing, 'id');
+        $maxSort = 0;
+        foreach ($existing as $row) {
+            $maxSort = max($maxSort, (int) ($row['sort_order'] ?? 0));
+        }
+        $pdo->prepare('INSERT INTO enrolmen_murid (title, image, sort_order) VALUES (?,?,?)')
+            ->execute([$title, $image, $maxSort + 10]);
+        $newId = (int) $pdo->lastInsertId();
+        if ($newId < 1) {
+            $newId = (int) $pdo->query('SELECT MAX(id) FROM enrolmen_murid')->fetchColumn();
+        }
+        $position = trim((string) ($data['position'] ?? 'end'));
+        if ($position === '') {
+            $position = 'end';
+        }
+        $ordered = smks3_place_enrolmen_slide($existingIds, $newId, $position);
+        smks3_set_enrolmen_slide_order($pdo, $ordered);
         return ['ok' => true, 'message' => 'Gambar ditambah.', 'reload' => true];
     }
     if ($block === 'enrolmen_item') {
@@ -464,15 +596,26 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         if ($title === '') {
             throw new InvalidArgumentException('Tajuk diperlukan.');
         }
+        smks3_ensure_enrolmen_sort($pdo);
         if (!empty($_FILES['image']['name'])) {
             $st = $pdo->prepare('SELECT image FROM enrolmen_murid WHERE id = ?');
             $st->execute([$id]);
             $old = (string) ($st->fetchColumn() ?: '');
             $image = smks3_store_upload($_FILES['image'], 'uploads/enrolmen', $imgExt, true);
             smks3_delete_project_file('uploads/enrolmen/' . ltrim($old, '/'));
-            $pdo->prepare('UPDATE enrolmen_murid SET title = ?, image = ? WHERE id = ?')->execute([$title, $image, $id]);
+            $pdo->prepare('UPDATE enrolmen_murid SET title = ?, image = ? WHERE id = ?')
+                ->execute([$title, $image, $id]);
         } else {
-            $pdo->prepare('UPDATE enrolmen_murid SET title = ? WHERE id = ?')->execute([$title, $id]);
+            $pdo->prepare('UPDATE enrolmen_murid SET title = ? WHERE id = ?')
+                ->execute([$title, $id]);
+        }
+        if (array_key_exists('position', $data)) {
+            $position = trim((string) $data['position']);
+            if ($position !== '' && $position !== 'keep') {
+                $existingIds = array_column(smks3_enrolmen_slide_list($pdo), 'id');
+                $ordered = smks3_place_enrolmen_slide($existingIds, $id, $position);
+                smks3_set_enrolmen_slide_order($pdo, $ordered);
+            }
         }
         return ['ok' => true, 'message' => 'Enrolmen dikemaskini.', 'reload' => true];
     }
@@ -491,9 +634,42 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         if (empty($_FILES['image']['name'])) {
             throw new InvalidArgumentException('Sila muat naik gambar.');
         }
+        $tingkatan = trim((string) ($data['tingkatan'] ?? ''));
+        $title = trim((string) ($data['title'] ?? ''));
+        if ($tingkatan === '') {
+            throw new InvalidArgumentException('Tingkatan diperlukan.');
+        }
+        smks3_ensure_bilangan_kelas_sort($pdo);
+        $existingOrder = smks3_bilangan_kelas_tingkatan_order($pdo);
+        $isNewTingkatan = true;
+        foreach ($existingOrder as $t) {
+            if (strcasecmp($t, $tingkatan) === 0) {
+                $isNewTingkatan = false;
+                $tingkatan = $t; // keep canonical casing
+                break;
+            }
+        }
+        if ($isNewTingkatan) {
+            $position = trim((string) ($data['position'] ?? 'end'));
+            if ($position === '') {
+                $position = 'end';
+            }
+            $ordered = smks3_place_bilangan_kelas_tingkatan($existingOrder, $tingkatan, $position);
+            smks3_set_bilangan_kelas_tingkatan_order($pdo, $ordered);
+            $idx = array_search($tingkatan, $ordered, true);
+            $sortOrder = ($idx === false ? count($ordered) : ((int) $idx + 1)) * 10;
+        } else {
+            $sortStmt = $pdo->prepare('SELECT COALESCE(MIN(sort_order), 0) FROM bilangan_kelas WHERE tingkatan = ?');
+            $sortStmt->execute([$tingkatan]);
+            $sortOrder = (int) $sortStmt->fetchColumn();
+            if ($sortOrder < 1) {
+                $idx = array_search($tingkatan, $existingOrder, true);
+                $sortOrder = ($idx === false ? count($existingOrder) + 1 : ((int) $idx + 1)) * 10;
+            }
+        }
         $image = smks3_store_upload($_FILES['image'], 'uploads/bil_kelas', $imgExt, true);
-        $pdo->prepare('INSERT INTO bilangan_kelas (tingkatan, title, image) VALUES (?,?,?)')
-            ->execute([trim((string) ($data['tingkatan'] ?? '')), trim((string) ($data['title'] ?? '')), $image]);
+        $pdo->prepare('INSERT INTO bilangan_kelas (tingkatan, title, image, sort_order) VALUES (?,?,?,?)')
+            ->execute([$tingkatan, $title, $image, $sortOrder]);
         return ['ok' => true, 'message' => 'Gambar ditambah.', 'reload' => true];
     }
     if ($block === 'bil_kelas_item') {
@@ -649,7 +825,7 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
             }
             $pdo->prepare('UPDATE pelan_sekolah SET image = ? LIMIT 1')->execute([$image]);
         } else {
-            $pdo->prepare('INSERT INTO pelan_sekolah (image) VALUES (?)')->execute([$image]);
+            smks3_insert_with_auto_id($pdo, 'pelan_sekolah', 'image', '?', [$image]);
         }
         return ['ok' => true, 'message' => 'Pelan dikemaskini.', 'reload' => true];
     }
@@ -858,12 +1034,17 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         if ($pageKey === '') {
             throw new InvalidArgumentException('Halaman tidak sah.');
         }
-        $intro = trim((string) ($data['intro'] ?? ''));
-        $sections = [];
+        $existing = smks3_get_kurikulum_meta($pageKey);
+        $intro = array_key_exists('intro', $data)
+            ? trim((string) ($data['intro'] ?? ''))
+            : (string) ($existing['intro'] ?? '');
+        $sections = is_array($existing['sections'] ?? null) ? $existing['sections'] : [];
         $rawSections = $data['sections_json'] ?? $data['sections'] ?? '';
+        $sectionFieldsTouched = false;
         if (is_string($rawSections) && $rawSections !== '') {
             $decoded = json_decode($rawSections, true);
             if (is_array($decoded)) {
+                $sectionFieldsTouched = true;
                 foreach ($decoded as $key => $sec) {
                     if (!is_array($sec)) {
                         continue;
@@ -879,17 +1060,46 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
             if (!is_string($k) || !preg_match('/^section_([a-z0-9_-]+)_(title|subtitle)$/', $k, $m)) {
                 continue;
             }
+            $sectionFieldsTouched = true;
             $secKey = $m[1];
             $field = $m[2];
-            if (!isset($sections[$secKey])) {
+            if (!isset($sections[$secKey]) || !is_array($sections[$secKey])) {
                 $sections[$secKey] = ['title' => '', 'subtitle' => ''];
             }
             $sections[$secKey][$field] = trim((string) $v);
+        }
+        // Intro-only panels must not wipe section titles.
+        if (!$sectionFieldsTouched) {
+            $sections = is_array($existing['sections'] ?? null) ? $existing['sections'] : [];
         }
         if (!smks3_save_kurikulum_meta($pageKey, ['intro' => $intro, 'sections' => $sections])) {
             throw new RuntimeException('Gagal simpan tajuk halaman.');
         }
         return ['ok' => true, 'message' => 'Tajuk halaman dikemaskini.', 'reload' => true];
+    }
+
+    if ($block === 'kurikulum_section') {
+        $pageKey = trim((string) ($data['page_key'] ?? ''));
+        $sectionKey = trim((string) ($data['section_key'] ?? ''));
+        if ($pageKey === '' || $sectionKey === '' || !preg_match('/^[a-z0-9_-]+$/i', $sectionKey)) {
+            throw new InvalidArgumentException('Bahagian tidak sah.');
+        }
+        $existing = smks3_get_kurikulum_meta($pageKey);
+        $sections = is_array($existing['sections'] ?? null) ? $existing['sections'] : [];
+        $prev = is_array($sections[$sectionKey] ?? null) ? $sections[$sectionKey] : ['title' => '', 'subtitle' => ''];
+        $sections[$sectionKey] = [
+            'title' => trim((string) ($data['title'] ?? '')),
+            'subtitle' => array_key_exists('subtitle', $data)
+                ? trim((string) ($data['subtitle'] ?? ''))
+                : trim((string) ($prev['subtitle'] ?? '')),
+        ];
+        if (!smks3_save_kurikulum_meta($pageKey, [
+            'intro' => (string) ($existing['intro'] ?? ''),
+            'sections' => $sections,
+        ])) {
+            throw new RuntimeException('Gagal simpan tajuk bahagian.');
+        }
+        return ['ok' => true, 'message' => 'Tajuk bahagian dikemaskini.', 'reload' => true];
     }
 
     if (str_starts_with($block, 'ubk_')) {

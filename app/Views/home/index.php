@@ -216,6 +216,18 @@
     .home-slideshow-wrap .carousel-item:hover .slideshow-img {
         transform: none !important;
     }
+    .home-slideshow-wrap.carousel-fade .carousel-item,
+    .home-slideshow-wrap.carousel-fade .carousel-item.active,
+    .home-slideshow-wrap.carousel-fade .carousel-item-next.carousel-item-start,
+    .home-slideshow-wrap.carousel-fade .carousel-item-prev.carousel-item-end,
+    .home-slideshow-wrap.carousel-fade .active.carousel-item-start,
+    .home-slideshow-wrap.carousel-fade .active.carousel-item-end {
+        transition: none !important;
+        transform: none !important;
+    }
+    .home-slideshow-wrap .carousel-item.active .slideshow-img {
+        animation: none !important;
+    }
 }
 
 /* ── Scroll reveals ── */
@@ -359,44 +371,82 @@
 
 /* ── Slideshow ── */
 .home-slideshow-wrap {
-    max-width: 560px;
+    width: fit-content;
+    max-width: min(100%, 720px);
     margin-left: auto;
     margin-right: auto;
-    border-radius: 16px;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
     overflow: hidden;
-    box-shadow: 0 8px 28px rgba(11, 60, 93, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: transparent;
 }
 .home-slideshow-wrap .carousel-inner {
-    border-radius: 17px;
+    border-radius: 0;
+    overflow: hidden;
 }
 .home-slideshow-wrap .carousel-item {
-    background: #0f172a;
+    background: transparent;
     overflow: hidden;
+}
+/* Only visible/transitioning slides get flex — inactive must stay display:none (Bootstrap) */
+.home-slideshow-wrap .carousel-item.active,
+.home-slideshow-wrap .carousel-item-next,
+.home-slideshow-wrap .carousel-item-prev {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 .home-slideshow-wrap .carousel-item a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     line-height: 0;
-    overflow: hidden;
-    width: 100%;
+    width: auto;
+    max-width: 100%;
+}
+/* Soft crossfade + slight zoom on slide change */
+.home-slideshow-wrap.carousel-fade .carousel-item {
+    opacity: 0;
+    transform: scale(1.045) translateY(0.4rem);
+    transition:
+        opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.home-slideshow-wrap.carousel-fade .carousel-item.active,
+.home-slideshow-wrap.carousel-fade .carousel-item-next.carousel-item-start,
+.home-slideshow-wrap.carousel-fade .carousel-item-prev.carousel-item-end {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+.home-slideshow-wrap.carousel-fade .active.carousel-item-start,
+.home-slideshow-wrap.carousel-fade .active.carousel-item-end {
+    opacity: 0;
+    transform: scale(0.97) translateY(-0.25rem);
+    transition:
+        opacity 0.55s cubic-bezier(0.4, 0, 1, 1),
+        transform 0.55s cubic-bezier(0.4, 0, 1, 1);
 }
 .slideshow-img {
-    width: 100%;
+    width: auto;
+    max-width: 100%;
     height: auto;
-    max-height: 720px;
-    object-fit: contain;
-    object-position: center;
+    max-height: 480px;
     display: block;
-    background: #0f172a;
+    background: transparent;
+    object-fit: contain;
+    transform-origin: center center;
     transition: transform 0.55s var(--motion-ease);
 }
+/* Slow drift while a slide is on screen */
+.home-slideshow-wrap .carousel-item.active .slideshow-img {
+    animation: homeSlideshowDrift 6.5s ease-out forwards;
+}
+@keyframes homeSlideshowDrift {
+    from { transform: scale(1); }
+    to { transform: scale(1.035); }
+}
 .home-slideshow-wrap .carousel-item:hover .slideshow-img {
-    transform: scale(1.03);
+    animation: none;
+    transform: scale(1.04);
 }
 .home-slideshow-wrap .carousel-control-prev,
 .home-slideshow-wrap .carousel-control-next {
@@ -413,16 +463,17 @@
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.92);
-    background-size: 45% 45%;
+    background-color: #0B3C5D;
+    background-size: 40% 40%;
     filter: none;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
-    transition: transform var(--motion-duration) var(--motion-ease), box-shadow var(--motion-duration) ease;
+    box-shadow: 0 4px 14px rgba(11, 60, 93, 0.35);
+    transition: transform var(--motion-duration) var(--motion-ease), box-shadow var(--motion-duration) ease, background-color 0.2s ease;
 }
 .home-slideshow-wrap .carousel-control-prev:hover .carousel-control-prev-icon,
 .home-slideshow-wrap .carousel-control-next:hover .carousel-control-next-icon {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+    transform: scale(1.08);
+    background-color: #0a314d;
+    box-shadow: 0 6px 18px rgba(11, 60, 93, 0.45);
 }
 .home-slideshow-wrap .carousel-indicators {
     margin-bottom: 0.85rem;
@@ -432,13 +483,15 @@
     height: 8px;
     border-radius: 50%;
     border: none;
-    background-color: rgba(255, 255, 255, 0.55);
+    background-color: rgba(15, 23, 42, 0.28);
     opacity: 1;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    transition: transform 0.3s var(--motion-ease), background-color 0.3s ease, width 0.3s var(--motion-ease);
 }
 .home-slideshow-wrap .carousel-indicators .active {
-    background-color: #fff;
-    transform: scale(1.25);
+    width: 1.35rem;
+    border-radius: 999px;
+    background-color: #0B3C5D;
+    transform: none;
 }
 
 /* ── News feed ── */
@@ -785,7 +838,7 @@
             <h2 class="home-section-head__title" data-bind="text"><?= htmlspecialchars($home_content['slideshow_section_title'], ENT_QUOTES, 'UTF-8') ?></h2>
         </div>
         <?php if (!empty($home_slideshow)) : ?>
-        <div id="homeSlideshow" class="carousel slide home-slideshow-wrap home-reveal<?= count($home_slideshow) < 2 ? ' home-slideshow-wrap--single' : '' ?>" data-bs-ride="carousel" style="--home-reveal-delay: 80ms">
+        <div id="homeSlideshow" class="carousel slide carousel-fade home-slideshow-wrap home-reveal<?= count($home_slideshow) < 2 ? ' home-slideshow-wrap--single' : '' ?>" data-bs-ride="carousel" data-bs-interval="5500" style="--home-reveal-delay: 80ms">
             <?php if (count($home_slideshow) > 1) : ?>
             <div class="carousel-indicators">
                 <?php foreach ($home_slideshow as $idx => $slide) : ?>
@@ -842,10 +895,11 @@
         <div class="text-center mt-3"
              data-edit-block="slideshow_add"
              data-edit-label="Tambah slaid / poster"
-             data-edit-hint="Muat naik gambar poster baharu untuk paparan Berita & Acara.">
+             data-edit-hint="Tambah poster baharu. Slaid sedia ada kekal.">
             <button type="button" class="btn btn-outline-primary btn-sm">
                 <i class="bi bi-plus-lg me-1"></i> Tambah slaid
             </button>
+            <p class="small text-muted mt-2 mb-0">Boleh ada lebih dari satu slaid. Muat naik baharu tidak menggantikan yang lama.</p>
         </div>
         <?php endif; ?>
     </div>
@@ -971,10 +1025,9 @@
 <?php endif; ?>
 
 <?php
-$cta_text_display = str_replace(
-    '{school_name}',
-    $settings['school_name'],
-    $home_content['cta_text']
+$cta_text_display = smks3_resolve_content_placeholders(
+    (string) ($home_content['cta_text'] ?? ''),
+    is_array($settings ?? null) ? $settings : null
 );
 ?>
 <!-- ═══ CTA ═══ -->
@@ -993,8 +1046,9 @@ $cta_text_display = str_replace(
                    <?php if ($is_editor): ?>
                    data-edit-block="cta_text"
                    data-edit-label="Teks CTA"
-                   data-edit-hint="Guna {school_name} untuk paparkan nama sekolah secara automatik."
+                   data-edit-hint="Tulis teks penuh. Nama sekolah akan dikemas kini sendiri jika ditukar di Maklumat Sekolah."
                    data-value="<?= htmlspecialchars($home_content['cta_text'], ENT_QUOTES, 'UTF-8') ?>"
+                   data-display="<?= htmlspecialchars($cta_text_display, ENT_QUOTES, 'UTF-8') ?>"
                    <?php endif; ?>
                    ><span data-bind="text"><?= htmlspecialchars($cta_text_display, ENT_QUOTES, 'UTF-8') ?></span></p>
                 <a href="contact" class="btn btn-light btn-lg">
