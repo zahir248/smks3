@@ -416,7 +416,7 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
 
     if ($block === 'fpk_delete') {
         if ($id < 1) {
-            throw new InvalidArgumentException('ID tidak sah.');
+            throw new InvalidArgumentException('ID tidak sah. Muat semula halaman lalu cuba padam lagi.');
         }
         $pdo->prepare('DELETE FROM fpk_misi_visi WHERE id = ?')->execute([$id]);
         return ['ok' => true, 'message' => 'Item dipadam.', 'reload' => true];

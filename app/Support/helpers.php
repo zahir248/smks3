@@ -861,6 +861,7 @@ function smks3_ensure_fpk_misi_visi_schema(?PDO $pdo = null): void
 
 /**
  * Ensure a table's `id` column is PRIMARY KEY + AUTO_INCREMENT (common CMS import gap).
+ * Also reassigns legacy rows that still have id 0 / NULL (those break Padam with "ID tidak sah.").
  */
 function smks3_ensure_table_auto_id(string $table, ?PDO $pdo = null): void
 {
@@ -876,6 +877,15 @@ function smks3_ensure_table_auto_id(string $table, ?PDO $pdo = null): void
         if (!$col) {
             return;
         }
+
+        // Legacy imports under non-strict SQL often store id=0 for every row.
+        // Delete refuses id < 1, and duplicate zeros also block PRIMARY KEY.
+        $badRows = $pdo->query("SELECT * FROM `{$table}` WHERE `id` IS NULL OR `id` < 1")->fetchAll(PDO::FETCH_ASSOC);
+        if ($badRows !== []) {
+            $pdo->exec("DELETE FROM `{$table}` WHERE `id` IS NULL OR `id` < 1");
+        }
+
+        $col = $pdo->query("SHOW COLUMNS FROM `{$table}` LIKE 'id'")->fetch(PDO::FETCH_ASSOC) ?: $col;
         $extra = strtolower((string) ($col['Extra'] ?? ''));
         $key = strtoupper((string) ($col['Key'] ?? ''));
         if ($key !== 'PRI') {
@@ -891,6 +901,36 @@ function smks3_ensure_table_auto_id(string $table, ?PDO $pdo = null): void
         $maxId = (int) $pdo->query("SELECT COALESCE(MAX(id), 0) FROM `{$table}`")->fetchColumn();
         if ($maxId > 0) {
             $pdo->exec("ALTER TABLE `{$table}` AUTO_INCREMENT = " . ($maxId + 1));
+        }
+
+        foreach ($badRows as $row) {
+            unset($row['id']);
+            $fields = [];
+            $values = [];
+            foreach ($row as $field => $value) {
+                $field = (string) $field;
+                if (!preg_match('/^[a-zA-Z0-9_]+$/', $field)) {
+                    continue;
+                }
+                $fields[] = '`' . $field . '`';
+                $values[] = $value;
+            }
+            if ($fields === []) {
+                continue;
+            }
+            $colSql = implode(', ', $fields);
+            $placeholders = implode(',', array_fill(0, count($fields), '?'));
+            try {
+                $pdo->prepare("INSERT INTO `{$table}` ({$colSql}) VALUES ({$placeholders})")->execute($values);
+            } catch (Throwable $e) {
+                $msg = $e->getMessage();
+                if (!str_contains($msg, "Field 'id'") && !str_contains($msg, "doesn't have a default value")) {
+                    throw $e;
+                }
+                $nextId = (int) $pdo->query("SELECT COALESCE(MAX(id), 0) + 1 FROM `{$table}`")->fetchColumn();
+                $pdo->prepare("INSERT INTO `{$table}` (`id`, {$colSql}) VALUES (?, {$placeholders})")
+                    ->execute(array_merge([$nextId], $values));
+            }
         }
     } catch (Throwable $e) {
         // best-effort; callers may still use next-id fallback

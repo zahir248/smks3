@@ -2294,7 +2294,12 @@ body.smks3-is-editor.smks3-panel-open {
         if (!deleteBlock || !activeEl) return;
         if (!confirm('Padam item ini?')) return;
         var idx = activeEl.getAttribute('data-index') || '';
-        var id = activeEl.getAttribute('data-id') || activeEl.getAttribute('data-news-id') || '';
+        var formId = (form.querySelector('[name="id"]') || {}).value || '';
+        var id = activeEl.getAttribute('data-id') || activeEl.getAttribute('data-news-id') || formId || '';
+        if (!id || id === '0') {
+            setStatus('ID kad tiada. Muat semula halaman lalu cuba lagi.', false);
+            return;
+        }
         form.innerHTML = hidden('index', idx) + hidden('id', id);
         postForm(deleteBlock).then(function (res) {
             if (!res.ok || !res.j.ok) {
