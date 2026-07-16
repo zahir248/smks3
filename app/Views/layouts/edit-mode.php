@@ -151,15 +151,37 @@ body.smks3-is-editor.smks3-panel-open {
 }
 .smks3-edit-panel__close {
     border: none;
-    background: #e2e8f0;
+    background: transparent;
     width: 2rem;
     height: 2rem;
-    border-radius: 8px;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: #334155;
+    color: #94a3b8;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.smks3-edit-panel__close i {
+    pointer-events: none;
+    line-height: 1;
+}
+.smks3-edit-panel__close:hover {
+    color: #0f172a;
+    background: rgba(148, 163, 184, 0.16);
+    transform: scale(1.08);
+}
+.smks3-edit-panel__close:active {
+    transform: scale(0.95);
+}
+.smks3-edit-panel__close:focus-visible {
+    outline: none;
+    color: #0f172a;
+    background: rgba(148, 163, 184, 0.22);
 }
 .smks3-edit-panel__body {
     flex: 1;
@@ -226,7 +248,7 @@ body.smks3-is-editor.smks3-panel-open {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.35rem;
-    padding: 0.55rem 2.2rem 0.55rem 0.55rem;
+    padding: 0.55rem 2.45rem 0.55rem 0.55rem;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background: #fff;
@@ -261,23 +283,41 @@ body.smks3-is-editor.smks3-panel-open {
 }
 .smks3-links-editor__remove {
     position: absolute;
-    top: 0.35rem;
-    right: 0.35rem;
+    top: 0.4rem;
+    right: 0.4rem;
+    z-index: 1;
     border: none;
-    background: #fee2e2;
-    color: #b91c1c;
-    width: 1.6rem;
-    height: 1.6rem;
+    background: transparent;
+    color: #94a3b8;
+    width: 1.75rem;
+    height: 1.75rem;
     border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.95rem;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.smks3-links-editor__remove i {
+    pointer-events: none;
     line-height: 1;
 }
 .smks3-links-editor__remove:hover {
-    background: #fecaca;
+    color: #dc2626;
+    background: rgba(254, 226, 226, 0.55);
+    transform: scale(1.08);
+}
+.smks3-links-editor__remove:active {
+    transform: scale(0.95);
+    color: #b91c1c;
+}
+.smks3-links-editor__remove:focus-visible {
+    outline: none;
+    color: #dc2626;
+    background: rgba(254, 226, 226, 0.7);
 }
 .smks3-links-editor__empty {
     font-size: 0.8rem;
@@ -471,7 +511,7 @@ body.smks3-is-editor.smks3-panel-open {
             <p id="smks3EditHint">Ubah teks kemudian simpan.</p>
         </div>
         <button type="button" class="smks3-edit-panel__close" id="smks3EditClose" aria-label="Tutup panel">
-            <i class="bi bi-x-lg"></i>
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
         </button>
     </div>
     <div class="smks3-edit-panel__body">
@@ -1582,7 +1622,7 @@ body.smks3-is-editor.smks3-panel-open {
         title = title || '';
         href = href || '';
         return '<div class="smks3-links-editor__row" data-link-editable="1">'
-            + '<button type="button" class="smks3-links-editor__remove" title="Buang pautan" aria-label="Buang pautan">&times;</button>'
+            + '<button type="button" class="smks3-links-editor__remove" title="Buang pautan" aria-label="Buang pautan"><i class="bi bi-trash3" aria-hidden="true"></i></button>'
             + '<div><label class="form-label mb-1">Tajuk pautan</label>'
             + '<input type="text" class="form-control form-control-sm" name="link_title[]" value="' + esc(title) + '" placeholder="Contoh: ANALISIS TINGKATAN 1"></div>'
             + '<div><label class="form-label mb-1">URL luar</label>'
@@ -1614,7 +1654,7 @@ body.smks3-is-editor.smks3-panel-open {
             opts = '<option value="' + esc(icon) + '" selected>' + esc(icon) + '</option>' + opts;
         }
         return '<div class="smks3-links-editor__row" data-social-row="1">'
-            + '<button type="button" class="smks3-links-editor__remove" title="Buang pautan" aria-label="Buang pautan">&times;</button>'
+            + '<button type="button" class="smks3-links-editor__remove" title="Buang pautan" aria-label="Buang pautan"><i class="bi bi-trash3" aria-hidden="true"></i></button>'
             + '<div><label class="form-label mb-1">Nama' + requiredMark(true) + '</label>'
             + '<input type="text" class="form-control form-control-sm" name="social_label[]" value="' + esc(label) + '" placeholder="Facebook" required></div>'
             + '<div><label class="form-label mb-1">Ikon' + requiredMark(true) + '</label>'
