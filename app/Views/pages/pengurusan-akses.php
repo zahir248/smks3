@@ -2457,7 +2457,8 @@ foreach ($admins as $a) {
             var adminRef = adminName ? quoteText(adminName) : 'admin';
 
             if (added.length || removed.length) {
-                out.push('Superadmin mengemaskini kebenaran sunting halaman untuk admin ' + adminRef + '.');
+                out.push('Superadmin mengemaskini kebenaran sunting halaman'
+                    + (adminName ? '' : (' untuk admin ' + adminRef)) + '.');
             }
             if (added.length) {
                 out.push('Halaman baharu boleh disunting (' + added.length + '): ' + formatPermissionList(added) + '.');
@@ -2466,7 +2467,9 @@ foreach ($admins as $a) {
                 out.push('Halaman tidak lagi boleh disunting (' + removed.length + '): ' + formatPermissionList(removed) + '.');
             }
             if (!added.length && !removed.length) {
-                out.push('Tiada perubahan kebenaran untuk admin ' + adminRef + ' — senarai yang sama disimpan semula.');
+                out.push('Tiada perubahan kebenaran'
+                    + (adminName ? '' : (' untuk admin ' + adminRef))
+                    + ' — senarai yang sama disimpan semula.');
             }
             return out;
         }
@@ -2700,14 +2703,14 @@ foreach ($admins as $a) {
         function renderExtraNotes(log) {
             var bits = [];
             var meta = log.meta || {};
-            if (meta.reason) {
+            var action = String(log.action || '');
+            // Logout reason is already woven into the ringkasan sentence
+            if (meta.reason && action.indexOf('auth.logout') !== 0) {
                 var reasonMap = { idle: 'Tamat masa tidak aktif', manual: 'Manual', deactivated: 'Akaun dinyahaktif', session_clear: 'Sesi dikosongkan' };
                 bits.push('<div class="small text-muted">Sebab: <strong>' + esc(reasonMap[meta.reason] || meta.reason) + '</strong></div>');
             }
-            if (String(log.action || '') === 'rbac.admin_permissions' && meta.username) {
-                bits.push('<div class="small text-muted mt-1">Admin yang diurus: <strong>' + esc(meta.username) + '</strong></div>');
-            }
-            if (meta._files && isPlainObject(meta._files)) {
+            // Skip upload note when before/after media narration already covers the same files
+            if (meta._files && isPlainObject(meta._files) && log.before == null && log.after == null) {
                 Object.keys(meta._files).forEach(function (field) {
                     var info = meta._files[field];
                     if (info && info.names && info.names.length) {
@@ -2725,11 +2728,15 @@ foreach ($admins as $a) {
             var bodyEl = document.getElementById('rbacLogDetailBody');
             var titleEl = document.getElementById('rbacLogDetailTitle');
             var targetAdmin = managedAdminName(log);
+            var action = String(log.action || '');
+            var adminInTitle = false;
             if (titleEl) {
-                if (String(log.action || '') === 'rbac.admin_permissions' && targetAdmin) {
+                if (action === 'rbac.admin_permissions' && targetAdmin) {
                     titleEl.textContent = 'Kebenaran admin — ' + targetAdmin;
-                } else if (String(log.action || '').indexOf('rbac.admin_') === 0 && targetAdmin) {
+                    adminInTitle = true;
+                } else if (action.indexOf('rbac.admin_') === 0 && targetAdmin) {
                     titleEl.textContent = (log.action_label || 'Admin') + ' — ' + targetAdmin;
+                    adminInTitle = true;
                 } else {
                     titleEl.textContent = log.action_label || log.action || 'Butiran log';
                 }
@@ -2744,7 +2751,7 @@ foreach ($admins as $a) {
                     + (pageLabel
                         ? ('<div>Halaman: <strong>' + esc(pageLabel) + '</strong></div>')
                         : '')
-                    + (targetAdmin
+                    + (targetAdmin && !adminInTitle
                         ? ('<div>Untuk admin: <strong>' + esc(targetAdmin) + '</strong></div>')
                         : '');
             }
