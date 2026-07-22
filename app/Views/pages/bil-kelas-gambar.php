@@ -110,7 +110,7 @@ $tingkatanOptions = array_keys($group);
      data-edit-hint="Tajuk halaman ini sahaja."
      data-page-key="bil-kelas-gambar"
      data-section-key="main"
-     data-title="<?= htmlspecialchars((string) ($sec['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+     data-title="<?= htmlspecialchars((string) ($sec['title'] ?? 'Bilangan Kelas (Gambar)'), ENT_QUOTES, 'UTF-8') ?>"
      <?php endif; ?>>
     <h2 class="fw-bold" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($sec['title'] ?? 'Bilangan Kelas (Gambar)')) ?></h2>
 </div>

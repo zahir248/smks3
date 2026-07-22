@@ -108,9 +108,9 @@ try {
                          alt="<?= htmlspecialchars($g['nama']) ?>">
                 </div>
 
-                <h6 class="mb-0 fw-bold"><?= htmlspecialchars($g['nama']) ?></h6>
-                <small class="text-muted"><?= htmlspecialchars($g['dg']) ?></small><br>
-                <small><?= htmlspecialchars($g['jawatan']) ?></small>
+                <h6 class="mb-0 fw-bold" data-bind="staff_nama"><?= htmlspecialchars($g['nama']) ?></h6>
+                <small class="text-muted" data-bind="staff_dg"><?= htmlspecialchars($g['dg']) ?></small><br>
+                <small data-bind="staff_jawatan"><?= htmlspecialchars($g['jawatan']) ?></small>
 
             </div>
         </div>
@@ -161,9 +161,9 @@ try {
                          alt="<?= htmlspecialchars($a['nama']) ?>">
                 </div>
 
-                <h6 class="mb-0 fw-bold"><?= htmlspecialchars($a['nama']) ?></h6>
-                <small class="text-muted"><?= htmlspecialchars($a['dg']) ?></small><br>
-                <small><?= htmlspecialchars($a['jawatan']) ?></small>
+                <h6 class="mb-0 fw-bold" data-bind="staff_nama"><?= htmlspecialchars($a['nama']) ?></h6>
+                <small class="text-muted" data-bind="staff_dg"><?= htmlspecialchars($a['dg']) ?></small><br>
+                <small data-bind="staff_jawatan"><?= htmlspecialchars($a['jawatan']) ?></small>
 
             </div>
         </div>

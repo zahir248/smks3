@@ -170,9 +170,9 @@ $blokB = is_array($enrolmen['blok_b'] ?? null) ? $enrolmen['blok_b'] : [];
              data-edit-label="Sunting pengenalan enrolmen"
              data-edit-hint="Teks pengenalan di bahagian atas sahaja."
              data-page-key="enrolmen-murid"
-             data-intro="<?= htmlspecialchars((string) ($page_meta['intro'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-intro="<?= htmlspecialchars((string) ($page_meta['intro'] ?? 'Susun atur kelas mengikut blok dan aras di SMK Seremban 3.'), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
-            <p class="text-muted lead mb-0"><?= htmlspecialchars((string) ($page_meta['intro'] ?? 'Susun atur kelas mengikut blok dan aras di SMK Seremban 3.')) ?></p>
+            <p class="text-muted lead mb-0" data-bind="kurikulum_intro"><?= htmlspecialchars((string) ($page_meta['intro'] ?? 'Susun atur kelas mengikut blok dan aras di SMK Seremban 3.')) ?></p>
         </div>
         <div class="mb-4">
             <a href="#blok-a" class="btn btn-outline-primary btn-sm me-2">Blok Akademik A</a>
@@ -338,12 +338,12 @@ $renderBlok('blok_b', $blokB, 'blok-b');
          <?php if ($is_editor): ?>
          data-edit-block="enrolmen_summary"
          data-edit-label="Sunting bilangan kelas"
-         data-title="<?= htmlspecialchars((string) ($enrolmen['summary_title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+         data-title="<?= htmlspecialchars((string) ($enrolmen['summary_title'] ?? 'Bilangan Kelas ( IKRAM/ IHSAN/ IKHLAS/ ITQAN )'), ENT_QUOTES, 'UTF-8') ?>"
          data-items="<?= htmlspecialchars(smks3_format_lines_list($enrolmen['summary'] ?? []), ENT_QUOTES, 'UTF-8') ?>"
          <?php endif; ?>>
         <div class="text-center mb-4">
-            <h2 class="fw-bold bilangan-kelas-title">
-                <?= htmlspecialchars((string) ($enrolmen['summary_title'] ?? 'Bilangan Kelas')) ?>
+            <h2 class="fw-bold bilangan-kelas-title" data-bind="enrolmen_summary_title">
+                <?= htmlspecialchars((string) ($enrolmen['summary_title'] ?? 'Bilangan Kelas ( IKRAM/ IHSAN/ IKHLAS/ ITQAN )')) ?>
             </h2>
         </div>
 

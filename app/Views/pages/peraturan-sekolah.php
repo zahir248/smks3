@@ -39,7 +39,7 @@
              data-edit-hint="Tajuk dan subtajuk halaman ini sahaja."
              data-page-key="peraturan-sekolah"
              data-section-key="main"
-             data-title="<?= htmlspecialchars((string) ($sec['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-title="<?= htmlspecialchars((string) ($sec['title'] ?? 'Peraturan Sekolah'), ENT_QUOTES, 'UTF-8') ?>"
              data-subtitle="<?= htmlspecialchars((string) ($sec['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
             <h2 class="fw-bold" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($sec['title'] ?? 'Peraturan Sekolah')) ?></h2>

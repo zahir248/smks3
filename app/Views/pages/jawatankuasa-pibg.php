@@ -11,11 +11,11 @@ $btnLabel = (string) ($pibg['button_label'] ?? 'Buka / Muat Turun PDF');
              <?php if ($is_editor): ?>
              data-edit-block="pibg_meta"
              data-edit-label="Sunting tajuk PIBG"
-             data-title="<?= htmlspecialchars((string) ($pibg['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-title="<?= htmlspecialchars((string) ($pibg['title'] ?? 'Jawatankuasa PIBG'), ENT_QUOTES, 'UTF-8') ?>"
              data-subtitle="<?= htmlspecialchars((string) ($pibg['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
              data-button-label="<?= htmlspecialchars($btnLabel, ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
-            <h2 class="fw-bold"><?= htmlspecialchars((string) ($pibg['title'] ?? 'Jawatankuasa PIBG')) ?></h2>
+            <h2 class="fw-bold" data-bind="pibg_title"><?= htmlspecialchars((string) ($pibg['title'] ?? 'Jawatankuasa PIBG')) ?></h2>
             <?php if (trim((string) ($pibg['subtitle'] ?? '')) !== ''): ?>
                 <p class="text-muted"><?= htmlspecialchars((string) $pibg['subtitle']) ?></p>
             <?php endif; ?>

@@ -29,7 +29,7 @@ $infoCards = is_array($kurikulum_by_section['info'] ?? null) ? $kurikulum_by_sec
              data-edit-hint="Tajuk bahagian barisan pemimpin sahaja."
              data-page-key="pemimpin-murid"
              data-section-key="main"
-             data-title="<?= htmlspecialchars((string) ($mainSec['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-title="<?= htmlspecialchars((string) ($mainSec['title'] ?? 'Barisan Pemimpin Murid'), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
             <h2 class="fw-bold mb-4" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($mainSec['title'] ?? 'Barisan Pemimpin Murid')) ?></h2>
         </div>
@@ -119,7 +119,7 @@ $infoCards = is_array($kurikulum_by_section['info'] ?? null) ? $kurikulum_by_sec
              data-edit-hint="Tajuk bahagian maklumat berkaitan sahaja."
              data-page-key="pemimpin-murid"
              data-section-key="info"
-             data-title="<?= htmlspecialchars((string) ($infoSec['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-title="<?= htmlspecialchars((string) ($infoSec['title'] ?? 'Maklumat Berkaitan'), ENT_QUOTES, 'UTF-8') ?>"
              data-subtitle="<?= htmlspecialchars((string) ($infoSec['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
             <h3 class="fw-bold" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($infoSec['title'] ?? 'Maklumat Berkaitan')) ?></h3>

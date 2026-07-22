@@ -58,7 +58,7 @@ $galeriJson = json_encode($galeriImages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED
              data-edit-hint="Tajuk dan subtajuk untuk bahagian carta sahaja."
              data-page-key="<?= htmlspecialchars($pageKey, ENT_QUOTES, 'UTF-8') ?>"
              data-section-key="carta"
-             data-title="<?= htmlspecialchars((string) ($cartaSec['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-title="<?= htmlspecialchars((string) ($cartaSec['title'] ?? 'Carta Organisasi Sekolah'), ENT_QUOTES, 'UTF-8') ?>"
              data-subtitle="<?= htmlspecialchars((string) ($cartaSec['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
             <h2 class="fw-bold" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($cartaSec['title'] ?? 'Carta Organisasi Sekolah')) ?></h2>
@@ -116,7 +116,7 @@ $galeriJson = json_encode($galeriImages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED
              data-edit-hint="Tajuk dan subtajuk untuk bahagian galeri sahaja."
              data-page-key="<?= htmlspecialchars($pageKey, ENT_QUOTES, 'UTF-8') ?>"
              data-section-key="galeri"
-             data-title="<?= htmlspecialchars((string) ($galeriSec['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-title="<?= htmlspecialchars((string) ($galeriSec['title'] ?? 'Galeri Murid'), ENT_QUOTES, 'UTF-8') ?>"
              data-subtitle="<?= htmlspecialchars((string) ($galeriSec['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
             <h2 class="fw-bold" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($galeriSec['title'] ?? 'Galeri Murid')) ?></h2>

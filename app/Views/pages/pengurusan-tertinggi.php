@@ -7,11 +7,11 @@
                 margin-bottom: 2rem;
                 cursor: pointer;
                 background: #fff;
-                padding: 10px;
-                border-radius: 10px;
+                padding: 14px;
+                border-radius: 12px;
                 box-shadow: 0 3px 10px rgba(0,0,0,0.05);
                 transition: transform 0.3s, box-shadow 0.3s;
-                height: 300px; /* tinggi tetap supaya semua card konsisten */
+                width: 240px;
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-start;
@@ -22,44 +22,45 @@
                 box-shadow: 0 8px 25px rgba(11,60,93,0.15);
             }
             .pengurusan-card .image-wrapper {
-                width: 130px;
-                height: 170px;
-                overflow: hidden;
-                border-radius: 0;
-                margin-bottom: 10px;
+                width: 100%;
+                margin-bottom: 12px;
                 flex-shrink: 0;
-                background: #f5f5f5;
+                line-height: 0;
             }
             .pengurusan-card img {
                 width: 100%;
-                height: 100%;
-                object-fit: cover;
-                object-position: center top;
-                transition: transform 0.3s;
-            }
-            .pengurusan-card:hover img {
-                transform: scale(1.1);
+                height: auto;
+                display: block;
+                border-radius: 4px;
             }
             .pengurusan-card h5 {
                 margin: 2px 0;
-                font-size: 14px;
+                font-size: 15px;
                 color: #333;
+                width: 100%;
+                max-width: 100%;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+                line-height: 1.35;
             }
             .pengurusan-card h5.jawatan {
                 font-weight: 600;
                 color: #0B3C5D;
             }
 
-            /* Grid spacing */
             .pengurusan-row {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 20px;
+                gap: 28px;
                 justify-content: center;
             }
-            @media(max-width: 768px){
-                .pengurusan-card { height: auto; width: 140px; padding: 8px; }
-                .pengurusan-card .image-wrapper { width: 100px; height: 130px; }
+            @media (max-width: 992px) {
+                .pengurusan-card { width: 210px; }
+            }
+            @media (max-width: 768px) {
+                .pengurusan-card { width: 160px; padding: 10px; }
+                .pengurusan-card h5 { font-size: 13px; }
+                .pengurusan-row { gap: 16px; }
             }
         </style>
 

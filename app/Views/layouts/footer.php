@@ -20,7 +20,7 @@ $footerSocial = is_array($layout['social'] ?? null) ? $layout['social'] : [];
                      <?php if ($can_edit_footer): ?>
                      data-edit-block="footer_about"
                      data-edit-label="Sunting pengenalan footer"
-                     data-brand="<?= htmlspecialchars((string) ($layout['footer_brand'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                     data-brand="<?= htmlspecialchars((string) ($layout['footer_brand'] ?? 'SMK Seremban 3'), ENT_QUOTES, 'UTF-8') ?>"
                      data-blurb="<?= htmlspecialchars((string) ($layout['footer_blurb'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
                      <?php endif; ?>>
                     <h5 class="mb-2" data-bind="footer_brand"><?= htmlspecialchars((string) ($layout['footer_brand'] ?? 'SMK Seremban 3')) ?></h5>
@@ -124,7 +124,7 @@ $footerSocial = is_array($layout['social'] ?? null) ? $layout['social'] : [];
                <?php if ($can_edit_footer): ?>
                data-edit-block="footer_copyright"
                data-edit-label="Sunting teks hak cipta"
-               data-value="<?= htmlspecialchars((string) ($layout['footer_copyright'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+               data-value="<?= htmlspecialchars((string) ($layout['footer_copyright'] ?? 'SMK Seremban 3. Hak Cipta Terpelihara.'), ENT_QUOTES, 'UTF-8') ?>"
                <?php endif; ?>>&copy; <?= date('Y') ?> <span data-bind="footer_copyright"><?= htmlspecialchars((string) ($layout['footer_copyright'] ?? 'SMK Seremban 3. Hak Cipta Terpelihara.')) ?></span></p>
         </div>
     </footer>

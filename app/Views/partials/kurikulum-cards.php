@@ -28,7 +28,7 @@ $page_key = (string) ($kurikulum_page_key ?? '');
         $desc = (string) ($card['description'] ?? '');
         $icon = trim((string) ($card['icon'] ?? 'bi-folder2-open')) ?: 'bi-folder2-open';
         $href = trim((string) ($card['href'] ?? ''));
-        $btn = trim((string) ($card['btn_label'] ?? ''));
+        $btn = trim((string) ($card['btn_label'] ?? '')) ?: 'Lihat Maklumat';
         $external = !empty($card['is_external']);
         $links = is_array($card['links'] ?? null) ? $card['links'] : [];
         $collapseId = 'kurikulumCollapse' . $id;
@@ -100,7 +100,7 @@ $page_key = (string) ($kurikulum_page_key ?? '');
                             <?php if (!empty($btnMeta['locked'])): ?>
                                 <i class="bi bi-lock-fill me-1" aria-hidden="true"></i>
                             <?php endif; ?>
-                            <?= htmlspecialchars($btn !== '' ? $btn : 'Lihat Maklumat') ?>
+                            <?= htmlspecialchars($btn) ?>
                         </a>
                     <?php endif; ?>
                 </div>

@@ -737,6 +737,34 @@ body.smks3-is-editor.smks3-panel-open {
 
     function attr(el, name) { return el.getAttribute(name) || ''; }
 
+    /** Prefer data-* attr; else [data-bind] text; else optional fallback. */
+    function prefField(el, dataAttr, bindName, fallback) {
+        var v = String(attr(el, dataAttr) || '').trim();
+        if (v) return v;
+        if (bindName) {
+            var node = el.querySelector('[data-bind="' + bindName + '"]');
+            if (node) {
+                var t = String(node.textContent || '').trim();
+                if (t) return t;
+            }
+        }
+        return fallback != null ? String(fallback) : '';
+    }
+
+    /** Prefer data-* attr; else first matching heading/selector text; else fallback. */
+    function prefOrText(el, dataAttr, selector, fallback) {
+        var v = String(attr(el, dataAttr) || '').trim();
+        if (v) return v;
+        if (selector) {
+            var node = el.querySelector(selector);
+            if (node) {
+                var t = String(node.textContent || '').trim();
+                if (t) return t;
+            }
+        }
+        return fallback != null ? String(fallback) : '';
+    }
+
     function buildFields(el) {
         var block = el.getAttribute('data-edit-block');
         if (block === 'school_info') {
@@ -746,11 +774,11 @@ body.smks3-is-editor.smks3-panel-open {
                 + field('email', 'Emel', attr(el, 'data-email'));
         }
         if (block === 'footer_about') {
-            return field('brand', 'Nama sekolah (footer)', attr(el, 'data-brand'))
-                + field('blurb', 'Ayat pengenalan', attr(el, 'data-blurb'), true, false);
+            return field('brand', 'Nama sekolah (footer)', prefField(el, 'data-brand', 'footer_brand', 'SMK Seremban 3'))
+                + field('blurb', 'Ayat pengenalan', prefField(el, 'data-blurb', 'footer_blurb', ''), true, false);
         }
         if (block === 'footer_contact') {
-            return field('title', 'Tajuk bahagian', attr(el, 'data-title') || 'Hubungi', false, false)
+            return field('title', 'Tajuk bahagian', prefField(el, 'data-title', 'footer_contact_title', 'Hubungi'), false, false)
                 + field('address', 'Alamat', attr(el, 'data-address'), true)
                 + field('phone', 'No. telefon', attr(el, 'data-phone'))
                 + field('email', 'Emel', attr(el, 'data-email'));
@@ -759,11 +787,11 @@ body.smks3-is-editor.smks3-panel-open {
             var socialArr = [];
             try { socialArr = JSON.parse(attr(el, 'data-social-json') || '[]') || []; } catch (err) { socialArr = []; }
             if (!Array.isArray(socialArr)) socialArr = [];
-            return field('title', 'Tajuk bahagian', attr(el, 'data-title') || 'Ikuti Kami', false, false)
+            return field('title', 'Tajuk bahagian', prefField(el, 'data-title', null, 'Ikuti Kami'), false, false)
                 + socialEditor(socialArr);
         }
         if (block === 'footer_copyright') {
-            return field('value', 'Teks selepas tahun', attr(el, 'data-value'))
+            return field('value', 'Teks selepas tahun', prefField(el, 'data-value', 'footer_copyright', 'SMK Seremban 3. Hak Cipta Terpelihara.'))
                 + '<p class="small text-muted mb-0">Contoh: SMK Seremban 3. Hak Cipta Terpelihara.</p>';
         }
         if (block === 'news_item') {
@@ -817,19 +845,19 @@ body.smks3-is-editor.smks3-panel-open {
         if (block === 'profil_item' || block === 'profil_item_add') {
             var isAddProfil = block === 'profil_item_add';
             return (isAddProfil ? '' : hidden('id', attr(el, 'data-id')))
-                + field('title', 'Tajuk', isAddProfil ? '' : attr(el, 'data-title'))
-                + field('value', 'Nilai / maklumat', isAddProfil ? '' : attr(el, 'data-value'), true, false)
+                + field('title', 'Tajuk', isAddProfil ? '' : prefField(el, 'data-title', null, ''))
+                + field('value', 'Nilai / maklumat', isAddProfil ? '' : prefField(el, 'data-value', null, ''), true, false)
                 + iconPicker('icon', 'Pilih ikon', isAddProfil ? 'bi-info-circle' : (attr(el, 'data-icon') || 'bi-info-circle'));
         }
         if (block === 'fpk_falsafah') {
-            return field('title', 'Tajuk', attr(el, 'data-title'))
-                + field('content', 'Teks falsafah', attr(el, 'data-content'), true)
+            return field('title', 'Tajuk', prefField(el, 'data-title', null, ''))
+                + field('content', 'Teks falsafah', prefField(el, 'data-content', null, ''), true)
                 + '<p class="small text-muted mb-0">Guna baris kosong antara perenggan.</p>';
         }
         if (block === 'fpk_item') {
             return hidden('id', attr(el, 'data-id'))
-                + field('kategori', 'Kategori', attr(el, 'data-kategori'))
-                + field('content', 'Kandungan', attr(el, 'data-content'), true);
+                + field('kategori', 'Kategori', prefField(el, 'data-kategori', 'fpk_kategori', ''))
+                + field('content', 'Kandungan', prefField(el, 'data-content', 'fpk_content', ''), true);
         }
         if (block === 'fpk_add') {
             return field('kategori', 'Kategori', 'Visi')
@@ -838,30 +866,24 @@ body.smks3-is-editor.smks3-panel-open {
         if (block === 'sejarah_item' || block === 'sejarah_add') {
             var isAddS = block === 'sejarah_add';
             return (isAddS ? '' : hidden('id', attr(el, 'data-id')))
-                + field('tajuk', 'Tajuk', isAddS ? '' : attr(el, 'data-tajuk'))
+                + field('tajuk', 'Tajuk', isAddS ? '' : prefField(el, 'data-tajuk', 'sejarah_tajuk', ''))
                 + field('tarikh', 'Tarikh (pilihan)', isAddS ? '' : attr(el, 'data-tarikh'), false, false)
-                + field('content', 'Kandungan', isAddS ? '' : attr(el, 'data-content'), true);
+                + field('content', 'Kandungan', isAddS ? '' : prefField(el, 'data-content', 'sejarah_content', ''), true);
         }
         if (block === 'pengetua_item' || block === 'pengetua_add') {
             var isAddP = block === 'pengetua_add';
             return (isAddP ? '' : hidden('id', attr(el, 'data-id')))
-                + field('name', 'Nama', isAddP ? '' : attr(el, 'data-name'))
+                + field('name', 'Nama', isAddP ? '' : prefField(el, 'data-name', 'pengetua_name', ''))
                 + field('start_year', 'Tahun mula', isAddP ? '' : attr(el, 'data-start-year'), false, false)
                 + field('end_year', 'Tahun akhir (kosong = Kini)', isAddP ? '' : attr(el, 'data-end-year'), false, false)
                 + fileField('photo', 'Gambar (pilihan)', false, 'image/*', undefined, !isAddP);
         }
         if (block === 'pengurusan_item' || block === 'pengurusan_add') {
             var isAddPg = block === 'pengurusan_add';
-            function pengurusanText(bindName, dataAttr) {
-                var fromData = attr(el, dataAttr).trim();
-                if (fromData) return fromData;
-                var node = el.querySelector('[data-bind="' + bindName + '"]');
-                return node ? String(node.textContent || '').trim() : '';
-            }
             return (isAddPg ? '' : hidden('id', attr(el, 'data-id')))
-                + field('nama', 'Nama', isAddPg ? '' : pengurusanText('pengurusan_nama', 'data-nama'))
-                + field('gred', 'Gred', isAddPg ? '' : pengurusanText('pengurusan_gred', 'data-gred'), false, false)
-                + field('jawatan', 'Jawatan', isAddPg ? '' : pengurusanText('pengurusan_jawatan', 'data-jawatan'))
+                + field('nama', 'Nama', isAddPg ? '' : prefField(el, 'data-nama', 'pengurusan_nama', ''))
+                + field('gred', 'Gred', isAddPg ? '' : prefField(el, 'data-gred', 'pengurusan_gred', ''), false, false)
+                + field('jawatan', 'Jawatan', isAddPg ? '' : prefField(el, 'data-jawatan', 'pengurusan_jawatan', ''))
                 + selectField('kategori', 'Kategori', isAddPg ? 'pk' : (attr(el, 'data-kategori') || 'pk'), [
                     { value: 'pengetua', label: 'Pengetua' },
                     { value: 'pk', label: 'Penolong Kanan (PK)' },
@@ -873,9 +895,9 @@ body.smks3-is-editor.smks3-panel-open {
         if (block === 'guru_item' || block === 'guru_add' || block === 'akp_item' || block === 'akp_add') {
             var isAddG = block.indexOf('_add') !== -1;
             return (isAddG ? '' : hidden('id', attr(el, 'data-id')))
-                + field('nama', 'Nama', isAddG ? '' : attr(el, 'data-nama'))
-                + field('jawatan', 'Jawatan', isAddG ? '' : attr(el, 'data-jawatan'), false, false)
-                + field('dg', 'DG', isAddG ? '' : attr(el, 'data-dg'), false, false)
+                + field('nama', 'Nama', isAddG ? '' : prefField(el, 'data-nama', 'staff_nama', ''))
+                + field('jawatan', 'Jawatan', isAddG ? '' : prefField(el, 'data-jawatan', 'staff_jawatan', ''), false, false)
+                + field('dg', 'DG', isAddG ? '' : prefField(el, 'data-dg', 'staff_dg', ''), false, false)
                 + fileField('image', 'Gambar (pilihan)', false, 'image/*', undefined, !isAddG);
         }
         if (block === 'kalendar_title') {
@@ -919,15 +941,15 @@ body.smks3-is-editor.smks3-panel-open {
             }
             var showIntro = el.hasAttribute('data-intro');
             return hidden('page_key', attr(el, 'data-page-key'))
-                + (showIntro ? field('intro', 'Pengenalan halaman', attr(el, 'data-intro'), true, false) : '')
+                + (showIntro ? field('intro', 'Pengenalan halaman', prefField(el, 'data-intro', 'kurikulum_intro', ''), true, false) : '')
                 + sectionsHtml;
         }
         if (block === 'kurikulum_section') {
             var showSubtitle = el.hasAttribute('data-subtitle');
             return hidden('page_key', attr(el, 'data-page-key'))
                 + hidden('section_key', attr(el, 'data-section-key') || 'main')
-                + field('title', 'Tajuk bahagian', attr(el, 'data-title'), false, false)
-                + (showSubtitle ? field('subtitle', 'Subtajuk bahagian', attr(el, 'data-subtitle'), true, false) : '');
+                + field('title', 'Tajuk bahagian', prefField(el, 'data-title', 'kurikulum_section_title', ''), false, false)
+                + (showSubtitle ? field('subtitle', 'Subtajuk bahagian', prefField(el, 'data-subtitle', 'kurikulum_section_subtitle', ''), true, false) : '');
         }
         if (block === 'kurikulum_card' || block === 'kurikulum_card_add') {
             var isAddK = block === 'kurikulum_card_add';
@@ -1092,16 +1114,16 @@ body.smks3-is-editor.smks3-panel-open {
                 + '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Selepas tingkatan dicipta, urus gambar lanjut melalui panel galeri tingkatan.</p>';
         }
         if (block === 'pibg_meta') {
-            return field('title', 'Tajuk', attr(el, 'data-title'), false, false)
-                + field('subtitle', 'Pengenalan', attr(el, 'data-subtitle'), true, false)
-                + field('button_label', 'Teks butang PDF', attr(el, 'data-button-label'), false, false);
+            return field('title', 'Tajuk', prefField(el, 'data-title', 'pibg_title', 'Jawatankuasa PIBG'), false, false)
+                + field('subtitle', 'Pengenalan', prefField(el, 'data-subtitle', null, ''), true, false)
+                + field('button_label', 'Teks butang PDF', prefField(el, 'data-button-label', null, 'Buka / Muat Turun PDF'), false, false);
         }
         if (block === 'pibg_pdf_gallery' || block === 'pibg_pdf') {
             return newsImagesField(el, { pdf: true })
                 + '<p class="small text-muted mb-0">Urus semua PDF dalam satu panel: tambah, buang, dan susun semula.</p>';
         }
         if (block === 'enrolmen_summary') {
-            return field('title', 'Tajuk bahagian', attr(el, 'data-title'), false, false)
+            return field('title', 'Tajuk bahagian', prefField(el, 'data-title', 'enrolmen_summary_title', 'Bilangan Kelas ( IKRAM/ IHSAN/ IKHLAS/ ITQAN )'), false, false)
                 + field('items', 'Senarai bilangan kelas (satu baris = satu item)', attr(el, 'data-items'), true)
                 + '<p class="small text-muted mb-0">Contoh: Tingkatan 1 – 4 Kelas</p>';
         }
@@ -1149,13 +1171,13 @@ body.smks3-is-editor.smks3-panel-open {
                 + fileField('gambar_galeri', 'Gambar galeri (pilihan)', false, 'image/*', galeriSrc);
         }
         if (block === 'lencana_moto') {
-            return field('moto', 'Moto', attr(el, 'data-moto'), false);
+            return field('moto', 'Moto', prefField(el, 'data-moto', 'lencana_moto', ''), false);
         }
         if (block === 'lencana_lagu') {
             return '<div class="mb-3">'
                 + '<label class="form-label" for="smks3_f_lirik">Lirik lagu' + requiredMark(true) + '</label>'
                 + '<textarea class="smks3-lyrics-editor" id="smks3_f_lirik" name="lirik" rows="18" required spellcheck="true">'
-                + esc(attr(el, 'data-lirik'))
+                + esc(prefField(el, 'data-lirik', null, ''))
                 + '</textarea>'
                 + '<p class="small text-muted mb-0 mt-1">Tekan Enter untuk baris baharu. Biarkan satu baris kosong antara bait.</p>'
                 + '</div>'
@@ -1173,8 +1195,8 @@ body.smks3-is-editor.smks3-panel-open {
         if (block === 'lencana_item' || block === 'lencana_item_add') {
             var isAddL = block === 'lencana_item_add';
             return (isAddL ? '' : hidden('id', attr(el, 'data-id')))
-                + field('title', 'Tajuk', isAddL ? '' : attr(el, 'data-title'))
-                + field('description', 'Penerangan', isAddL ? '' : attr(el, 'data-description'), true, false);
+                + field('title', 'Tajuk', isAddL ? '' : prefField(el, 'data-title', null, ''))
+                + field('description', 'Penerangan', isAddL ? '' : prefField(el, 'data-description', null, ''), true, false);
         }
         if (block === 'kalendar_page') {
             return field('title', 'Tajuk halaman', attr(el, 'data-title'), false, false)
@@ -2266,6 +2288,9 @@ body.smks3-is-editor.smks3-panel-open {
             return;
         }
         if (block === 'pengetua_item') {
+            activeEl.setAttribute('data-name', f.name || '');
+            activeEl.setAttribute('data-start-year', f.start_year || '');
+            activeEl.setAttribute('data-end-year', f.end_year || '');
             var pn = activeEl.querySelector('[data-bind="pengetua_name"]');
             if (pn) pn.textContent = f.name || '';
             var py = activeEl.querySelector('[data-bind="pengetua_years"]');
@@ -2290,6 +2315,23 @@ body.smks3-is-editor.smks3-panel-open {
             }
             return;
         }
+        if (block === 'guru_item' || block === 'akp_item') {
+            activeEl.setAttribute('data-nama', f.nama || '');
+            activeEl.setAttribute('data-jawatan', f.jawatan || '');
+            activeEl.setAttribute('data-dg', f.dg || '');
+            var sn = activeEl.querySelector('[data-bind="staff_nama"]');
+            if (sn) sn.textContent = f.nama || '';
+            var sd = activeEl.querySelector('[data-bind="staff_dg"]');
+            if (sd) sd.textContent = f.dg || '';
+            var sj = activeEl.querySelector('[data-bind="staff_jawatan"]');
+            if (sj) sj.textContent = f.jawatan || '';
+            if (typeof f.image === 'string') {
+                activeEl.setAttribute('data-image', f.image);
+                var simg = activeEl.querySelector('.image-wrapper img');
+                if (simg && f.image) simg.src = f.image.indexOf('uploads/') === 0 || f.image.indexOf('/') === 0 ? f.image : ('uploads/' + f.image);
+            }
+            return;
+        }
         if (typeof f.value === 'string') {
             activeEl.setAttribute('data-value', f.value);
             var bind = activeEl.querySelector('[data-bind="text"]') || activeEl;
@@ -2307,18 +2349,41 @@ body.smks3-is-editor.smks3-panel-open {
         syncRichTextEditor();
         var fd = new FormData(form);
         fd.set('block', blockName);
-        // Explicitly copy critical fields (some browsers omit odd edge cases)
-        if (blockName === 'pengurusan_item' || blockName === 'pengurusan_add') {
-            var namaInput = form.querySelector('[name="nama"]');
-            var idInput = form.querySelector('[name="id"]');
-            var gredInput = form.querySelector('[name="gred"]');
-            var jawatanInput = form.querySelector('[name="jawatan"]');
-            var kategoriInput = form.querySelector('[name="kategori"]');
-            fd.set('nama', namaInput ? String(namaInput.value || '').trim() : '');
-            if (idInput) fd.set('id', String(idInput.value || '').trim());
-            if (gredInput) fd.set('gred', String(gredInput.value || '').trim());
-            if (jawatanInput) fd.set('jawatan', String(jawatanInput.value || '').trim());
-            if (kategoriInput) fd.set('kategori', String(kategoriInput.value || '').trim());
+        // Explicitly copy critical fields (avoids empty/omitted edge cases)
+        function copyField(name) {
+            var input = form.querySelector('[name="' + name + '"]');
+            if (input) fd.set(name, String(input.value || '').trim());
+        }
+        var criticalBlocks = {
+            pengurusan_item: ['id', 'nama', 'gred', 'jawatan', 'kategori'],
+            pengurusan_add: ['nama', 'gred', 'jawatan', 'kategori'],
+            guru_item: ['id', 'nama', 'jawatan', 'dg'],
+            guru_add: ['nama', 'jawatan', 'dg'],
+            akp_item: ['id', 'nama', 'jawatan', 'dg'],
+            akp_add: ['nama', 'jawatan', 'dg'],
+            pengetua_item: ['id', 'name', 'start_year', 'end_year'],
+            pengetua_add: ['name', 'start_year', 'end_year'],
+            sejarah_item: ['id', 'tajuk', 'tarikh', 'content'],
+            sejarah_add: ['tajuk', 'tarikh', 'content'],
+            fpk_item: ['id', 'kategori', 'content'],
+            fpk_add: ['kategori', 'content'],
+            fpk_falsafah: ['title', 'content'],
+            news_item: ['id', 'title', 'year'],
+            news_add: ['title', 'year'],
+            footer_about: ['brand', 'blurb'],
+            footer_copyright: ['value'],
+            footer_contact: ['title', 'address', 'phone', 'email'],
+            pibg_meta: ['title', 'subtitle', 'button_label'],
+            kurikulum_section: ['page_key', 'section_key', 'title', 'subtitle'],
+            kurikulum_meta: ['page_key', 'intro'],
+            enrolmen_summary: ['title', 'items'],
+            lencana_moto: ['moto'],
+            profil_item: ['id', 'title', 'value', 'icon'],
+            school_info: ['school_name', 'address', 'phone', 'email']
+        };
+        var critical = criticalBlocks[blockName];
+        if (critical) {
+            critical.forEach(copyField);
         }
         if (!fd.has('external') && form.querySelector('[name="external"]')) {
             // unchecked checkbox omitted
