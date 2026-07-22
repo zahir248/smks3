@@ -39,9 +39,9 @@ $infoCards = is_array($kurikulum_by_section['info'] ?? null) ? $kurikulum_by_sec
              data-edit-label="Sunting pengenalan"
              data-edit-hint="Teks pengenalan di bahagian atas sahaja."
              data-page-key="pemimpin-murid"
-             data-intro="<?= htmlspecialchars((string) ($page_meta['intro'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+             data-intro="<?= htmlspecialchars((string) ($page_meta['intro'] ?? 'Barisan kepimpinan murid yang berwibawa, berdisiplin dan komited dalam membantu pengurusan serta pembangunan sahsiah pelajar di sekolah.'), ENT_QUOTES, 'UTF-8') ?>"
              <?php endif; ?>>
-            <p class="text-muted lead mb-0"><?= htmlspecialchars((string) ($page_meta['intro'] ?? '')) ?></p>
+            <p class="text-muted lead mb-0" data-bind="kurikulum_intro"><?= htmlspecialchars((string) ($page_meta['intro'] ?? 'Barisan kepimpinan murid yang berwibawa, berdisiplin dan komited dalam membantu pengurusan serta pembangunan sahsiah pelajar di sekolah.')) ?></p>
         </div>
 
         <div class="text-center mb-4">

@@ -18,13 +18,13 @@ $cards = is_array($kurikulum_by_section['main'] ?? null)
          data-sections="<?= htmlspecialchars(json_encode($sections, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>"
          <?php endif; ?>>
         <?php if (trim((string) ($meta['intro'] ?? '')) !== ''): ?>
-            <p class="text-center text-muted lead mb-4"><?= htmlspecialchars((string) $meta['intro']) ?></p>
+            <p class="text-center text-muted lead mb-4" data-bind="kurikulum_intro"><?= htmlspecialchars((string) $meta['intro']) ?></p>
         <?php endif; ?>
 
         <div class="text-center mb-5">
-            <h2 class="fw-bold"><?= htmlspecialchars((string) ($sec['title'] ?? '')) ?></h2>
+            <h2 class="fw-bold" data-bind="kurikulum_section_title"><?= htmlspecialchars((string) ($sec['title'] ?? '')) ?></h2>
             <?php if (trim((string) ($sec['subtitle'] ?? '')) !== ''): ?>
-                <p class="text-muted"><?= htmlspecialchars((string) $sec['subtitle']) ?></p>
+                <p class="text-muted" data-bind="kurikulum_section_subtitle"><?= htmlspecialchars((string) $sec['subtitle']) ?></p>
             <?php endif; ?>
         </div>
 
