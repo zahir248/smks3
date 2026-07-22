@@ -2375,15 +2375,48 @@ foreach ($admins as $a) {
                 }
                 return 'Untuk admin <strong>' + esc(target) + '</strong>';
             }
+            if (action.indexOf('content.') === 0) {
+                var pageLabel = logPageLabel(row);
+                var summary = String(row.summary || '').trim();
+                if (pageLabel && summary) {
+                    return 'Halaman <strong>' + esc(pageLabel) + '</strong> · ' + esc(summary);
+                }
+                if (pageLabel) {
+                    return 'Halaman <strong>' + esc(pageLabel) + '</strong>';
+                }
+            }
             return esc(row.summary || '');
         }
 
         function permissionLabel(key) {
             key = String(key == null ? '' : key).trim();
             if (!key) return 'Tidak diketahui';
+            if (key === 'home') return 'Laman Utama';
+            if (key === 'news') return 'Berita';
+            if (key === 'footer') return 'Footer laman';
+            if (key === 'contact') return 'Hubungi';
             var meta = PERM_LABELS[key];
             if (meta && meta.label) return meta.label;
             return key.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+        }
+
+        function logPageKey(log) {
+            if (log.page_key) return String(log.page_key).trim();
+            var meta = log.meta || {};
+            if (meta.page_key) return String(meta.page_key).trim();
+            if (meta.request && meta.request.page_key) return String(meta.request.page_key).trim();
+            if (meta.request && meta.request.key) return String(meta.request.key).trim();
+            var route = String(log.route || '').trim();
+            if (route && route !== 'save-content' && route !== 'save-content.php') {
+                return route === 'index' ? 'home' : route;
+            }
+            return '';
+        }
+
+        function logPageLabel(log) {
+            if (log.page_label) return String(log.page_label).trim();
+            var key = logPageKey(log);
+            return key ? permissionLabel(key) : '';
         }
 
         function permissionGroup(key) {
@@ -2684,7 +2717,10 @@ foreach ($admins as $a) {
                     }
                 });
             }
-            if (log.route) {
+            var pageLabel = logPageLabel(log);
+            if (pageLabel) {
+                bits.push('<div class="small text-muted mt-1">Halaman: <strong>' + esc(pageLabel) + '</strong></div>');
+            } else if (log.route && log.route !== 'save-content' && log.route !== 'save-content.php') {
                 bits.push('<div class="small text-muted mt-1">Halaman: ' + esc(log.route) + '</div>');
             }
             return bits.length ? '<div class="mt-3">' + bits.join('') + '</div>' : '';
@@ -2705,11 +2741,15 @@ foreach ($admins as $a) {
                 }
             }
             if (metaEl) {
+                var pageLabel = logPageLabel(log);
                 metaEl.innerHTML = '<div><strong>' + esc(log.occurred_at || '') + '</strong></div>'
                     + '<div>Dilakukan oleh: ' + esc(actorLabel(log.actor_username, log.actor_user_id))
                     + (log.actor_role ? ' · ' + esc(log.actor_role) : '')
                     + (log.ip ? ' · IP ' + esc(log.ip) : '')
                     + '</div>'
+                    + (pageLabel
+                        ? ('<div>Halaman: <strong>' + esc(pageLabel) + '</strong></div>')
+                        : '')
                     + (targetAdmin
                         ? ('<div>Untuk admin: <strong>' + esc(targetAdmin) + '</strong></div>')
                         : '');

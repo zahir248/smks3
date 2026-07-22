@@ -91,6 +91,15 @@ function smks3_activity_log(
         }
 
         $route = function_exists('smks3_current_route') ? smks3_current_route() : null;
+        if (is_array($meta)) {
+            $pageKey = trim((string) ($meta['page_key'] ?? ''));
+            if ($pageKey === '' && isset($meta['request']) && is_array($meta['request'])) {
+                $pageKey = trim((string) ($meta['request']['page_key'] ?? $meta['request']['key'] ?? ''));
+            }
+            if ($pageKey !== '' && ($route === null || $route === '' || $route === 'save-content' || $route === 'save-content.php')) {
+                $route = $pageKey === 'index' ? 'home' : $pageKey;
+            }
+        }
         $ip = function_exists('smks3_client_ip') ? smks3_client_ip() : (string) ($_SERVER['REMOTE_ADDR'] ?? '');
 
         $stmt = $pdo->prepare(
@@ -238,6 +247,70 @@ function smks3_activity_log_target_username(array $row): string
         return trim((string) ($m[1] ?? ''));
     }
     return '';
+}
+
+/** CMS page key for content.* log entries (from meta, route, or block permission). */
+function smks3_activity_log_page_key(array $row): string
+{
+    $metaJson = (string) ($row['meta_json'] ?? '');
+    if ($metaJson !== '' && $metaJson !== 'null') {
+        $meta = json_decode($metaJson, true);
+        if (is_array($meta)) {
+            $fromMeta = trim((string) ($meta['page_key'] ?? ''));
+            if ($fromMeta !== '') {
+                return $fromMeta === 'index' ? 'home' : $fromMeta;
+            }
+            $request = $meta['request'] ?? null;
+            if (is_array($request)) {
+                $fromReq = trim((string) ($request['page_key'] ?? $request['key'] ?? ''));
+                if ($fromReq !== '') {
+                    return $fromReq === 'index' ? 'home' : $fromReq;
+                }
+            }
+        }
+    }
+
+    $route = trim((string) ($row['route'] ?? ''));
+    if ($route !== '' && $route !== 'save-content' && $route !== 'save-content.php') {
+        return $route === 'index' ? 'home' : $route;
+    }
+
+    $entity = trim((string) ($row['entity_type'] ?? ''));
+    if ($entity !== '' && function_exists('smks3_rbac_permission_for_block')) {
+        $perm = smks3_rbac_permission_for_block($entity);
+        if (is_string($perm) && $perm !== '') {
+            return $perm;
+        }
+    }
+
+    return '';
+}
+
+function smks3_activity_log_page_label(string $pageKey): string
+{
+    $pageKey = trim($pageKey);
+    if ($pageKey === '') {
+        return '';
+    }
+
+    static $special = [
+        'home' => 'Laman Utama',
+        'news' => 'Berita',
+        'footer' => 'Footer laman',
+        'contact' => 'Hubungi',
+    ];
+    if (isset($special[$pageKey])) {
+        return $special[$pageKey];
+    }
+
+    if (function_exists('smks3_rbac_permission_catalog')) {
+        $catalog = smks3_rbac_permission_catalog();
+        if (isset($catalog[$pageKey]['label']) && (string) $catalog[$pageKey]['label'] !== '') {
+            return (string) $catalog[$pageKey]['label'];
+        }
+    }
+
+    return ucwords(str_replace('-', ' ', $pageKey));
 }
 
 function smks3_activity_content_op(string $block): string
@@ -761,6 +834,7 @@ function smks3_activity_log_list(PDO $pdo, array $filters = []): array
     foreach ($rows as $row) {
         $actionKey = (string) ($row['action'] ?? '');
         $targetUsername = smks3_activity_log_target_username($row);
+        $pageKey = smks3_activity_log_page_key($row);
         $items[] = [
             'id' => (int) ($row['id'] ?? 0),
             'occurred_at' => (string) ($row['occurred_at'] ?? ''),
@@ -773,6 +847,8 @@ function smks3_activity_log_list(PDO $pdo, array $filters = []): array
             'entity_id' => (string) ($row['entity_id'] ?? ''),
             'summary' => (string) ($row['summary'] ?? ''),
             'target_username' => $targetUsername,
+            'page_key' => $pageKey,
+            'page_label' => smks3_activity_log_page_label($pageKey),
             'route' => (string) ($row['route'] ?? ''),
             'ip' => smks3_format_client_ip((string) ($row['ip'] ?? '')),
             'has_before' => !empty($row['has_before']),
@@ -828,6 +904,7 @@ function smks3_activity_log_get(PDO $pdo, int $id): ?array
     };
 
     $actionKey = (string) ($row['action'] ?? '');
+    $pageKey = smks3_activity_log_page_key($row);
     return [
         'id' => (int) ($row['id'] ?? 0),
         'occurred_at' => (string) ($row['occurred_at'] ?? ''),
@@ -840,6 +917,8 @@ function smks3_activity_log_get(PDO $pdo, int $id): ?array
         'entity_id' => (string) ($row['entity_id'] ?? ''),
         'summary' => (string) ($row['summary'] ?? ''),
         'target_username' => smks3_activity_log_target_username($row),
+        'page_key' => $pageKey,
+        'page_label' => smks3_activity_log_page_label($pageKey),
         'route' => (string) ($row['route'] ?? ''),
         'ip' => smks3_format_client_ip((string) ($row['ip'] ?? '')),
         'user_agent' => (string) ($row['user_agent'] ?? ''),
