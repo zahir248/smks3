@@ -33,26 +33,22 @@
                 display: block;
                 border-radius: 4px;
             }
-            .pengurusan-card h5 {
-                margin: 2px 0;
-                font-size: 15px;
-                color: #333;
+            .pengurusan-card .staff-meta {
                 width: 100%;
                 max-width: 100%;
                 overflow-wrap: anywhere;
                 word-break: break-word;
                 line-height: 1.35;
             }
-            .pengurusan-card h5.jawatan {
-                font-weight: 600;
-                color: #0B3C5D;
+            .pengurusan-card .staff-meta h6 {
+                margin-bottom: 0;
             }
             .pengurusan-card--pengetua {
                 width: 280px;
                 padding: 16px;
             }
-            .pengurusan-card--pengetua h5 {
-                font-size: 16px;
+            .pengurusan-card--pengetua .staff-meta h6 {
+                font-size: 1.05rem;
             }
 
             .pengurusan-row {
@@ -68,8 +64,6 @@
             @media (max-width: 768px) {
                 .pengurusan-card { width: 160px; padding: 10px; }
                 .pengurusan-card--pengetua { width: 185px; padding: 12px; }
-                .pengurusan-card h5 { font-size: 13px; }
-                .pengurusan-card--pengetua h5 { font-size: 14px; }
                 .pengurusan-row { gap: 16px; }
             }
         </style>
@@ -96,9 +90,11 @@
                                 <img src="<?= !empty($p['gambar']) ? htmlspecialchars((string) $p['gambar'], ENT_QUOTES, 'UTF-8') : $placeholderImage ?>" 
                                      alt="<?= htmlspecialchars((string) ($p['nama'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
                             </div>
-                            <h5 data-bind="pengurusan_nama"><?= htmlspecialchars((string) ($p['nama'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h5>
-                            <h5 data-bind="pengurusan_gred"><?= htmlspecialchars((string) ($p['gred'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h5>
-                            <h5 class="jawatan" data-bind="pengurusan_jawatan"><?= htmlspecialchars((string) ($p['jawatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h5>
+                            <div class="staff-meta">
+                                <h6 class="mb-0 fw-bold" data-bind="pengurusan_nama"><?= htmlspecialchars((string) ($p['nama'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h6>
+                                <small class="text-muted" data-bind="pengurusan_gred"><?= htmlspecialchars((string) ($p['gred'] ?? ''), ENT_QUOTES, 'UTF-8') ?></small><br>
+                                <small data-bind="pengurusan_jawatan"><?= htmlspecialchars((string) ($p['jawatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?></small>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 </div>

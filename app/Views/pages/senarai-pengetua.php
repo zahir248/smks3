@@ -8,6 +8,28 @@
     display: block;
     margin: 0 auto;
 }
+.pengetua-details {
+    width: 100%;
+    max-width: 150px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.35;
+}
+.pengetua-details h5,
+.pengetua-details p {
+    margin-left: 0;
+    margin-right: 0;
+}
+.timeline-item.left .pengetua-details {
+    margin-left: auto;
+    margin-right: 0;
+    text-align: right;
+}
+.timeline-item.right .pengetua-details {
+    margin-left: 0;
+    margin-right: auto;
+    text-align: left;
+}
 /* Timeline container */
 .timeline {
     position: relative;
@@ -85,6 +107,12 @@
     }
     .timeline-item.left, .timeline-item.right { text-align: left; left: 0; }
     .timeline-item.left .timeline-icon, .timeline-item.right .timeline-icon { left: 0; right: auto; }
+    .timeline-item.left .pengetua-details,
+    .timeline-item.right .pengetua-details {
+        margin-left: 0;
+        margin-right: auto;
+        text-align: left;
+    }
 }
 </style>
 
@@ -114,15 +142,16 @@
                             </div>
                         <?php endif; ?>
                     
-                        <h5 class="fw-bold" data-bind="pengetua_name">
-                            <?= htmlspecialchars($p['name']) ?>
-                        </h5>
-                    
-                        <p class="text-muted mb-0" data-bind="pengetua_years">
-                            <?= htmlspecialchars($p['start_year']) ?> – 
-                            <?= !empty($p['end_year']) ? htmlspecialchars($p['end_year']) : 'Kini' ?>
-                        </p>
-                    
+                        <div class="pengetua-details">
+                            <h5 class="fw-bold" data-bind="pengetua_name">
+                                <?= htmlspecialchars($p['name']) ?>
+                            </h5>
+
+                            <p class="text-muted mb-0" data-bind="pengetua_years">
+                                <?= htmlspecialchars($p['start_year']) ?> –
+                                <?= !empty($p['end_year']) ? htmlspecialchars($p['end_year']) : 'Kini' ?>
+                            </p>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
