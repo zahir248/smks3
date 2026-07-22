@@ -47,6 +47,13 @@
                 font-weight: 600;
                 color: #0B3C5D;
             }
+            .pengurusan-card--pengetua {
+                width: 280px;
+                padding: 16px;
+            }
+            .pengurusan-card--pengetua h5 {
+                font-size: 16px;
+            }
 
             .pengurusan-row {
                 display: flex;
@@ -56,10 +63,13 @@
             }
             @media (max-width: 992px) {
                 .pengurusan-card { width: 210px; }
+                .pengurusan-card--pengetua { width: 245px; }
             }
             @media (max-width: 768px) {
                 .pengurusan-card { width: 160px; padding: 10px; }
+                .pengurusan-card--pengetua { width: 185px; padding: 12px; }
                 .pengurusan-card h5 { font-size: 13px; }
+                .pengurusan-card--pengetua h5 { font-size: 14px; }
                 .pengurusan-row { gap: 16px; }
             }
         </style>
@@ -71,7 +81,7 @@
         ?>
                 <div class="pengurusan-row mb-4">
                     <?php foreach ($groups[$kategori] as $p): ?>
-                        <div class="pengurusan-card"
+                        <div class="pengurusan-card<?= $kategori === 'pengetua' ? ' pengurusan-card--pengetua' : '' ?>"
                              <?php if ($is_editor): ?>
                              data-edit-block="pengurusan_item"
                              data-edit-label="Sunting pengurusan"
