@@ -17,18 +17,52 @@ try {
 } catch (PDOException $e) {
     die("Query failed: " . $e->getMessage());
 }
+
+/**
+ * Pick cards per row (desktop) while keeping the original 5-column card width.
+ * Only 3–5 cards fit per row at that fixed size; prefers an even last row.
+ */
+$smks3_staff_grid_cols = static function (int $total, int $min = 3, int $max = 5): int {
+    if ($total < 1) {
+        return $max;
+    }
+    if ($total <= $min) {
+        return $total;
+    }
+
+    for ($cols = $max; $cols >= $min; $cols--) {
+        if ($total % $cols === 0) {
+            return $cols;
+        }
+    }
+
+    $best = $max;
+    $bestEmpty = PHP_INT_MAX;
+    for ($cols = $max; $cols >= $min; $cols--) {
+        $rem = $total % $cols;
+        $empty = $rem === 0 ? 0 : ($cols - $rem);
+        if ($empty < $bestEmpty) {
+            $bestEmpty = $empty;
+            $best = $cols;
+        }
+    }
+
+    return $best;
+};
+
+$guruCols = $smks3_staff_grid_cols(count($guru));
+$akpCols = $smks3_staff_grid_cols(count($akp));
+$guruRows = $guru !== [] ? array_chunk($guru, $guruCols) : [];
+$akpRows = $akp !== [] ? array_chunk($akp, $akpCols) : [];
 ?>
 
 <!-- =========================
     STYLE
 ========================= -->
 <style>
-.background-page{
-    
-}
 .staff-card {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0;
 }
 
 .staff-card .image-wrapper {
@@ -55,27 +89,38 @@ try {
     transform: translate(-50%, -50%) scale(1.05);
 }
 
-/* 5 COLUMN GRID */
+.staff-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+.staff-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.staff-col {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 0 0.75rem;
+}
+
+@media (min-width: 577px) and (max-width: 991px) {
+    .staff-col {
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
+    }
+}
+
 @media (min-width: 992px) {
-    .col-5-grid {
+    .staff-col {
         flex: 0 0 20%;
         max-width: 20%;
-    }
-}
-
-/* tablet */
-@media (max-width: 991px) {
-    .col-5-grid {
-        flex: 0 0 33.33%;
-        max-width: 33.33%;
-    }
-}
-
-/* mobile */
-@media (max-width: 576px) {
-    .col-5-grid {
-        flex: 0 0 50%;
-        max-width: 50%;
     }
 }
 </style>
@@ -88,31 +133,35 @@ try {
 
 <h3 class="text-center fw-bold mb-4">Barisan Guru</h3>
 
-<div class="row justify-content-center">
+<div class="staff-grid">
 
-<?php if(count($guru) > 0): ?>
-    <?php foreach($guru as $g): ?>
-        <div class="col-6 col-md-4 col-lg-3 col-5-grid">
-            <div class="staff-card"
-                 <?php if ($is_editor): ?>
-                 data-edit-block="guru_item"
-                 data-edit-label="Sunting guru"
-                 data-id="<?= (int) $g['id'] ?>"
-                 data-nama="<?= htmlspecialchars((string) $g['nama'], ENT_QUOTES, 'UTF-8') ?>"
-                 data-jawatan="<?= htmlspecialchars((string) ($g['jawatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                 data-dg="<?= htmlspecialchars((string) ($g['dg'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                 <?php endif; ?>>
+<?php if ($guruRows !== []): ?>
+    <?php foreach ($guruRows as $row): ?>
+        <div class="staff-row">
+            <?php foreach ($row as $g): ?>
+                <div class="staff-col">
+                    <div class="staff-card"
+                         <?php if ($is_editor): ?>
+                         data-edit-block="guru_item"
+                         data-edit-label="Sunting guru"
+                         data-id="<?= (int) $g['id'] ?>"
+                         data-nama="<?= htmlspecialchars((string) $g['nama'], ENT_QUOTES, 'UTF-8') ?>"
+                         data-jawatan="<?= htmlspecialchars((string) ($g['jawatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                         data-dg="<?= htmlspecialchars((string) ($g['dg'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                         <?php endif; ?>>
 
-                <div class="image-wrapper mb-2">
-                    <img src="<?= !empty($g['image']) ? 'uploads/' . htmlspecialchars($g['image']) : htmlspecialchars($placeholderImage ?? '/smks3/images/placeholder.png') ?>"
-                         alt="<?= htmlspecialchars($g['nama']) ?>">
+                        <div class="image-wrapper mb-2">
+                            <img src="<?= !empty($g['image']) ? 'uploads/' . htmlspecialchars($g['image']) : htmlspecialchars($placeholderImage ?? '/smks3/images/placeholder.png') ?>"
+                                 alt="<?= htmlspecialchars($g['nama']) ?>">
+                        </div>
+
+                        <h6 class="mb-0 fw-bold" data-bind="staff_nama"><?= htmlspecialchars($g['nama']) ?></h6>
+                        <small class="text-muted" data-bind="staff_dg"><?= htmlspecialchars($g['dg']) ?></small><br>
+                        <small data-bind="staff_jawatan"><?= htmlspecialchars($g['jawatan']) ?></small>
+
+                    </div>
                 </div>
-
-                <h6 class="mb-0 fw-bold" data-bind="staff_nama"><?= htmlspecialchars($g['nama']) ?></h6>
-                <small class="text-muted" data-bind="staff_dg"><?= htmlspecialchars($g['dg']) ?></small><br>
-                <small data-bind="staff_jawatan"><?= htmlspecialchars($g['jawatan']) ?></small>
-
-            </div>
+            <?php endforeach; ?>
         </div>
     <?php endforeach; ?>
 <?php else: ?>
@@ -141,31 +190,35 @@ try {
 
 <h3 class="text-center fw-bold mb-4">Barisan AKP</h3>
 
-<div class="row justify-content-center">
+<div class="staff-grid">
 
-<?php if(count($akp) > 0): ?>
-    <?php foreach($akp as $a): ?>
-        <div class="col-6 col-md-4 col-lg-3 col-5-grid">
-            <div class="staff-card"
-                 <?php if ($is_editor): ?>
-                 data-edit-block="akp_item"
-                 data-edit-label="Sunting AKP"
-                 data-id="<?= (int) $a['id'] ?>"
-                 data-nama="<?= htmlspecialchars((string) $a['nama'], ENT_QUOTES, 'UTF-8') ?>"
-                 data-jawatan="<?= htmlspecialchars((string) ($a['jawatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                 data-dg="<?= htmlspecialchars((string) ($a['dg'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                 <?php endif; ?>>
+<?php if ($akpRows !== []): ?>
+    <?php foreach ($akpRows as $row): ?>
+        <div class="staff-row">
+            <?php foreach ($row as $a): ?>
+                <div class="staff-col">
+                    <div class="staff-card"
+                         <?php if ($is_editor): ?>
+                         data-edit-block="akp_item"
+                         data-edit-label="Sunting AKP"
+                         data-id="<?= (int) $a['id'] ?>"
+                         data-nama="<?= htmlspecialchars((string) $a['nama'], ENT_QUOTES, 'UTF-8') ?>"
+                         data-jawatan="<?= htmlspecialchars((string) ($a['jawatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                         data-dg="<?= htmlspecialchars((string) ($a['dg'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                         <?php endif; ?>>
 
-                <div class="image-wrapper mb-2">
-                    <img src="<?= !empty($a['image']) ? 'uploads/' . htmlspecialchars($a['image']) : htmlspecialchars($placeholderImage ?? '/smks3/images/placeholder.png') ?>"
-                         alt="<?= htmlspecialchars($a['nama']) ?>">
+                        <div class="image-wrapper mb-2">
+                            <img src="<?= !empty($a['image']) ? 'uploads/' . htmlspecialchars($a['image']) : htmlspecialchars($placeholderImage ?? '/smks3/images/placeholder.png') ?>"
+                                 alt="<?= htmlspecialchars($a['nama']) ?>">
+                        </div>
+
+                        <h6 class="mb-0 fw-bold" data-bind="staff_nama"><?= htmlspecialchars($a['nama']) ?></h6>
+                        <small class="text-muted" data-bind="staff_dg"><?= htmlspecialchars($a['dg']) ?></small><br>
+                        <small data-bind="staff_jawatan"><?= htmlspecialchars($a['jawatan']) ?></small>
+
+                    </div>
                 </div>
-
-                <h6 class="mb-0 fw-bold" data-bind="staff_nama"><?= htmlspecialchars($a['nama']) ?></h6>
-                <small class="text-muted" data-bind="staff_dg"><?= htmlspecialchars($a['dg']) ?></small><br>
-                <small data-bind="staff_jawatan"><?= htmlspecialchars($a['jawatan']) ?></small>
-
-            </div>
+            <?php endforeach; ?>
         </div>
     <?php endforeach; ?>
 <?php else: ?>
