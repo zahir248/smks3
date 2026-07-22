@@ -267,16 +267,22 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
     // ── Pengurusan ────────────────────────────────────────
     $pengurusanKategori = ['pengetua', 'pk', 'gkmp', 'kaunselor'];
     if ($block === 'pengurusan_item') {
-        $nama = trim((string) ($data['nama'] ?? ''));
+        $nama = trim((string) ($data['nama'] ?? $data['name'] ?? ''));
         $gred = trim((string) ($data['gred'] ?? ''));
         $jawatan = trim((string) ($data['jawatan'] ?? ''));
         $kategori = trim((string) ($data['kategori'] ?? ''));
-        if ($id < 1 || $nama === '') {
+        if ($id < 1) {
+            throw new InvalidArgumentException('Rekod pengurusan tidak dijumpai.');
+        }
+        if ($nama === '') {
             throw new InvalidArgumentException('Nama diperlukan.');
         }
         $cur = $pdo->prepare('SELECT gambar, kategori FROM pengurusan WHERE id = ?');
         $cur->execute([$id]);
         $row = $cur->fetch(PDO::FETCH_ASSOC) ?: [];
+        if ($row === []) {
+            throw new InvalidArgumentException('Rekod pengurusan tidak dijumpai.');
+        }
         $gambar = (string) ($row['gambar'] ?? '');
         if ($kategori === '' || !in_array($kategori, $pengurusanKategori, true)) {
             $kategori = (string) ($row['kategori'] ?? 'pengetua');
@@ -295,11 +301,22 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         }
         $pdo->prepare('UPDATE pengurusan SET nama=?, gred=?, jawatan=?, kategori=?, gambar=? WHERE id=?')
             ->execute([$nama, $gred, $jawatan, $kategori, $gambar, $id]);
-        return ['ok' => true, 'message' => 'Pengurusan dikemaskini.', 'reload' => true];
+        return [
+            'ok' => true,
+            'message' => 'Pengurusan dikemaskini.',
+            'reload' => true,
+            'fields' => [
+                'nama' => $nama,
+                'gred' => $gred,
+                'jawatan' => $jawatan,
+                'kategori' => $kategori,
+                'gambar' => $gambar,
+            ],
+        ];
     }
 
     if ($block === 'pengurusan_add') {
-        $nama = trim((string) ($data['nama'] ?? ''));
+        $nama = trim((string) ($data['nama'] ?? $data['name'] ?? ''));
         if ($nama === '') {
             throw new InvalidArgumentException('Nama diperlukan.');
         }

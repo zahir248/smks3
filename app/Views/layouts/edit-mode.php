@@ -852,10 +852,16 @@ body.smks3-is-editor.smks3-panel-open {
         }
         if (block === 'pengurusan_item' || block === 'pengurusan_add') {
             var isAddPg = block === 'pengurusan_add';
+            function pengurusanText(bindName, dataAttr) {
+                var fromData = attr(el, dataAttr).trim();
+                if (fromData) return fromData;
+                var node = el.querySelector('[data-bind="' + bindName + '"]');
+                return node ? String(node.textContent || '').trim() : '';
+            }
             return (isAddPg ? '' : hidden('id', attr(el, 'data-id')))
-                + field('nama', 'Nama', isAddPg ? '' : attr(el, 'data-nama'))
-                + field('gred', 'Gred', isAddPg ? '' : attr(el, 'data-gred'), false, false)
-                + field('jawatan', 'Jawatan', isAddPg ? '' : attr(el, 'data-jawatan'))
+                + field('nama', 'Nama', isAddPg ? '' : pengurusanText('pengurusan_nama', 'data-nama'))
+                + field('gred', 'Gred', isAddPg ? '' : pengurusanText('pengurusan_gred', 'data-gred'), false, false)
+                + field('jawatan', 'Jawatan', isAddPg ? '' : pengurusanText('pengurusan_jawatan', 'data-jawatan'))
                 + selectField('kategori', 'Kategori', isAddPg ? 'pk' : (attr(el, 'data-kategori') || 'pk'), [
                     { value: 'pengetua', label: 'Pengetua' },
                     { value: 'pk', label: 'Penolong Kanan (PK)' },
@@ -2267,12 +2273,21 @@ body.smks3-is-editor.smks3-panel-open {
             return;
         }
         if (block === 'pengurusan_item') {
+            activeEl.setAttribute('data-nama', f.nama || '');
+            activeEl.setAttribute('data-gred', f.gred || '');
+            activeEl.setAttribute('data-jawatan', f.jawatan || '');
+            if (f.kategori) activeEl.setAttribute('data-kategori', f.kategori);
+            if (typeof f.gambar === 'string') activeEl.setAttribute('data-image', f.gambar);
             var n = activeEl.querySelector('[data-bind="pengurusan_nama"]');
             if (n) n.textContent = f.nama || '';
             var g = activeEl.querySelector('[data-bind="pengurusan_gred"]');
             if (g) g.textContent = f.gred || '';
             var j = activeEl.querySelector('[data-bind="pengurusan_jawatan"]');
             if (j) j.textContent = f.jawatan || '';
+            if (typeof f.gambar === 'string') {
+                var img = activeEl.querySelector('.image-wrapper img');
+                if (img && f.gambar) img.src = f.gambar;
+            }
             return;
         }
         if (typeof f.value === 'string') {
@@ -2292,6 +2307,19 @@ body.smks3-is-editor.smks3-panel-open {
         syncRichTextEditor();
         var fd = new FormData(form);
         fd.set('block', blockName);
+        // Explicitly copy critical fields (some browsers omit odd edge cases)
+        if (blockName === 'pengurusan_item' || blockName === 'pengurusan_add') {
+            var namaInput = form.querySelector('[name="nama"]');
+            var idInput = form.querySelector('[name="id"]');
+            var gredInput = form.querySelector('[name="gred"]');
+            var jawatanInput = form.querySelector('[name="jawatan"]');
+            var kategoriInput = form.querySelector('[name="kategori"]');
+            fd.set('nama', namaInput ? String(namaInput.value || '').trim() : '');
+            if (idInput) fd.set('id', String(idInput.value || '').trim());
+            if (gredInput) fd.set('gred', String(gredInput.value || '').trim());
+            if (jawatanInput) fd.set('jawatan', String(jawatanInput.value || '').trim());
+            if (kategoriInput) fd.set('kategori', String(kategoriInput.value || '').trim());
+        }
         if (!fd.has('external') && form.querySelector('[name="external"]')) {
             // unchecked checkbox omitted
         }

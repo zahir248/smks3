@@ -23,16 +23,18 @@
             }
             .pengurusan-card .image-wrapper {
                 width: 130px;
-                height: 200px;
+                height: 170px;
                 overflow: hidden;
-                border-radius: 50%;
+                border-radius: 0;
                 margin-bottom: 10px;
                 flex-shrink: 0;
+                background: #f5f5f5;
             }
             .pengurusan-card img {
                 width: 100%;
                 height: 100%;
-                object-fit: contain;
+                object-fit: cover;
+                object-position: center top;
                 transition: transform 0.3s;
             }
             .pengurusan-card:hover img {
@@ -57,7 +59,7 @@
             }
             @media(max-width: 768px){
                 .pengurusan-card { height: auto; width: 140px; padding: 8px; }
-                .pengurusan-card .image-wrapper { width: 80px; height: 80px; }
+                .pengurusan-card .image-wrapper { width: 100px; height: 130px; }
             }
         </style>
 
@@ -73,18 +75,19 @@
                              data-edit-block="pengurusan_item"
                              data-edit-label="Sunting pengurusan"
                              data-id="<?= (int) $p['id'] ?>"
-                             data-nama="<?= htmlspecialchars($p['nama'], ENT_QUOTES, 'UTF-8') ?>"
-                             data-gred="<?= htmlspecialchars($p['gred'], ENT_QUOTES, 'UTF-8') ?>"
-                             data-jawatan="<?= htmlspecialchars($p['jawatan'], ENT_QUOTES, 'UTF-8') ?>"
+                             data-nama="<?= htmlspecialchars((string) ($p['nama'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                             data-gred="<?= htmlspecialchars((string) ($p['gred'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                             data-jawatan="<?= htmlspecialchars((string) ($p['jawatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
                              data-kategori="<?= htmlspecialchars((string) ($p['kategori'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                             data-image="<?= htmlspecialchars((string) ($p['gambar'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
                              <?php endif; ?>>
                             <div class="image-wrapper">
-                                <img src="<?= !empty($p['gambar']) ? htmlspecialchars($p['gambar']) : $placeholderImage ?>" 
-                                     alt="<?= htmlspecialchars($p['nama']) ?>">
+                                <img src="<?= !empty($p['gambar']) ? htmlspecialchars((string) $p['gambar'], ENT_QUOTES, 'UTF-8') : $placeholderImage ?>" 
+                                     alt="<?= htmlspecialchars((string) ($p['nama'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
                             </div>
-                            <h5 data-bind="pengurusan_nama"><?= htmlspecialchars($p['nama']) ?></h5>
-                            <h5 data-bind="pengurusan_gred"><?= htmlspecialchars($p['gred']) ?></h5>
-                            <h5 class="jawatan" data-bind="pengurusan_jawatan"><?= htmlspecialchars($p['jawatan']) ?></h5>
+                            <h5 data-bind="pengurusan_nama"><?= htmlspecialchars((string) ($p['nama'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h5>
+                            <h5 data-bind="pengurusan_gred"><?= htmlspecialchars((string) ($p['gred'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h5>
+                            <h5 class="jawatan" data-bind="pengurusan_jawatan"><?= htmlspecialchars((string) ($p['jawatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h5>
                         </div>
                     <?php endforeach; ?>
                 </div>
