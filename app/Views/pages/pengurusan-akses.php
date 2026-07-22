@@ -19,6 +19,21 @@ foreach ($catalog as $key => $meta) {
     $groups[$g][$key] = $meta['label'];
 }
 
+$permLabelsJson = [];
+foreach ($catalog as $key => $meta) {
+    $permLabelsJson[$key] = [
+        'label' => (string) ($meta['label'] ?? $key),
+        'group' => (string) ($meta['group'] ?? 'Lain'),
+    ];
+}
+if (function_exists('smks3_rbac_permission_aliases')) {
+    foreach (smks3_rbac_permission_aliases() as $alias => $target) {
+        if (isset($permLabelsJson[$target])) {
+            $permLabelsJson[$alias] = $permLabelsJson[$target];
+        }
+    }
+}
+
 $unitsJson = [];
 foreach ($units as $u) {
     $unitsJson[] = [
@@ -883,6 +898,7 @@ foreach ($admins as $a) {
     var CURRENT_USERNAME = <?= json_encode((string) ($_SESSION['username'] ?? ''), JSON_UNESCAPED_UNICODE) ?>;
     var units = <?= json_encode($unitsJson, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
     var admins = <?= json_encode($adminsJson, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+    var PERM_LABELS = <?= json_encode($permLabelsJson, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
     var unitPage = 1;
     var adminPage = 1;
     var unitQuery = '';
@@ -2322,7 +2338,78 @@ foreach ($admins as $a) {
             return sentences;
         }
 
-        function narratePermissions(before, after) {
+        function managedAdminName(log) {
+            if (!log) return '';
+            if (log.target_username) return String(log.target_username).trim();
+            if (log.meta && log.meta.username) return String(log.meta.username).trim();
+            if (log.summary) {
+                var m = String(log.summary).match(/:\s*(.+)$/);
+                if (m) return m[1].trim();
+            }
+            if (log.entity_type === 'user' && log.entity_id) {
+                var uid = Number(log.entity_id);
+                var found = admins.find(function (a) { return Number(a.id) === uid; });
+                if (found && found.username) return String(found.username).trim();
+            }
+            return '';
+        }
+
+        function formatLogSummaryCell(row) {
+            var action = String(row.action || '');
+            var target = managedAdminName(row);
+            if (action.indexOf('rbac.admin_') === 0 && target) {
+                if (action === 'rbac.admin_permissions') {
+                    return 'Untuk admin <strong>' + esc(target) + '</strong> · kebenaran sunting dikemaskini';
+                }
+                if (action === 'rbac.admin_create') {
+                    return 'Admin baharu <strong>' + esc(target) + '</strong> didaftarkan';
+                }
+                if (action === 'rbac.admin_delete') {
+                    return 'Admin <strong>' + esc(target) + '</strong> dipadam';
+                }
+                if (action === 'rbac.admin_set_active') {
+                    return 'Status admin <strong>' + esc(target) + '</strong> dikemaskini';
+                }
+                if (action === 'rbac.admin_update') {
+                    return 'Maklumat admin <strong>' + esc(target) + '</strong> dikemaskini';
+                }
+                return 'Untuk admin <strong>' + esc(target) + '</strong>';
+            }
+            return esc(row.summary || '');
+        }
+
+        function permissionLabel(key) {
+            key = String(key == null ? '' : key).trim();
+            if (!key) return 'Tidak diketahui';
+            var meta = PERM_LABELS[key];
+            if (meta && meta.label) return meta.label;
+            return key.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+        }
+
+        function permissionGroup(key) {
+            var meta = PERM_LABELS[String(key == null ? '' : key)];
+            return (meta && meta.group) ? meta.group : 'Lain';
+        }
+
+        /** Human-readable list of permission keys, grouped when many. */
+        function formatPermissionList(keys) {
+            keys = (Array.isArray(keys) ? keys : []).map(String).filter(Boolean);
+            if (!keys.length) return '';
+            if (keys.length >= 3) {
+                var groups = {};
+                keys.forEach(function (k) {
+                    var g = permissionGroup(k);
+                    if (!groups[g]) groups[g] = [];
+                    groups[g].push(permissionLabel(k));
+                });
+                return Object.keys(groups).sort().map(function (g) {
+                    return g + ' — ' + groups[g].join(', ');
+                }).join('; ');
+            }
+            return keys.map(permissionLabel).join(', ');
+        }
+
+        function narratePermissions(before, after, log) {
             var b = Array.isArray(before) ? before.map(String) : [];
             var a = Array.isArray(after) ? after.map(String) : [];
             var bSet = {};
@@ -2332,14 +2419,21 @@ foreach ($admins as $a) {
             var added = a.filter(function (k) { return !bSet[k]; });
             var removed = b.filter(function (k) { return !aSet[k]; });
             var out = [];
+
+            var adminName = managedAdminName(log);
+            var adminRef = adminName ? quoteText(adminName) : 'admin';
+
+            if (added.length || removed.length) {
+                out.push('Superadmin mengemaskini kebenaran sunting halaman untuk admin ' + adminRef + '.');
+            }
             if (added.length) {
-                out.push('Kebenaran ditambah: ' + added.map(function (k) { return quoteText(k); }).join(', ') + '.');
+                out.push('Halaman baharu boleh disunting (' + added.length + '): ' + formatPermissionList(added) + '.');
             }
             if (removed.length) {
-                out.push('Kebenaran dibuang: ' + removed.map(function (k) { return quoteText(k); }).join(', ') + '.');
+                out.push('Halaman tidak lagi boleh disunting (' + removed.length + '): ' + formatPermissionList(removed) + '.');
             }
-            if (!out.length) {
-                out.push('Senarai kebenaran disimpan tanpa perubahan.');
+            if (!added.length && !removed.length) {
+                out.push('Tiada perubahan kebenaran untuk admin ' + adminRef + ' — senarai yang sama disimpan semula.');
             }
             return out;
         }
@@ -2472,19 +2566,17 @@ foreach ($admins as $a) {
                 return sentences;
             }
 
-            // Permissions
-            if (action === 'rbac.admin_permissions'
-                || (before && before.permissions) || (after && after.permissions)) {
+            // Permissions (admin page access)
+            var isPermLog = action === 'rbac.admin_permissions';
+            if (isPermLog) {
                 var bp = (before && before.permissions) || [];
                 var ap = (after && after.permissions) || [];
-                if (Array.isArray(bp) || Array.isArray(ap)) {
-                    sentences = sentences.concat(narratePermissions(bp, ap));
-                }
+                sentences = sentences.concat(narratePermissions(bp, ap, log));
             }
 
             // List-like content (slideshow, galleries, quick links)
-            var beforeList = asList(before);
-            var afterList = asList(after);
+            var beforeList = isPermLog ? null : asList(before);
+            var afterList = isPermLog ? null : asList(after);
             if (beforeList || afterList) {
                 // Quick link single-item edits still include `all`
                 if (entity.indexOf('quick_link') === 0 && before && before.item != null && after && after.item != null
@@ -2579,6 +2671,9 @@ foreach ($admins as $a) {
                 var reasonMap = { idle: 'Tamat masa tidak aktif', manual: 'Manual', deactivated: 'Akaun dinyahaktif', session_clear: 'Sesi dikosongkan' };
                 bits.push('<div class="small text-muted">Sebab: <strong>' + esc(reasonMap[meta.reason] || meta.reason) + '</strong></div>');
             }
+            if (String(log.action || '') === 'rbac.admin_permissions' && meta.username) {
+                bits.push('<div class="small text-muted mt-1">Admin yang diurus: <strong>' + esc(meta.username) + '</strong></div>');
+            }
             if (meta._files && isPlainObject(meta._files)) {
                 Object.keys(meta._files).forEach(function (field) {
                     var info = meta._files[field];
@@ -2599,13 +2694,25 @@ foreach ($admins as $a) {
             var metaEl = document.getElementById('rbacLogDetailMeta');
             var bodyEl = document.getElementById('rbacLogDetailBody');
             var titleEl = document.getElementById('rbacLogDetailTitle');
-            if (titleEl) titleEl.textContent = log.action_label || log.action || 'Butiran log';
+            var targetAdmin = managedAdminName(log);
+            if (titleEl) {
+                if (String(log.action || '') === 'rbac.admin_permissions' && targetAdmin) {
+                    titleEl.textContent = 'Kebenaran admin — ' + targetAdmin;
+                } else if (String(log.action || '').indexOf('rbac.admin_') === 0 && targetAdmin) {
+                    titleEl.textContent = (log.action_label || 'Admin') + ' — ' + targetAdmin;
+                } else {
+                    titleEl.textContent = log.action_label || log.action || 'Butiran log';
+                }
+            }
             if (metaEl) {
                 metaEl.innerHTML = '<div><strong>' + esc(log.occurred_at || '') + '</strong></div>'
-                    + '<div>' + esc(actorLabel(log.actor_username, log.actor_user_id))
+                    + '<div>Dilakukan oleh: ' + esc(actorLabel(log.actor_username, log.actor_user_id))
                     + (log.actor_role ? ' · ' + esc(log.actor_role) : '')
                     + (log.ip ? ' · IP ' + esc(log.ip) : '')
-                    + '</div>';
+                    + '</div>'
+                    + (targetAdmin
+                        ? ('<div>Untuk admin: <strong>' + esc(targetAdmin) + '</strong></div>')
+                        : '');
             }
             if (!bodyEl) return;
 
@@ -2705,8 +2812,8 @@ foreach ($admins as $a) {
                     logBody.innerHTML = items.map(function (row) {
                         var actor = esc(actorLabel(row.actor_username, row.actor_user_id));
                         if (row.actor_role) actor += ' <span class="text-muted">(' + esc(row.actor_role) + ')</span>';
-                        var detail = esc(row.summary || '');
-                        if (row.entity_type) {
+                        var detail = formatLogSummaryCell(row);
+                        if (row.entity_type && String(row.action || '').indexOf('rbac.admin_') !== 0) {
                             detail += (detail ? ' · ' : '') + '<span class="text-muted">' + esc(row.entity_type)
                                 + (row.entity_id ? ' #' + esc(row.entity_id) : '') + '</span>';
                         }
@@ -2758,8 +2865,8 @@ foreach ($admins as $a) {
                     adminHistoryBody.innerHTML = items.map(function (row) {
                         var actor = esc(actorLabel(row.actor_username, row.actor_user_id));
                         if (row.actor_role) actor += ' <span class="text-muted">(' + esc(row.actor_role) + ')</span>';
-                        var detail = esc(row.summary || '');
-                        if (row.entity_type) {
+                        var detail = formatLogSummaryCell(row);
+                        if (row.entity_type && String(row.action || '').indexOf('rbac.admin_') !== 0) {
                             detail += (detail ? ' · ' : '') + '<span class="text-muted">' + esc(row.entity_type)
                                 + (row.entity_id ? ' #' + esc(row.entity_id) : '') + '</span>';
                         }

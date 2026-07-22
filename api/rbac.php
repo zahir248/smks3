@@ -184,7 +184,7 @@ try {
             ['permissions' => $cleanKeys],
             'user',
             (string) $id,
-            'Kebenaran admin dikemaskini: ' . (string) ($adminRow['username'] ?? ''),
+            'Kebenaran sunting untuk admin: ' . (string) ($adminRow['username'] ?? ''),
             ['username' => (string) ($adminRow['username'] ?? '')]
         );
         echo json_encode([

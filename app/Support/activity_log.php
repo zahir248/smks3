@@ -216,6 +216,30 @@ function smks3_activity_action_label(string $action): string
     return $map[$action] ?? $action;
 }
 
+/** Admin username affected by rbac.admin_* log entries. */
+function smks3_activity_log_target_username(array $row): string
+{
+    $action = (string) ($row['action'] ?? '');
+    if ($action === '' || !str_starts_with($action, 'rbac.admin_')) {
+        return '';
+    }
+    $metaJson = (string) ($row['meta_json'] ?? '');
+    if ($metaJson !== '' && $metaJson !== 'null') {
+        $meta = json_decode($metaJson, true);
+        if (is_array($meta)) {
+            $fromMeta = trim((string) ($meta['username'] ?? ''));
+            if ($fromMeta !== '') {
+                return $fromMeta;
+            }
+        }
+    }
+    $summary = (string) ($row['summary'] ?? '');
+    if ($summary !== '' && preg_match('/:\s*(.+)$/u', $summary, $m)) {
+        return trim((string) ($m[1] ?? ''));
+    }
+    return '';
+}
+
 function smks3_activity_content_op(string $block): string
 {
     if (str_ends_with($block, '_add') || str_ends_with($block, '_item_add')) {
@@ -722,7 +746,7 @@ function smks3_activity_log_list(PDO $pdo, array $filters = []): array
 
     $stmt = $pdo->prepare(
         "SELECT id, occurred_at, actor_user_id, actor_username, actor_role, action,
-                entity_type, entity_id, summary, route, ip,
+                entity_type, entity_id, summary, route, ip, meta_json,
                 (before_json IS NOT NULL AND before_json <> '' AND before_json <> 'null') AS has_before,
                 (after_json IS NOT NULL AND after_json <> '' AND after_json <> 'null') AS has_after
          FROM activity_log
@@ -736,6 +760,7 @@ function smks3_activity_log_list(PDO $pdo, array $filters = []): array
     $items = [];
     foreach ($rows as $row) {
         $actionKey = (string) ($row['action'] ?? '');
+        $targetUsername = smks3_activity_log_target_username($row);
         $items[] = [
             'id' => (int) ($row['id'] ?? 0),
             'occurred_at' => (string) ($row['occurred_at'] ?? ''),
@@ -747,6 +772,7 @@ function smks3_activity_log_list(PDO $pdo, array $filters = []): array
             'entity_type' => (string) ($row['entity_type'] ?? ''),
             'entity_id' => (string) ($row['entity_id'] ?? ''),
             'summary' => (string) ($row['summary'] ?? ''),
+            'target_username' => $targetUsername,
             'route' => (string) ($row['route'] ?? ''),
             'ip' => smks3_format_client_ip((string) ($row['ip'] ?? '')),
             'has_before' => !empty($row['has_before']),
@@ -813,6 +839,7 @@ function smks3_activity_log_get(PDO $pdo, int $id): ?array
         'entity_type' => (string) ($row['entity_type'] ?? ''),
         'entity_id' => (string) ($row['entity_id'] ?? ''),
         'summary' => (string) ($row['summary'] ?? ''),
+        'target_username' => smks3_activity_log_target_username($row),
         'route' => (string) ($row['route'] ?? ''),
         'ip' => smks3_format_client_ip((string) ($row['ip'] ?? '')),
         'user_agent' => (string) ($row['user_agent'] ?? ''),
