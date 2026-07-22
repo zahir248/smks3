@@ -46,6 +46,49 @@ $bool = static function ($v): bool {
 try {
     $pdo = getConnection();
 
+    $before = smks3_activity_snapshot_block($block, $data, $pdo);
+    $requestMeta = smks3_activity_sanitize_payload($data);
+    if (!empty($_FILES)) {
+        $fileMeta = [];
+        foreach ($_FILES as $field => $info) {
+            if (is_array($info['name'] ?? null)) {
+                $names = array_values(array_filter((array) $info['name'], static fn($n) => $n !== '' && $n !== null));
+                $fileMeta[$field] = ['count' => count($names), 'names' => $names];
+            } elseif (!empty($info['name'])) {
+                $fileMeta[$field] = ['name' => (string) $info['name'], 'size' => (int) ($info['size'] ?? 0)];
+            }
+        }
+        if ($fileMeta !== []) {
+            $requestMeta['_files'] = $fileMeta;
+        }
+    }
+
+    $respond = static function (array $payload) use ($block, $data, $pdo, $before, $requestMeta): void {
+        $after = smks3_activity_snapshot_block($block, $data, $pdo);
+        $entityId = isset($data['id']) && (string) $data['id'] !== ''
+            ? (string) $data['id']
+            : (isset($data['index']) ? (string) $data['index'] : null);
+        $summary = (string) ($payload['message'] ?? smks3_activity_action_label(smks3_activity_content_op($block)));
+        if ($summary === '') {
+            $summary = $block;
+        }
+        $pageKey = smks3_activity_resolve_page_key($block, is_array($data) ? $data : []);
+        $meta = ['request' => $requestMeta];
+        if ($pageKey !== null && $pageKey !== '') {
+            $meta['page_key'] = $pageKey;
+        }
+        smks3_activity_log(
+            smks3_activity_content_op($block),
+            $before,
+            $after ?? ($payload['fields'] ?? null),
+            $block,
+            $entityId,
+            $summary,
+            $meta
+        );
+        echo json_encode($payload);
+    };
+
     if ($block === 'school_info') {
         $fields = [
             'school_name' => $data['school_name'] ?? '',
@@ -56,7 +99,7 @@ try {
         if (!smks3_save_settings($fields)) {
             throw new RuntimeException('Gagal simpan maklumat sekolah.');
         }
-        echo json_encode(['ok' => true, 'message' => 'Maklumat sekolah dikemaskini.', 'fields' => array_map('trim', $fields)]);
+        $respond(['ok' => true, 'message' => 'Maklumat sekolah dikemaskini.', 'fields' => array_map('trim', $fields)]);
         exit;
     }
 
@@ -79,7 +122,7 @@ try {
         if (!smks3_save_json_content('home_quick_links', $links)) {
             throw new RuntimeException('Gagal simpan pautan.');
         }
-        echo json_encode(['ok' => true, 'message' => 'Pautan dikemaskini.', 'fields' => $links[$index] + ['index' => $index], 'reload' => true]);
+        $respond(['ok' => true, 'message' => 'Pautan dikemaskini.', 'fields' => $links[$index] + ['index' => $index], 'reload' => true]);
         exit;
     }
 
@@ -95,7 +138,7 @@ try {
         if (!smks3_save_json_content('home_quick_links', $links)) {
             throw new RuntimeException('Gagal tambah pautan.');
         }
-        echo json_encode(['ok' => true, 'message' => 'Pautan ditambah.', 'reload' => true]);
+        $respond(['ok' => true, 'message' => 'Pautan ditambah.', 'reload' => true]);
         exit;
     }
 
@@ -109,61 +152,20 @@ try {
         if (!smks3_save_json_content('home_quick_links', $links)) {
             throw new RuntimeException('Gagal padam pautan.');
         }
-        echo json_encode(['ok' => true, 'message' => 'Pautan dipadam.', 'reload' => true]);
+        $respond(['ok' => true, 'message' => 'Pautan dipadam.', 'reload' => true]);
         exit;
     }
 
-    if ($block === 'slideshow_slide') {
-        $index = (int) ($data['index'] ?? -1);
-        $slides = smks3_get_slideshow(dirname(__DIR__));
-        if (!isset($slides[$index])) {
-            throw new InvalidArgumentException('Slaid tidak dijumpai.');
+    if ($block === 'slideshow_gallery') {
+        $uploads = smks3_normalize_uploaded_files($_FILES['images'] ?? null);
+        if ($uploads === [] && !empty($_FILES['image']['name'])) {
+            $uploads = [$_FILES['image']];
         }
-        $slides[$index]['alt'] = trim((string) ($data['alt'] ?? $slides[$index]['alt']));
-        $slides[$index]['href'] = trim((string) ($data['href'] ?? ''));
-        $slides[$index]['external'] = $bool($data['external'] ?? false);
-        if (!empty($_FILES['image']['name'])) {
-            $slides[$index]['image'] = smks3_upload_slideshow_image($_FILES['image']);
-        }
-        if ($slides[$index]['image'] === '') {
-            throw new InvalidArgumentException('Gambar slaid diperlukan.');
-        }
+        $slides = smks3_sync_slideshow_gallery($data, $uploads);
         if (!smks3_save_json_content('home_slideshow', $slides)) {
             throw new RuntimeException('Gagal simpan slaid.');
         }
-        echo json_encode(['ok' => true, 'message' => 'Slaid dikemaskini.', 'reload' => true]);
-        exit;
-    }
-
-    if ($block === 'slideshow_add') {
-        $slides = smks3_get_slideshow(dirname(__DIR__));
-        if (empty($_FILES['image']['name'])) {
-            throw new InvalidArgumentException('Sila muat naik gambar slaid.');
-        }
-        $slides[] = smks3_normalize_slide([
-            'image' => smks3_upload_slideshow_image($_FILES['image']),
-            'alt' => $data['alt'] ?? 'Slaid baharu',
-            'href' => $data['href'] ?? '',
-            'external' => $bool($data['external'] ?? false),
-        ]);
-        if (!smks3_save_json_content('home_slideshow', $slides)) {
-            throw new RuntimeException('Gagal tambah slaid.');
-        }
-        echo json_encode(['ok' => true, 'message' => 'Slaid ditambah.', 'reload' => true]);
-        exit;
-    }
-
-    if ($block === 'slideshow_delete') {
-        $index = (int) ($data['index'] ?? -1);
-        $slides = smks3_get_slideshow(dirname(__DIR__));
-        if (!isset($slides[$index])) {
-            throw new InvalidArgumentException('Slaid tidak dijumpai.');
-        }
-        array_splice($slides, $index, 1);
-        if (!smks3_save_json_content('home_slideshow', $slides)) {
-            throw new RuntimeException('Gagal padam slaid.');
-        }
-        echo json_encode(['ok' => true, 'message' => 'Slaid dipadam.', 'reload' => true]);
+        $respond(['ok' => true, 'message' => 'Slaid dikemaskini.', 'reload' => true]);
         exit;
     }
 
@@ -183,14 +185,14 @@ try {
             $stmt = $pdo->prepare('UPDATE fpk_misi_visi SET content = ? WHERE id = ?');
             $stmt->execute([$content, $id]);
         }
-        echo json_encode(['ok' => true, 'message' => 'Kandungan dikemaskini.', 'fields' => compact('id', 'content', 'kategori')]);
+        $respond(['ok' => true, 'message' => 'Kandungan dikemaskini.', 'fields' => compact('id', 'content', 'kategori')]);
         exit;
     }
 
     require_once __DIR__ . '/../app/Services/CmsHandlers.php';
     $extra = smks3_handle_cms_block($block, $data, $pdo, $bool);
     if (is_array($extra)) {
-        echo json_encode($extra);
+        $respond($extra);
         exit;
     }
 
@@ -205,7 +207,7 @@ try {
         if (!smks3_save_site_content($block, $value)) {
             throw new RuntimeException('Gagal simpan kandungan.');
         }
-        echo json_encode(['ok' => true, 'message' => 'Kandungan dikemaskini.', 'fields' => ['block' => $block, 'value' => $value]]);
+        $respond(['ok' => true, 'message' => 'Kandungan dikemaskini.', 'fields' => ['block' => $block, 'value' => $value]]);
         exit;
     }
 

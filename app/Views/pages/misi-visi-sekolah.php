@@ -29,7 +29,7 @@ if ($fpk_falsafah_paras === ['']) {
 
 <section class="page-section">
     <div class="container">
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             <?php foreach ($fpk_rows as $row):
                 $icon = smks3_fpk_icon($row['kategori']);
             ?>

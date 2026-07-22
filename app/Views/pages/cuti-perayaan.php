@@ -82,7 +82,21 @@ body.smks3-is-editor [data-edit-list] li[data-edit-block] {
             <?php endif; ?>
         </div>
 
-        <?php foreach ($cuti_pdfs as $row) :
+        <?php
+        $cuti_pdfs = is_array($cuti_pdfs ?? null) ? $cuti_pdfs : [];
+        $cutiPdfSrcs = [];
+        foreach ($cuti_pdfs as $row) {
+            $file = $row['file_pdf'] ?? '';
+            if ($file === '') {
+                continue;
+            }
+            $filePath = 'uploads/cuti_perayaan/' . $file;
+            if (file_exists(BASE_PATH . '/' . $filePath)) {
+                $cutiPdfSrcs[] = $filePath;
+            }
+        }
+        $cutiPdfJson = json_encode($cutiPdfSrcs, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        foreach ($cuti_pdfs as $row) :
             $file = $row['file_pdf'] ?? '';
             if ($file === '') {
                 continue;
@@ -92,13 +106,7 @@ body.smks3-is-editor [data-edit-list] li[data-edit-block] {
                 continue;
             }
         ?>
-        <div class="card shadow-sm border-0 mb-4 mt-4"
-             <?php if ($is_editor): ?>
-             data-edit-block="cuti_pdf"
-             data-edit-label="PDF cuti perayaan"
-             data-edit-hint="Guna Padam untuk buang PDF ini."
-             data-id="<?= (int) $row['id'] ?>"
-             <?php endif; ?>>
+        <div class="card shadow-sm border-0 mb-4 mt-4">
             <div class="card-body">
                 <?php
                 smks3_pdf_viewer($filePath, [
@@ -114,12 +122,13 @@ body.smks3-is-editor [data-edit-list] li[data-edit-block] {
         <?php if ($is_editor): ?>
         <div class="text-center mb-4 mt-3">
             <button type="button" class="btn btn-outline-primary"
-                    data-edit-block="cuti_pdf_add"
-                    data-edit-label="Tambah PDF cuti"
-                    data-edit-hint="Tambah PDF baharu. PDF yang sedia ada kekal (tidak diganti).">
-                <i class="bi bi-plus-lg me-1"></i> Tambah PDF
+                    data-edit-block="cuti_pdf_gallery"
+                    data-edit-label="Urus PDF cuti"
+                    data-edit-hint="Tambah, buang, atau susun semula semua PDF dalam satu panel."
+                    data-images-json="<?= htmlspecialchars($cutiPdfJson ?: '[]', ENT_QUOTES, 'UTF-8') ?>">
+                <i class="bi bi-files me-1"></i> Urus PDF
             </button>
-            <p class="small text-muted mt-2 mb-0">Boleh ada lebih dari satu PDF. Muat naik baharu tidak menggantikan yang lama.</p>
+            <p class="small text-muted mt-2 mb-0">Satu panel untuk semua PDF: muat naik berbilang, buang, dan susun semula.</p>
         </div>
         <?php endif; ?>
     </div>

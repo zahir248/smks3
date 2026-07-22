@@ -48,6 +48,12 @@ function smks3_brand_aliases(): string
 /** Default OG / social share image. */
 function smks3_default_og_image(): string
 {
+    if (function_exists('smks3_site_logo_src')) {
+        $logo = smks3_site_logo_src();
+        if ($logo !== '' && is_file(BASE_PATH . '/' . $logo)) {
+            return smks3_absolute_url($logo);
+        }
+    }
     foreach (['images/smk-seremban-3-hero.jpg', 'images/hero-logo.png', 'images/favicon-smks3.ico'] as $candidate) {
         if (is_file(BASE_PATH . '/' . $candidate)) {
             return smks3_absolute_url($candidate);
@@ -295,7 +301,7 @@ function smks3_resolve_seo(array $vars = []): array
         'name' => $schoolName,
         'alternateName' => ['SMK Seremban 3', 'SMKS3', 'smks3', 'SMK S3'],
         'url' => smks3_absolute_url('/'),
-        'logo' => smks3_absolute_url((string) ($layout['navbar_logo'] ?? 'images/hero-logo.png')),
+        'logo' => smks3_absolute_url(function_exists('smks3_site_logo_src') ? smks3_site_logo_src() : (string) ($layout['navbar_logo'] ?? 'images/hero-logo.png')),
         'image' => $ogImage,
         'description' => smks3_seo_plain_text((string) ($settings['about_summary'] ?? $metaDescription), 300),
         'email' => (string) ($settings['email'] ?? ''),
@@ -362,7 +368,7 @@ function smks3_resolve_seo(array $vars = []): array
                 'name' => $schoolName,
                 'logo' => [
                     '@type' => 'ImageObject',
-                    'url' => smks3_absolute_url((string) ($layout['navbar_logo'] ?? 'images/hero-logo.png')),
+                    'url' => smks3_absolute_url(function_exists('smks3_site_logo_src') ? smks3_site_logo_src() : (string) ($layout['navbar_logo'] ?? 'images/hero-logo.png')),
                 ],
             ],
             'mainEntityOfPage' => $canonical,

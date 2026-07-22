@@ -77,19 +77,23 @@ body.smks3-is-editor .akademik-content td[data-edit-block] {
         </p>
         <?php endif; ?>
 
-        <?php foreach ($calendar_pdfs as $row) : ?>
+        <?php
+        $calendar_pdfs = is_array($calendar_pdfs ?? null) ? $calendar_pdfs : [];
+        $kalendarPdfSrcs = [];
+        foreach ($calendar_pdfs as $row) {
+            if (empty($row['file_pdf'])) {
+                continue;
+            }
+            $kalendarPdfSrcs[] = 'uploads/kalendar/' . $row['file_pdf'];
+        }
+        $kalendarPdfJson = json_encode($kalendarPdfSrcs, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        foreach ($calendar_pdfs as $row) : ?>
             <?php if (empty($row['file_pdf'])) {
                 continue;
             }
             $kalendarPdf = 'uploads/kalendar/' . $row['file_pdf'];
             ?>
-        <div class="card mb-4 shadow-sm border-0"
-             <?php if ($is_editor): ?>
-             data-edit-block="kalendar_pdf"
-             data-edit-label="PDF kalendar"
-             data-edit-hint="Guna Padam untuk buang PDF ini."
-             data-id="<?= (int) $row['id'] ?>"
-             <?php endif; ?>>
+        <div class="card mb-4 shadow-sm border-0">
             <div class="card-body">
                 <?php
                 smks3_pdf_viewer($kalendarPdf, [
@@ -105,12 +109,13 @@ body.smks3-is-editor .akademik-content td[data-edit-block] {
         <?php if ($is_editor): ?>
         <div class="text-center mb-4">
             <button type="button" class="btn btn-outline-primary"
-                    data-edit-block="kalendar_pdf_add"
-                    data-edit-label="Tambah PDF kalendar"
-                    data-edit-hint="Tambah PDF baharu. PDF yang sedia ada kekal (tidak diganti).">
-                <i class="bi bi-plus-lg me-1"></i> Tambah PDF
+                    data-edit-block="kalendar_pdf_gallery"
+                    data-edit-label="Urus PDF kalendar"
+                    data-edit-hint="Tambah, buang, atau susun semula semua PDF dalam satu panel."
+                    data-images-json="<?= htmlspecialchars($kalendarPdfJson ?: '[]', ENT_QUOTES, 'UTF-8') ?>">
+                <i class="bi bi-files me-1"></i> Urus PDF
             </button>
-            <p class="small text-muted mt-2 mb-0">Boleh ada lebih dari satu PDF. Muat naik baharu tidak menggantikan yang lama.</p>
+            <p class="small text-muted mt-2 mb-0">Satu panel untuk semua PDF: muat naik berbilang, buang, dan susun semula.</p>
         </div>
         <?php endif; ?>
 

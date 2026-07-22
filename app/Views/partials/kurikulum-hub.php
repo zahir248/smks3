@@ -31,12 +31,14 @@ $cards = is_array($kurikulum_by_section['main'] ?? null)
         <?php
         $section_key = 'main';
         $col_class = 'col-md-6 col-lg-4 mb-4';
+        $row_class = 'row g-4 justify-content-center';
         smks3_view_include(VIEW_PATH . '/partials/kurikulum-cards.php', compact(
             'is_editor',
             'kurikulum_page_key',
             'cards',
             'section_key',
-            'col_class'
+            'col_class',
+            'row_class'
         ));
         ?>
     </div>

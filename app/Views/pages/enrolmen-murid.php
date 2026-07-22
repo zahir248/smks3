@@ -186,35 +186,40 @@ $enrolments = $pdo->query('
     FROM enrolmen_murid
     ORDER BY sort_order ASC, id ASC
 ')->fetchAll(PDO::FETCH_ASSOC);
-$slideMeta = [];
+$enrolmenGalleryItems = [];
 foreach ($enrolments as $row) {
-    $slideMeta[] = [
-        'id' => (int) ($row['id'] ?? 0),
+    $id = (int) ($row['id'] ?? 0);
+    if ($id < 1) {
+        continue;
+    }
+    $imgSrc = smks3_enrolmen_img_src((string) ($row['image'] ?? ''));
+    $enrolmenGalleryItems[] = [
+        'src' => $imgSrc,
+        'key' => (string) $id,
+        'id' => $id,
         'title' => (string) ($row['title'] ?? ''),
     ];
 }
-$slidesJson = htmlspecialchars(json_encode($slideMeta, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
+$enrolmenGalleryJson = htmlspecialchars(json_encode($enrolmenGalleryItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
 $slideCount = count($enrolments);
 ?>
 
 <?php if ($enrolments): ?>
 <div id="enrolmentCarousel"
      class="carousel slide enrolmen-hero enrolmen-carousel-wrap"
-     <?= $is_editor ? 'data-bs-interval="false"' : 'data-bs-ride="carousel"' ?>>
+     <?= $is_editor ? 'data-bs-interval="false"' : 'data-bs-ride="carousel"' ?>
+     <?php if ($is_editor): ?>
+     data-edit-block="enrolmen_gallery"
+     data-edit-label="Urus gambar enrolmen"
+     data-edit-hint="Tambah, buang, susun semula, dan edit tajuk setiap slaid."
+     data-images-json="<?= $enrolmenGalleryJson ?>"
+     <?php endif; ?>>
     <div class="carousel-inner">
         <?php foreach ($enrolments as $index => $item):
             $imgSrc = smks3_enrolmen_img_src((string) ($item['image'] ?? ''));
             ?>
         <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
-            <div class="enrolmen-slide"
-                 <?php if ($is_editor): ?>
-                 data-edit-block="enrolmen_item"
-                 data-edit-label="Sunting enrolmen"
-                 data-edit-hint="Kemaskini tajuk, gambar, atau kedudukan slaid. Guna Padam untuk buang."
-                 data-id="<?= (int) $item['id'] ?>"
-                 data-title="<?= htmlspecialchars((string) ($item['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                 data-slides="<?= $slidesJson ?>"
-                 <?php endif; ?>>
+            <div class="enrolmen-slide">
                 <h3 class="fw-bold enrolmen-slide__title">
                     <?= htmlspecialchars((string) ($item['title'] ?? '')) ?>
                 </h3>
@@ -248,13 +253,13 @@ $slideCount = count($enrolments);
         <?php if ($is_editor): ?>
         <div class="text-center mb-4">
             <button type="button" class="btn btn-outline-primary"
-                    data-edit-block="enrolmen_add"
-                    data-edit-label="Tambah gambar enrolmen"
-                    data-edit-hint="Muat naik gambar dan pilih kedudukan dalam slaid."
-                    data-slides="<?= $slidesJson ?>">
-                <i class="bi bi-plus-lg me-1"></i> Tambah Gambar
+                    data-edit-block="enrolmen_gallery"
+                    data-edit-label="Urus gambar enrolmen"
+                    data-edit-hint="Tambah, buang, susun semula, dan edit tajuk setiap slaid."
+                    data-images-json="<?= $enrolmenGalleryJson ?>">
+                <i class="bi bi-images me-1"></i> Urus gambar
             </button>
-            <p class="small text-muted mt-2 mb-0">Gambar dipaparkan sebagai slaid. Anda boleh pilih kedudukan (awal / selepas / akhir) bila menambah atau menyunting.</p>
+            <p class="small text-muted mt-2 mb-0">Urus semua slaid dalam satu panel — termasuk tajuk, susunan, dan muat naik berbilang.</p>
         </div>
         <?php endif; ?>
 
@@ -342,7 +347,7 @@ $renderBlok('blok_b', $blokB, 'blok-b');
             </h2>
         </div>
 
-        <div class="row g-4 text-center">
+        <div class="row g-4 text-center justify-content-center">
             <?php foreach (($enrolmen['summary'] ?? []) as $item): ?>
             <div class="col-md-4">
                 <div class="card shadow-sm border-0 h-100">

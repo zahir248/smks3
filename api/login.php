@@ -26,7 +26,7 @@ if ($rateError !== null) {
     exit;
 }
 
-$username = trim((string) ($data['username'] ?? ''));
+$username = smks3_normalize_username((string) ($data['username'] ?? ''));
 $password = trim((string) ($data['password'] ?? ''));
 
 if ($username === '' || $password === '') {
@@ -38,7 +38,7 @@ if ($username === '' || $password === '') {
 try {
     $pdo = getConnection();
     smks3_ensure_users_is_active_column($pdo);
-    $stmt = $pdo->prepare('SELECT * FROM users WHERE username = ? LIMIT 1');
+    $stmt = $pdo->prepare('SELECT * FROM users WHERE ' . smks3_sql_username_equals('username') . ' LIMIT 1');
     $stmt->execute([$username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -69,6 +69,7 @@ try {
 
     $_SESSION['username'] = $user['username'];
     $_SESSION['role'] = $role;
+    $_SESSION['user_id'] = isset($user['id']) ? (int) $user['id'] : null;
     $_SESSION['edit_preview'] = !empty($user['edit_preview']) ? 1 : 0;
     $_SESSION['unit_id'] = isset($user['unit_id']) && $user['unit_id'] !== null && $user['unit_id'] !== ''
         ? (int) $user['unit_id']
@@ -85,6 +86,26 @@ try {
     }
     smks3_ensure_rbac_schema();
     smks3_rbac_refresh_session_permissions();
+
+    smks3_activity_log(
+        'auth.login',
+        null,
+        [
+            'user_id' => (int) ($user['id'] ?? 0),
+            'username' => (string) ($user['username'] ?? ''),
+            'role' => $role,
+            'unit_id' => $_SESSION['unit_id'] ?? null,
+        ],
+        'user',
+        (string) ((int) ($user['id'] ?? 0)),
+        'Log masuk berjaya.',
+        null,
+        [
+            'user_id' => (int) ($user['id'] ?? 0),
+            'username' => (string) ($user['username'] ?? ''),
+            'role' => $role,
+        ]
+    );
 
     echo json_encode([
         'ok' => true,

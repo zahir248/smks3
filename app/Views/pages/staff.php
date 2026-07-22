@@ -1,7 +1,7 @@
 <section class="py-5 bg-light">
     <div class="container">
         <p class="text-muted lead mb-4">Tenaga pengajar dan kakitangan kami.</p>
-        <div class="row g-4 mt-4">
+        <div class="row g-4 mt-4 justify-content-center">
             <?php foreach ($staff_list as $s) : ?>
             <div class="col-md-6 col-lg-4">
                 <div class="card card-hover border-0 shadow-sm h-100">

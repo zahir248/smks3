@@ -54,7 +54,8 @@ smks3_record_visit();
 
 $settings = is_array($settings ?? null) ? $settings : getSettings();
 $layout = is_array($layout ?? null) ? $layout : smks3_get_layout_content();
-$navbar_logo = smks3_layout_asset_src((string) ($layout['navbar_logo'] ?? 'images/hero-logo.png'));
+$navbar_logo = smks3_site_logo_src();
+$site_favicon = smks3_site_favicon();
 
 if (!function_exists('smks3_resolve_seo')) {
     require_once (defined('APP_PATH') ? APP_PATH : (__DIR__ . '/../../')) . '/Support/seo.php';
@@ -96,7 +97,7 @@ if ($googleVerification !== '') :
 ?>
     <meta name="google-site-verification" content="<?= htmlspecialchars($googleVerification, ENT_QUOTES, 'UTF-8') ?>">
 <?php endif; ?>
-    <link rel="icon" href="images/favicon-smks3.ico">
+    <link rel="icon" href="<?= htmlspecialchars($site_favicon['href'], ENT_QUOTES, 'UTF-8') ?>" type="<?= htmlspecialchars($site_favicon['type'], ENT_QUOTES, 'UTF-8') ?>">
 <?php foreach ($seo['json_ld'] as $seoBlock) : ?>
     <script type="application/ld+json"><?= json_encode($seoBlock, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
 <?php endforeach; ?>
@@ -212,6 +213,17 @@ if ($googleVerification !== '') :
             position: relative;
             outline: 2px dashed transparent;
             outline-offset: 4px;
+            --smks3-edit-dash: rgba(26, 111, 168, 0.5);
+            /* Draw inside the box so overflow:hidden parents never clip the border */
+            --smks3-edit-dash-inset: 0px;
+        }
+        /* Image / media edit blocks: keep Edit badge clear of the media hit area */
+        body.smks3-is-editor:not(.smks3-edit-preview) [data-edit-block]:has(img),
+        body.smks3-is-editor:not(.smks3-edit-preview) [data-edit-block].ubk-image-empty,
+        body.smks3-is-editor:not(.smks3-edit-preview) [data-edit-block].pra-image-empty {
+            outline-offset: 14px;
+            padding: 0.85rem;
+            --smks3-edit-dash-inset: 0px;
         }
         body.smks3-is-editor.smks3-edit-preview [data-edit-block],
         body.smks3-is-editor.smks3-edit-preview [data-edit-block]:hover,
@@ -221,6 +233,7 @@ if ($googleVerification !== '') :
             cursor: inherit !important;
             transition: none !important;
         }
+        body.smks3-is-editor.smks3-edit-preview [data-edit-block]::before,
         body.smks3-is-editor.smks3-edit-preview [data-edit-block]::after {
             content: none !important;
             display: none !important;
@@ -230,7 +243,42 @@ if ($googleVerification !== '') :
         }
         body.smks3-is-editor:not(.smks3-edit-preview) [data-edit-block] {
             cursor: pointer;
-            outline-color: rgba(26, 111, 168, 0.45);
+            outline: none;
+            /* Allow dash/badge when the edit host itself used to clip */
+            overflow: visible;
+        }
+        /* Animated dashed border — clockwise, drawn inside so it always matches Edit badge */
+        body.smks3-is-editor:not(.smks3-edit-preview) [data-edit-block]::before {
+            content: "";
+            position: absolute;
+            inset: var(--smks3-edit-dash-inset, 0px);
+            z-index: 6;
+            border-radius: inherit;
+            pointer-events: none;
+            background:
+                repeating-linear-gradient(90deg, var(--smks3-edit-dash) 0 8px, transparent 8px 16px) top / 16px 2px repeat-x,
+                repeating-linear-gradient(90deg, var(--smks3-edit-dash) 0 8px, transparent 8px 16px) bottom / 16px 2px repeat-x,
+                repeating-linear-gradient(180deg, var(--smks3-edit-dash) 0 8px, transparent 8px 16px) left / 2px 16px repeat-y,
+                repeating-linear-gradient(180deg, var(--smks3-edit-dash) 0 8px, transparent 8px 16px) right / 2px 16px repeat-y;
+            background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+            background-position: 0 0, 0 100%, 0 0, 100% 0;
+            animation: smks3-edit-dash-cw 1s linear infinite;
+        }
+        @keyframes smks3-edit-dash-cw {
+            to {
+                background-position: 16px 0, -16px 100%, 0 -16px, 100% 16px;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            body.smks3-is-editor:not(.smks3-edit-preview) [data-edit-block]::before {
+                content: none !important;
+                display: none !important;
+                animation: none;
+            }
+            body.smks3-is-editor:not(.smks3-edit-preview) [data-edit-block] {
+                outline: 2px dashed var(--smks3-edit-dash);
+                outline-offset: -2px;
+            }
         }
         body.smks3-is-editor:not(.smks3-edit-preview) [data-edit-block].btn,
         body.smks3-is-editor:not(.smks3-edit-preview) a.btn[data-edit-block] {
@@ -242,7 +290,7 @@ if ($googleVerification !== '') :
             position: absolute;
             top: 0.35rem;
             right: 0.35rem;
-            z-index: 5;
+            z-index: 7;
             font-size: 0.7rem;
             font-weight: 700;
             letter-spacing: 0.02em;
@@ -258,22 +306,35 @@ if ($googleVerification !== '') :
             cursor: pointer;
         }
         body.smks3-is-editor:not(.smks3-edit-preview) footer [data-edit-block] {
-            outline-color: rgba(255, 255, 255, 0.55);
+            --smks3-edit-dash: rgba(255, 255, 255, 0.65);
         }
         body.smks3-is-editor:not(.smks3-edit-preview) footer [data-edit-block]::after {
             background: #fff;
             color: #0B3C5D;
         }
-        body.smks3-is-editor.smks3-edit-ready:not(.smks3-edit-preview) [data-edit-block] {
-            transition: outline-color 0.2s ease;
-        }
         body.smks3-is-editor.smks3-edit-ready:not(.smks3-edit-preview) [data-edit-block]:hover,
         body.smks3-is-editor.smks3-edit-ready:not(.smks3-edit-preview) [data-edit-block].is-editing {
-            outline-color: #1a6fa8;
+            --smks3-edit-dash: #1a6fa8;
         }
         body.smks3-is-editor.smks3-edit-ready:not(.smks3-edit-preview) footer [data-edit-block]:hover,
         body.smks3-is-editor.smks3-edit-ready:not(.smks3-edit-preview) footer [data-edit-block].is-editing {
-            outline-color: #fff;
+            --smks3-edit-dash: #ffffff;
+        }
+        /* Parents that commonly clipped child edit borders */
+        body.smks3-is-editor:not(.smks3-edit-preview) .home-cta,
+        body.smks3-is-editor:not(.smks3-edit-preview) .home-slideshow-wrap,
+        body.smks3-is-editor:not(.smks3-edit-preview) .home-slideshow-wrap .carousel-inner,
+        body.smks3-is-editor:not(.smks3-edit-preview) .home-slideshow-wrap .carousel-item,
+        body.smks3-is-editor:not(.smks3-edit-preview) .card[data-edit-block],
+        body.smks3-is-editor:not(.smks3-edit-preview) .card-hover[data-edit-block],
+        body.smks3-is-editor:not(.smks3-edit-preview) .table-responsive:has([data-edit-block]) {
+            overflow: visible !important;
+        }
+        /* Table / list cells: keep a clear dash even inside scrollports */
+        body.smks3-is-editor:not(.smks3-edit-preview) td[data-edit-block],
+        body.smks3-is-editor:not(.smks3-edit-preview) th[data-edit-block],
+        body.smks3-is-editor:not(.smks3-edit-preview) li[data-edit-block] {
+            --smks3-edit-dash-inset: 1px;
         }
         body.smks3-is-editor:not(.smks3-edit-preview) .carousel-inner {
             display: flex;

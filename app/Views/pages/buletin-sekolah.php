@@ -7,7 +7,7 @@
             <p class="text-muted">Klik buletin untuk melihat atau memuat turun versi PDF.</p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
 
             <?php foreach ($buletin_list as $b) : ?>
             <div class="col-md-6 col-lg-4">

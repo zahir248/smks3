@@ -49,28 +49,38 @@ $infoCards = is_array($kurikulum_by_section['info'] ?? null) ? $kurikulum_by_sec
         </div>
 
         <div class="text-center">
-            <?php if (!empty($db_images)) : ?>
-                <?php foreach ($db_images as $img) :
-                    $src = 'uploads/pemimpin_murid/' . ($img['image'] ?? '');
-                    if (!is_file(BASE_PATH . '/' . $src)) {
-                        continue;
-                    }
-                    $srcEsc = htmlspecialchars($src, ENT_QUOTES, 'UTF-8');
-                ?>
-                <div class="d-inline-block mb-4"
+            <?php
+            $db_images = is_array($db_images ?? null) ? $db_images : [];
+            $pemimpinSrcs = [];
+            foreach ($db_images as $img) {
+                $src = 'uploads/pemimpin_murid/' . ($img['image'] ?? '');
+                if (is_file(BASE_PATH . '/' . $src)) {
+                    $pemimpinSrcs[] = $src;
+                }
+            }
+            $pemimpinJson = json_encode($pemimpinSrcs, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            ?>
+            <?php if ($pemimpinSrcs !== []) : ?>
+                <div class="pemimpin-gallery"
                      <?php if ($is_editor): ?>
-                     data-edit-block="pemimpin_item"
-                     data-edit-label="Pemimpin murid"
-                     data-edit-hint="Guna Padam untuk buang gambar ini."
-                     data-id="<?= (int) $img['id'] ?>"
+                     data-edit-block="pemimpin_gallery"
+                     data-edit-label="Urus gambar pemimpin murid"
+                     data-edit-hint="Tambah, buang, atau susun semula semua gambar dalam satu panel."
+                     data-images-json="<?= htmlspecialchars($pemimpinJson ?: '[]', ENT_QUOTES, 'UTF-8') ?>"
                      <?php endif; ?>>
-                <img
-                    src="<?= $srcEsc ?>"
-                    alt="Barisan Pemimpin Murid"
-                    class="img-fluid rounded shadow pemimpin-photo"
-                    onclick="window.open(this.src, '_blank')">
+                    <?php foreach ($pemimpinSrcs as $src): ?>
+                    <div class="mb-4">
+                        <img
+                            src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
+                            alt="Barisan Pemimpin Murid"
+                            class="img-fluid rounded shadow pemimpin-photo"
+                            <?php if (!$is_editor): ?>
+                            style="cursor:pointer;"
+                            onclick="window.open(this.src, '_blank')"
+                            <?php endif; ?>>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
-                <?php endforeach; ?>
             <?php elseif (!empty($static_image)) : ?>
                 <a href="<?= htmlspecialchars($static_image, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">
                     <img
@@ -83,12 +93,13 @@ $infoCards = is_array($kurikulum_by_section['info'] ?? null) ? $kurikulum_by_sec
             <?php if ($is_editor): ?>
             <div class="mt-3 mb-3">
                 <button type="button" class="btn btn-outline-primary"
-                        data-edit-block="pemimpin_add"
-                        data-edit-label="Tambah pemimpin murid"
-                        data-edit-hint="Tambah gambar baharu. Gambar sedia ada kekal.">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah Gambar
+                        data-edit-block="pemimpin_gallery"
+                        data-edit-label="Urus gambar pemimpin murid"
+                        data-edit-hint="Tambah, buang, atau susun semula semua gambar dalam satu panel."
+                        data-images-json="<?= htmlspecialchars($pemimpinJson ?: '[]', ENT_QUOTES, 'UTF-8') ?>">
+                    <i class="bi bi-images me-1"></i> Urus Gambar
                 </button>
-                <p class="small text-muted mt-2 mb-0">Boleh ada lebih dari satu gambar. Muat naik baharu tidak menggantikan yang lama.</p>
+                <p class="small text-muted mt-2 mb-0">Satu panel untuk semua gambar: muat naik berbilang, buang, dan susun semula.</p>
             </div>
             <?php endif; ?>
 
@@ -121,7 +132,7 @@ $infoCards = is_array($kurikulum_by_section['info'] ?? null) ? $kurikulum_by_sec
         $section_key = 'info';
         $cards = $infoCards;
         $col_class = 'col-md-4';
-        $row_class = 'row g-4';
+        $row_class = 'row g-4 justify-content-center';
         smks3_view_include(VIEW_PATH . '/partials/kurikulum-cards.php', compact(
             'is_editor',
             'kurikulum_page_key',

@@ -29,11 +29,69 @@ function smks3_default_ubk_content(): array
             'Menjadi ahli jawatankuasa dalam Majlis Perancang, Disiplin, Lembaga/Badan Pengawas sekolah.',
             'Menjadi penyelaras dalam program mentor mentee.',
         ],
-        'carta_image' => 'images/carta organisasi ubk 2026.jpg',
-        'pamplet1_image' => 'images/pamplet1.jpg',
-        'pamplet2_image' => 'images/pamplet2.jpg',
+        'carta_image' => ['images/carta organisasi ubk 2026.jpg'],
+        'pamplet_images' => ['images/pamplet1.jpg', 'images/pamplet2.jpg'],
         'aktiviti_note' => '[Rujuk Google Drive / dokumen aktiviti]',
     ];
+}
+
+/** @return list<string> */
+function smks3_ubk_image_keys(): array
+{
+    return ['carta_image', 'pamplet_images'];
+}
+
+/**
+ * Parse UBK image field (legacy single path or list) into relative path list.
+ *
+ * @return list<string>
+ */
+function smks3_ubk_parse_images(mixed $raw): array
+{
+    if (is_array($raw)) {
+        $list = $raw;
+    } else {
+        $raw = trim((string) $raw);
+        if ($raw === '') {
+            return [];
+        }
+        if (str_starts_with($raw, '[')) {
+            $decoded = json_decode($raw, true);
+            $list = is_array($decoded) ? $decoded : [$raw];
+        } else {
+            $list = [$raw];
+        }
+    }
+
+    $out = [];
+    $seen = [];
+    foreach ($list as $item) {
+        $path = trim(str_replace('\\', '/', (string) $item));
+        if ($path === '' || str_contains($path, '..') || isset($seen[$path])) {
+            continue;
+        }
+        $seen[$path] = true;
+        $out[] = $path;
+    }
+    return $out;
+}
+
+/**
+ * @return list<string> Existing public paths for gallery display.
+ */
+function smks3_ubk_img_srcs(mixed $raw): array
+{
+    $out = [];
+    foreach (smks3_ubk_parse_images($raw) as $path) {
+        $src = smks3_ubk_img_src($path);
+        if ($src === '') {
+            continue;
+        }
+        if (preg_match('#^https?://#i', $src) || is_file(BASE_PATH . '/' . $src)) {
+            $out[] = $src;
+        }
+    }
+    return $out;
 }
 
 function smks3_parse_lines_list(string $text): array
@@ -68,8 +126,14 @@ function smks3_get_ubk_content(): array
         return $defaults;
     }
 
+    $imageKeys = smks3_ubk_image_keys();
     foreach ($defaults as $key => $defaultVal) {
         if (!array_key_exists($key, $stored)) {
+            continue;
+        }
+        if (in_array($key, $imageKeys, true)) {
+            // Allow empty list once saved (do not resurrect stock defaults).
+            $defaults[$key] = smks3_ubk_parse_images($stored[$key]);
             continue;
         }
         if (is_array($defaultVal)) {
@@ -87,14 +151,31 @@ function smks3_get_ubk_content(): array
             $defaults[$key] = $val;
         }
     }
+
+    // Migrate legacy pamplet1_image + pamplet2_image into combined pamplet_images.
+    if (!array_key_exists('pamplet_images', $stored)) {
+        $legacy = array_merge(
+            smks3_ubk_parse_images($stored['pamplet1_image'] ?? null),
+            smks3_ubk_parse_images($stored['pamplet2_image'] ?? null)
+        );
+        if ($legacy !== []) {
+            $defaults['pamplet_images'] = smks3_ubk_parse_images($legacy);
+        }
+    }
+
     return $defaults;
 }
 
 function smks3_save_ubk_content(array $content): bool
 {
     $defaults = smks3_default_ubk_content();
+    $imageKeys = smks3_ubk_image_keys();
     $payload = [];
     foreach ($defaults as $key => $defaultVal) {
+        if (in_array($key, $imageKeys, true)) {
+            $payload[$key] = smks3_ubk_parse_images($content[$key] ?? []);
+            continue;
+        }
         if (is_array($defaultVal)) {
             $list = $content[$key] ?? [];
             if (is_string($list)) {

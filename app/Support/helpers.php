@@ -29,12 +29,38 @@ function smks3_session_idle_ttl(): int
     return 30 * 60; // 30 minit
 }
 
-/** Clear portal editor auth keys from the current session. */
-function smks3_clear_editor_session(): void
+/**
+ * Clear portal editor auth keys from the current session.
+ * @param string $reason idle|deactivated|session_clear
+ */
+function smks3_clear_editor_session(string $reason = 'session_clear'): void
 {
+    $hadUser = !empty($_SESSION['username']);
+    if ($hadUser && function_exists('smks3_activity_log')) {
+        $action = match ($reason) {
+            'idle' => 'auth.logout_idle',
+            'deactivated' => 'auth.logout_deactivated',
+            default => 'auth.logout',
+        };
+        smks3_activity_log(
+            $action,
+            null,
+            null,
+            'session',
+            null,
+            'Sesi ditamatkan (' . $reason . ').',
+            ['reason' => $reason],
+            [
+                'user_id' => isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : null,
+                'username' => (string) ($_SESSION['username'] ?? ''),
+                'role' => (string) ($_SESSION['role'] ?? ''),
+            ]
+        );
+    }
     unset(
         $_SESSION['username'],
         $_SESSION['role'],
+        $_SESSION['user_id'],
         $_SESSION['unit_id'],
         $_SESSION['unit_name'],
         $_SESSION['edit_preview'],
@@ -61,7 +87,7 @@ function smks3_enforce_idle_editor_session(): void
     $now = time();
     $last = (int) ($_SESSION['last_activity'] ?? 0);
     if ($last > 0 && ($now - $last) > $ttl) {
-        smks3_clear_editor_session();
+        smks3_clear_editor_session('idle');
         return;
     }
     $_SESSION['last_activity'] = $now;
@@ -164,7 +190,7 @@ function smks3_enforce_active_editor_session(): void
         $stmt->execute([$username]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row || !smks3_user_row_is_active($row)) {
-            smks3_clear_editor_session();
+            smks3_clear_editor_session('deactivated');
         }
     } catch (Throwable $e) {
         // ignore — do not lock out on schema/db blips
@@ -640,12 +666,19 @@ function smks3_store_upload(array $file, string $relativeDir, array $allowedExt,
     return $filenameOnly ? $name : (trim($relativeDir, '/') . '/' . $name);
 }
 
-function smks3_delete_project_file(?string $relativePath): void
+function smks3_delete_project_file(?string $relativePath, ?string $note = null): void
 {
     $relativePath = trim((string) $relativePath);
     if ($relativePath === '' || str_contains($relativePath, '..')) {
         return;
     }
+    // Soft-delete into recycle bin (Lain-lain) when helper is available
+    if (function_exists('smks3_media_trash_soft_delete')) {
+        if (smks3_media_trash_soft_delete($relativePath, $note)) {
+            return;
+        }
+    }
+    // Fallback: hard delete (missing file, protected asset, or trash failure)
     $full = BASE_PATH . '/' . ltrim($relativePath, '/');
     if (is_file($full)) {
         @unlink($full);
@@ -1143,6 +1176,391 @@ function smks3_upload_slideshow_image(array $file): string
     return 'images/slideshow/' . $name;
 }
 
+/**
+ * Sync home slideshow JSON: remove, reorder, update meta, append uploads.
+ *
+ * @param array<string, mixed> $data
+ * @param list<array<string, mixed>> $uploads
+ * @return list<array{image:string,alt:string,href:string,external:bool}>
+ */
+function smks3_sync_slideshow_gallery(array $data, array $uploads = []): array
+{
+    $slides = smks3_get_slideshow();
+    $byBase = [];
+    foreach ($slides as $slide) {
+        if (!is_array($slide)) {
+            continue;
+        }
+        $n = smks3_normalize_slide($slide);
+        $base = basename(str_replace('\\', '/', $n['image']));
+        if ($base === '' || isset($byBase[$base])) {
+            continue;
+        }
+        $byBase[$base] = $n;
+    }
+
+    $alts = is_array($data['item_alt'] ?? null) ? array_values($data['item_alt']) : [];
+    $hrefs = is_array($data['item_href'] ?? null) ? array_values($data['item_href']) : [];
+    $externalOn = [];
+    if (is_array($data['item_external_on'] ?? null)) {
+        foreach ($data['item_external_on'] as $onKey) {
+            $base = basename(str_replace('\\', '/', trim((string) $onKey)));
+            if ($base !== '') {
+                $externalOn[$base] = true;
+            }
+        }
+    }
+
+    $orderKeys = $data['image_order'] ?? [];
+    if (!is_array($orderKeys)) {
+        $orderKeys = [];
+    }
+
+    // Map meta by key using form order (before removals) so Buang does not shift titles.
+    $metaByBase = [];
+    $metaIdx = 0;
+    foreach ($orderKeys as $key) {
+        $base = basename(str_replace('\\', '/', trim((string) $key)));
+        if ($base === '') {
+            continue;
+        }
+        $metaByBase[$base] = [
+            'alt' => array_key_exists($metaIdx, $alts) ? trim((string) $alts[$metaIdx]) : null,
+            'href' => array_key_exists($metaIdx, $hrefs) ? trim((string) $hrefs[$metaIdx]) : null,
+            'external' => !empty($externalOn[$base]),
+        ];
+        $metaIdx++;
+    }
+
+    $removeSet = smks3_image_remove_set($data['remove_images'] ?? null);
+    foreach (array_keys($removeSet) as $base) {
+        if (!isset($byBase[$base])) {
+            continue;
+        }
+        $rel = $byBase[$base]['image'];
+        if ($rel !== '' && str_starts_with($rel, 'images/slideshow/')) {
+            smks3_delete_project_file($rel);
+        }
+        unset($byBase[$base]);
+    }
+
+    $out = [];
+    $seen = [];
+    foreach ($orderKeys as $key) {
+        $base = basename(str_replace('\\', '/', trim((string) $key)));
+        if ($base === '' || !isset($byBase[$base]) || isset($seen[$base])) {
+            continue;
+        }
+        $slide = $byBase[$base];
+        if (isset($metaByBase[$base])) {
+            if ($metaByBase[$base]['alt'] !== null) {
+                $slide['alt'] = $metaByBase[$base]['alt'];
+            }
+            if ($metaByBase[$base]['href'] !== null) {
+                $slide['href'] = $metaByBase[$base]['href'];
+            }
+            $slide['external'] = !empty($metaByBase[$base]['external']);
+        }
+        $out[] = smks3_normalize_slide($slide);
+        $seen[$base] = true;
+        unset($byBase[$base]);
+    }
+    foreach ($byBase as $base => $slide) {
+        if (isset($metaByBase[$base])) {
+            if ($metaByBase[$base]['alt'] !== null) {
+                $slide['alt'] = $metaByBase[$base]['alt'];
+            }
+            if ($metaByBase[$base]['href'] !== null) {
+                $slide['href'] = $metaByBase[$base]['href'];
+            }
+            $slide['external'] = !empty($metaByBase[$base]['external']);
+        }
+        $out[] = smks3_normalize_slide($slide);
+    }
+
+    $newAlts = is_array($data['new_item_alt'] ?? null) ? array_values($data['new_item_alt']) : [];
+    $newHrefs = is_array($data['new_item_href'] ?? null) ? array_values($data['new_item_href']) : [];
+    $newExternals = is_array($data['new_item_external'] ?? null) ? array_values($data['new_item_external']) : [];
+
+    foreach (smks3_normalize_uploaded_files($uploads) as $i => $file) {
+        $alt = array_key_exists($i, $newAlts) ? trim((string) $newAlts[$i]) : '';
+        if ($alt === '') {
+            $alt = 'Slaid baharu';
+        }
+        $href = array_key_exists($i, $newHrefs) ? trim((string) $newHrefs[$i]) : '';
+        $external = array_key_exists($i, $newExternals) ? !empty($newExternals[$i]) : false;
+        $out[] = smks3_normalize_slide([
+            'image' => smks3_upload_slideshow_image($file),
+            'alt' => $alt,
+            'href' => $href,
+            'external' => $external,
+        ]);
+    }
+
+    return array_values($out);
+}
+
+/**
+ * Ensure bilangan_kelas.item_sort exists for within-tingkatan image order.
+ */
+function smks3_ensure_bilangan_kelas_item_sort(?PDO $pdo = null): void
+{
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+    try {
+        $pdo = $pdo ?? getConnection();
+        smks3_ensure_bilangan_kelas_sort($pdo);
+        $col = $pdo->query("SHOW COLUMNS FROM bilangan_kelas LIKE 'item_sort'")->fetch(PDO::FETCH_ASSOC);
+        if (!$col) {
+            $pdo->exec('ALTER TABLE bilangan_kelas ADD COLUMN item_sort INT NOT NULL DEFAULT 0');
+        }
+        $needs = (int) $pdo->query('SELECT COUNT(*) FROM bilangan_kelas WHERE item_sort = 0')->fetchColumn();
+        $total = (int) $pdo->query('SELECT COUNT(*) FROM bilangan_kelas')->fetchColumn();
+        if ($total > 0 && $needs === $total) {
+            $tings = $pdo->query('SELECT DISTINCT tingkatan FROM bilangan_kelas')->fetchAll(PDO::FETCH_COLUMN) ?: [];
+            $upd = $pdo->prepare('UPDATE bilangan_kelas SET item_sort = ? WHERE id = ?');
+            foreach ($tings as $ting) {
+                $ting = trim((string) $ting);
+                if ($ting === '') {
+                    continue;
+                }
+                $st = $pdo->prepare('SELECT id FROM bilangan_kelas WHERE tingkatan = ? ORDER BY id DESC');
+                $st->execute([$ting]);
+                $ids = $st->fetchAll(PDO::FETCH_COLUMN) ?: [];
+                $i = 1;
+                foreach ($ids as $id) {
+                    $upd->execute([$i * 10, (int) $id]);
+                    $i++;
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        // best-effort
+    }
+}
+
+/**
+ * Sync enrolmen_murid gallery by id: titles, remove, reorder, append.
+ *
+ * @param array<string, mixed> $data
+ * @param list<array<string, mixed>> $uploads
+ * @param list<string> $imgExt
+ */
+function smks3_sync_enrolmen_gallery(PDO $pdo, array $data, array $uploads, array $imgExt): void
+{
+    smks3_ensure_enrolmen_sort($pdo);
+    $rows = $pdo->query(
+        'SELECT id, title, image, sort_order FROM enrolmen_murid ORDER BY sort_order ASC, id ASC'
+    )->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+    $byId = [];
+    foreach ($rows as $row) {
+        $id = (string) ((int) ($row['id'] ?? 0));
+        if ($id === '0') {
+            continue;
+        }
+        $byId[$id] = $row;
+    }
+
+    $titles = is_array($data['item_title'] ?? null) ? array_values($data['item_title']) : [];
+    $orderKeys = $data['image_order'] ?? [];
+    if (!is_array($orderKeys)) {
+        $orderKeys = [];
+    }
+
+    $titleById = [];
+    $metaIdx = 0;
+    foreach ($orderKeys as $key) {
+        $id = (string) ((int) trim((string) $key));
+        if ($id === '0') {
+            continue;
+        }
+        if (array_key_exists($metaIdx, $titles)) {
+            $titleById[$id] = trim((string) $titles[$metaIdx]);
+        }
+        $metaIdx++;
+    }
+
+    $removeRaw = $data['remove_images'] ?? [];
+    if (!is_array($removeRaw)) {
+        $removeRaw = $removeRaw !== '' && $removeRaw !== null ? [(string) $removeRaw] : [];
+    }
+    foreach ($removeRaw as $rm) {
+        $id = (string) ((int) trim((string) $rm));
+        if ($id === '0' || !isset($byId[$id])) {
+            continue;
+        }
+        smks3_delete_project_file('uploads/enrolmen/' . ltrim((string) ($byId[$id]['image'] ?? ''), '/'));
+        $pdo->prepare('DELETE FROM enrolmen_murid WHERE id = ?')->execute([(int) $id]);
+        unset($byId[$id]);
+    }
+
+    $titleStmt = $pdo->prepare('UPDATE enrolmen_murid SET title = ? WHERE id = ?');
+    $orderedIds = [];
+    $seen = [];
+    foreach ($orderKeys as $key) {
+        $id = (string) ((int) trim((string) $key));
+        if ($id === '0' || !isset($byId[$id]) || isset($seen[$id])) {
+            continue;
+        }
+        $title = $titleById[$id] ?? trim((string) ($byId[$id]['title'] ?? ''));
+        if ($title === '') {
+            $title = 'Enrolmen';
+        }
+        $titleStmt->execute([$title, (int) $id]);
+        $orderedIds[] = (int) $id;
+        $seen[$id] = true;
+    }
+    foreach ($byId as $id => $_row) {
+        if (!isset($seen[$id])) {
+            $orderedIds[] = (int) $id;
+            $seen[$id] = true;
+        }
+    }
+    smks3_set_enrolmen_slide_order($pdo, $orderedIds);
+
+    $maxSort = count($orderedIds) * 10;
+    $newTitles = is_array($data['new_item_title'] ?? null) ? array_values($data['new_item_title']) : [];
+    foreach (smks3_normalize_uploaded_files($uploads) as $i => $file) {
+        $maxSort += 10;
+        $title = array_key_exists($i, $newTitles) ? trim((string) $newTitles[$i]) : '';
+        if ($title === '') {
+            $title = 'Enrolmen';
+        }
+        $image = smks3_store_upload($file, 'uploads/enrolmen', $imgExt, true);
+        $pdo->prepare('INSERT INTO enrolmen_murid (title, image, sort_order) VALUES (?,?,?)')
+            ->execute([$title, $image, $maxSort]);
+    }
+}
+
+/**
+ * Sync bilangan_kelas images for one tingkatan (titles, remove, reorder, append).
+ *
+ * @param array<string, mixed> $data
+ * @param list<array<string, mixed>> $uploads
+ * @param list<string> $imgExt
+ */
+function smks3_sync_bil_kelas_gallery(PDO $pdo, array $data, array $uploads, array $imgExt): void
+{
+    $tingkatan = trim((string) ($data['tingkatan'] ?? ''));
+    if ($tingkatan === '') {
+        throw new InvalidArgumentException('Tingkatan diperlukan.');
+    }
+    smks3_ensure_bilangan_kelas_item_sort($pdo);
+
+    $st = $pdo->prepare(
+        'SELECT id, tingkatan, title, image, sort_order, item_sort
+         FROM bilangan_kelas
+         WHERE tingkatan = ?
+         ORDER BY item_sort ASC, id DESC'
+    );
+    $st->execute([$tingkatan]);
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    if ($rows === [] && smks3_normalize_uploaded_files($uploads) === []) {
+        // Allow emptying an existing tingkatan; reject unknown names with nothing to add.
+        $exists = $pdo->prepare('SELECT COUNT(*) FROM bilangan_kelas WHERE tingkatan = ?');
+        $exists->execute([$tingkatan]);
+        if ((int) $exists->fetchColumn() < 1) {
+            throw new InvalidArgumentException('Tingkatan tidak dijumpai.');
+        }
+    }
+
+    $groupSort = 10;
+    if ($rows !== []) {
+        $groupSort = (int) ($rows[0]['sort_order'] ?? 10);
+        if ($groupSort < 1) {
+            $groupSort = 10;
+        }
+    } else {
+        $existingOrder = smks3_bilangan_kelas_tingkatan_order($pdo);
+        $idx = array_search($tingkatan, $existingOrder, true);
+        $groupSort = ($idx === false ? count($existingOrder) + 1 : ((int) $idx + 1)) * 10;
+    }
+
+    $byId = [];
+    foreach ($rows as $row) {
+        $id = (string) ((int) ($row['id'] ?? 0));
+        if ($id === '0') {
+            continue;
+        }
+        $byId[$id] = $row;
+    }
+
+    $titles = is_array($data['item_title'] ?? null) ? array_values($data['item_title']) : [];
+    $orderKeys = $data['image_order'] ?? [];
+    if (!is_array($orderKeys)) {
+        $orderKeys = [];
+    }
+
+    $titleById = [];
+    $metaIdx = 0;
+    foreach ($orderKeys as $key) {
+        $id = (string) ((int) trim((string) $key));
+        if ($id === '0') {
+            continue;
+        }
+        if (array_key_exists($metaIdx, $titles)) {
+            $titleById[$id] = trim((string) $titles[$metaIdx]);
+        }
+        $metaIdx++;
+    }
+
+    $removeRaw = $data['remove_images'] ?? [];
+    if (!is_array($removeRaw)) {
+        $removeRaw = $removeRaw !== '' && $removeRaw !== null ? [(string) $removeRaw] : [];
+    }
+    foreach ($removeRaw as $rm) {
+        $id = (string) ((int) trim((string) $rm));
+        if ($id === '0' || !isset($byId[$id])) {
+            continue;
+        }
+        smks3_delete_project_file('uploads/bil_kelas/' . ltrim((string) ($byId[$id]['image'] ?? ''), '/'));
+        $pdo->prepare('DELETE FROM bilangan_kelas WHERE id = ?')->execute([(int) $id]);
+        unset($byId[$id]);
+    }
+
+    $titleStmt = $pdo->prepare('UPDATE bilangan_kelas SET title = ? WHERE id = ?');
+    $orderedIds = [];
+    $seen = [];
+    foreach ($orderKeys as $key) {
+        $id = (string) ((int) trim((string) $key));
+        if ($id === '0' || !isset($byId[$id]) || isset($seen[$id])) {
+            continue;
+        }
+        if (array_key_exists($id, $titleById)) {
+            $titleStmt->execute([$titleById[$id], (int) $id]);
+        }
+        $orderedIds[] = (int) $id;
+        $seen[$id] = true;
+    }
+    foreach ($byId as $id => $_row) {
+        if (!isset($seen[$id])) {
+            $orderedIds[] = (int) $id;
+            $seen[$id] = true;
+        }
+    }
+
+    $sortStmt = $pdo->prepare('UPDATE bilangan_kelas SET item_sort = ?, sort_order = ? WHERE id = ?');
+    $i = 1;
+    foreach ($orderedIds as $id) {
+        $sortStmt->execute([$i * 10, $groupSort, $id]);
+        $i++;
+    }
+
+    $newTitles = is_array($data['new_item_title'] ?? null) ? array_values($data['new_item_title']) : [];
+    foreach (smks3_normalize_uploaded_files($uploads) as $idx => $file) {
+        $image = smks3_store_upload($file, 'uploads/bil_kelas', $imgExt, true);
+        $title = array_key_exists($idx, $newTitles) ? trim((string) $newTitles[$idx]) : '';
+        $pdo->prepare(
+            'INSERT INTO bilangan_kelas (tingkatan, title, image, sort_order, item_sort) VALUES (?,?,?,?,?)'
+        )->execute([$tingkatan, $title, $image, $groupSort, $i * 10]);
+        $i++;
+    }
+}
+
 /** News items: newest `published_at` first. */
 function smks3_sort_news_by_published_desc(array $items): array
 {
@@ -1296,6 +1714,52 @@ function smks3_news_encode_images(array $images): ?string
     return json_encode($images, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }
 
+/** Parse news.pdf_file (legacy single filename or JSON list). @return list<string> */
+function smks3_news_parse_pdfs(mixed $raw): array
+{
+    return smks3_news_parse_images($raw);
+}
+
+/** Encode news PDF list for DB. */
+function smks3_news_encode_pdfs(array $pdfs): ?string
+{
+    return smks3_news_encode_images($pdfs);
+}
+
+/** Public path for a news PDF filename (uploads/pdf/…). */
+function smks3_news_pdf_src(string $filename): string
+{
+    $filename = basename(str_replace('\\', '/', trim($filename)));
+    if ($filename === '') {
+        return '';
+    }
+    if (str_starts_with($filename, 'uploads/pdf/')) {
+        return $filename;
+    }
+    return 'uploads/pdf/' . ltrim($filename, '/');
+}
+
+/**
+ * @return list<string> Existing public PDF paths for display.
+ */
+function smks3_news_pdf_srcs(mixed $raw): array
+{
+    $out = [];
+    foreach (smks3_news_parse_pdfs($raw) as $name) {
+        $src = smks3_news_pdf_src($name);
+        if ($src !== '' && is_file(BASE_PATH . '/' . $src)) {
+            $out[] = $src;
+        }
+    }
+    return $out;
+}
+
+function smks3_news_primary_pdf(mixed $raw): string
+{
+    $pdfs = smks3_news_parse_pdfs($raw);
+    return $pdfs[0] ?? '';
+}
+
 /** Public path for a news image filename (uploads/…). */
 function smks3_news_image_src(string $filename): string
 {
@@ -1331,13 +1795,242 @@ function smks3_news_primary_image(mixed $raw): string
 }
 
 /**
+ * Reorder image list by basename keys from the edit form (`image_order[]`).
+ *
+ * @param list<string> $images
+ * @return list<string>
+ */
+function smks3_reorder_images_by_keys(array $images, mixed $orderKeys): array
+{
+    if (!is_array($orderKeys) || $orderKeys === []) {
+        return array_values($images);
+    }
+
+    $byBase = [];
+    foreach ($images as $img) {
+        $path = trim(str_replace('\\', '/', (string) $img));
+        $base = basename($path);
+        if ($base === '' || isset($byBase[$base])) {
+            continue;
+        }
+        $byBase[$base] = $path;
+    }
+
+    $out = [];
+    $seen = [];
+    foreach ($orderKeys as $key) {
+        $base = basename(str_replace('\\', '/', trim((string) $key)));
+        if ($base === '' || !isset($byBase[$base]) || isset($seen[$base])) {
+            continue;
+        }
+        $out[] = $byBase[$base];
+        $seen[$base] = true;
+    }
+    foreach ($images as $img) {
+        $path = trim(str_replace('\\', '/', (string) $img));
+        $base = basename($path);
+        if ($base === '' || isset($seen[$base])) {
+            continue;
+        }
+        $out[] = $path;
+        $seen[$base] = true;
+    }
+    return $out;
+}
+
+/**
+ * Normalize remove_images[] form values into a basename set.
+ *
+ * @return array<string, true>
+ */
+function smks3_image_remove_set(mixed $remove): array
+{
+    if (!is_array($remove)) {
+        $remove = $remove !== '' && $remove !== null ? [(string) $remove] : [];
+    }
+    $removeSet = [];
+    foreach ($remove as $rm) {
+        $base = basename(str_replace('\\', '/', trim((string) $rm)));
+        if ($base !== '') {
+            $removeSet[$base] = true;
+        }
+    }
+    return $removeSet;
+}
+
+/**
+ * Ensure a simple gallery table has sort_order (and backfill by id).
+ */
+function smks3_ensure_gallery_sort_order(string $table, ?PDO $pdo = null): void
+{
+    static $done = [];
+    if (isset($done[$table])) {
+        return;
+    }
+    $done[$table] = true;
+    try {
+        $pdo = $pdo ?? getConnection();
+        $safe = preg_replace('/[^a-z0-9_]/i', '', $table) ?: '';
+        if ($safe === '') {
+            return;
+        }
+        $col = $pdo->query("SHOW COLUMNS FROM `{$safe}` LIKE 'sort_order'")->fetch(PDO::FETCH_ASSOC);
+        if (!$col) {
+            $pdo->exec("ALTER TABLE `{$safe}` ADD COLUMN sort_order INT NOT NULL DEFAULT 0");
+        }
+        $needs = (int) $pdo->query("SELECT COUNT(*) FROM `{$safe}` WHERE sort_order = 0")->fetchColumn();
+        $total = (int) $pdo->query("SELECT COUNT(*) FROM `{$safe}`")->fetchColumn();
+        if ($needs > 0 && $total > 0 && $needs === $total) {
+            $pdo->exec("SET @s := 0");
+            $pdo->exec("UPDATE `{$safe}` SET sort_order = (@s := @s + 1) ORDER BY id ASC");
+        }
+    } catch (Throwable $e) {
+        // best-effort
+    }
+}
+
+/**
+ * Sync a row-per-file gallery: remove, reorder, append uploads.
+ *
+ * Config keys:
+ * - table, col, dir, filenameOnly
+ * - uploadField: form field name for multi files (default images)
+ * - whereSql: optional SQL fragment to limit rows (e.g. file_pdf <> '')
+ * - insertCallback: optional fn(PDO, string $storedFile, int $sort): void for custom INSERT
+ *
+ * @param array<string, mixed> $cfg
+ * @param array<string, mixed> $data
+ * @param list<string> $allowedExt
+ */
+function smks3_sync_row_file_gallery(PDO $pdo, array $cfg, array $data, array $filesField, array $allowedExt): void
+{
+    $table = (string) ($cfg['table'] ?? '');
+    $col = (string) ($cfg['col'] ?? '');
+    $dir = (string) ($cfg['dir'] ?? '');
+    $filenameOnly = !empty($cfg['filenameOnly']);
+    $whereSql = trim((string) ($cfg['whereSql'] ?? ''));
+    $insertCb = $cfg['insertCallback'] ?? null;
+
+    if ($table === '' || $col === '' || $dir === '') {
+        throw new InvalidArgumentException('Konfigurasi galeri tidak sah.');
+    }
+
+    smks3_ensure_gallery_sort_order($table, $pdo);
+    $safeTable = preg_replace('/[^a-z0-9_]/i', '', $table) ?: $table;
+    $safeCol = preg_replace('/[^a-z0-9_]/i', '', $col) ?: $col;
+
+    $sql = "SELECT id, `{$safeCol}` AS file FROM `{$safeTable}`";
+    if ($whereSql !== '') {
+        $sql .= ' WHERE ' . $whereSql;
+    }
+    $sql .= ' ORDER BY sort_order ASC, id ASC';
+    $rows = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+    $byBase = [];
+    foreach ($rows as $row) {
+        $file = trim(str_replace('\\', '/', (string) ($row['file'] ?? '')));
+        $base = basename($file);
+        if ($base === '' || isset($byBase[$base])) {
+            continue;
+        }
+        $byBase[$base] = [
+            'id' => (int) ($row['id'] ?? 0),
+            'file' => $file,
+        ];
+    }
+
+    $removeSet = smks3_image_remove_set($data['remove_images'] ?? null);
+    if ($removeSet !== []) {
+        foreach (array_keys($removeSet) as $base) {
+            if (!isset($byBase[$base])) {
+                continue;
+            }
+            $file = $byBase[$base]['file'];
+            $rel = str_starts_with($file, $dir . '/')
+                ? $file
+                : ($dir . '/' . ltrim($file, '/'));
+            smks3_delete_project_file($rel);
+            $pdo->prepare("DELETE FROM `{$safeTable}` WHERE id = ?")->execute([$byBase[$base]['id']]);
+            unset($byBase[$base]);
+        }
+    }
+
+    $orderedBases = [];
+    $orderKeys = $data['image_order'] ?? [];
+    if (!is_array($orderKeys)) {
+        $orderKeys = [];
+    }
+    foreach ($orderKeys as $key) {
+        $base = basename(str_replace('\\', '/', trim((string) $key)));
+        if ($base === '' || !isset($byBase[$base]) || in_array($base, $orderedBases, true)) {
+            continue;
+        }
+        $orderedBases[] = $base;
+    }
+    foreach ($byBase as $base => $_row) {
+        if (!in_array($base, $orderedBases, true)) {
+            $orderedBases[] = $base;
+        }
+    }
+
+    $uploads = smks3_normalize_uploaded_files($filesField);
+    $newFiles = [];
+    foreach ($uploads as $file) {
+        $stored = smks3_store_upload($file, $dir, $allowedExt, $filenameOnly);
+        $newFiles[] = [
+            'stored' => basename(str_replace('\\', '/', (string) $stored)),
+            'orig' => (string) ($file['name'] ?? ''),
+        ];
+    }
+
+    if ($orderedBases === [] && $newFiles === [] && $removeSet === []) {
+        throw new InvalidArgumentException('Sila muat naik sekurang-kurangnya satu fail.');
+    }
+
+    $sort = 1;
+    $upd = $pdo->prepare("UPDATE `{$safeTable}` SET sort_order = ? WHERE id = ?");
+    foreach ($orderedBases as $base) {
+        $upd->execute([$sort++, $byBase[$base]['id']]);
+    }
+
+    foreach ($newFiles as $nf) {
+        $nameOnly = (string) ($nf['stored'] ?? '');
+        $origName = (string) ($nf['orig'] ?? '');
+        if (is_callable($insertCb)) {
+            $insertCb($pdo, $nameOnly, $sort++, $origName);
+            continue;
+        }
+        $pdo->prepare("INSERT INTO `{$safeTable}` (`{$safeCol}`, sort_order) VALUES (?,?)")
+            ->execute([$nameOnly, $sort++]);
+    }
+}
+
+/**
  * Normalize $_FILES['images'] (single or multi) into a list of file arrays.
  *
  * @return list<array<string, mixed>>
  */
 function smks3_normalize_uploaded_files(mixed $filesField): array
 {
-    if (!is_array($filesField) || empty($filesField['name'])) {
+    if (!is_array($filesField) || $filesField === []) {
+        return [];
+    }
+    // Already a list of single-file arrays (from a prior normalize call).
+    if (array_is_list($filesField) && isset($filesField[0]) && is_array($filesField[0]) && array_key_exists('tmp_name', $filesField[0])) {
+        $out = [];
+        foreach ($filesField as $file) {
+            if (!is_array($file)) {
+                continue;
+            }
+            $name = trim((string) ($file['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $out[] = $file;
+        }
+        return $out;
+    }
+    if (empty($filesField['name'])) {
         return [];
     }
     if (!is_array($filesField['name'])) {
@@ -1381,12 +2074,19 @@ function smks3_ensure_news_indexes(?PDO $pdo = null): void
         if ($yearCol && !isset($names['idx_news_year'])) {
             $pdo->exec('ALTER TABLE news ADD INDEX idx_news_year (year)');
         }
-        // Multi-image JSON may exceed short VARCHAR — widen when needed.
+        // Multi-image / multi-PDF JSON may exceed short VARCHAR — widen when needed.
         $imageCol = $pdo->query("SHOW COLUMNS FROM news LIKE 'image'")->fetch(PDO::FETCH_ASSOC);
         if ($imageCol) {
             $type = strtolower((string) ($imageCol['Type'] ?? ''));
             if (str_contains($type, 'varchar') || str_starts_with($type, 'char(')) {
                 $pdo->exec('ALTER TABLE news MODIFY image TEXT NULL');
+            }
+        }
+        $pdfCol = $pdo->query("SHOW COLUMNS FROM news LIKE 'pdf_file'")->fetch(PDO::FETCH_ASSOC);
+        if ($pdfCol) {
+            $type = strtolower((string) ($pdfCol['Type'] ?? ''));
+            if (str_contains($type, 'varchar') || str_starts_with($type, 'char(')) {
+                $pdo->exec('ALTER TABLE news MODIFY pdf_file TEXT NULL');
             }
         }
     } catch (Throwable $e) {

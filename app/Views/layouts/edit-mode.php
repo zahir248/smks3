@@ -393,6 +393,31 @@ body.smks3-is-editor.smks3-panel-open {
     border-radius: 8px;
     background: #f8fafc;
 }
+.smks3-news-images__order {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 0 0 auto;
+}
+.smks3-news-images__order button {
+    width: 1.65rem;
+    height: 1.35rem;
+    padding: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background: #fff;
+    color: #0f172a;
+    line-height: 1;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+.smks3-news-images__order button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+.smks3-news-images__order button:not(:disabled):hover {
+    background: #e2e8f0;
+}
 .smks3-news-images__thumb {
     width: 44px;
     height: 44px;
@@ -400,6 +425,22 @@ body.smks3-is-editor.smks3-panel-open {
     border-radius: 6px;
     background: #e2e8f0;
     flex: 0 0 auto;
+}
+.smks3-news-images__thumb--file {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #b91c1c;
+    font-size: 1.35rem;
+}
+.smks3-news-images__item--meta {
+    align-items: flex-start;
+}
+.smks3-news-images__fields {
+    margin-top: 0.35rem;
+}
+.smks3-news-images__fields .form-control-sm {
+    font-size: 0.8rem;
 }
 .smks3-news-images__meta {
     min-width: 0;
@@ -418,6 +459,19 @@ body.smks3-is-editor.smks3-panel-open {
     font-size: 0.78rem;
     color: #64748b;
     margin: 0;
+}
+.smks3-news-images__item--pending {
+    border-style: dashed;
+    background: #f8fafc;
+}
+.smks3-news-images__pending-remove {
+    border: 0;
+    background: transparent;
+    color: #b91c1c;
+    font-size: 0.78rem;
+    padding: 0;
+    text-decoration: underline;
+    cursor: pointer;
 }
 </style>
 
@@ -639,13 +693,13 @@ body.smks3-is-editor.smks3-panel-open {
         bindKurikulumCardKind(form);
         bindPageHrefField(form);
         bindRichTextEditor(form);
+        bindImageOrder(form);
         var isNewsEditor = currentBlock === 'news_item' || currentBlock === 'news_add';
-        panel.classList.toggle('is-wide', isNewsEditor || currentBlock === 'lencana_lagu' || currentBlock === 'cuti_kumpulan' || currentBlock === 'kurikulum_card' || currentBlock === 'kurikulum_card_add' || currentBlock === 'kurikulum_meta' || currentBlock === 'footer_social');
+        panel.classList.toggle('is-wide', isNewsEditor || currentBlock === 'pelan_image' || currentBlock === 'pra_sekolah_carta' || currentBlock === 'pra_sekolah_galeri' || currentBlock === 'ubk_carta_image' || currentBlock === 'ubk_pamplet' || currentBlock === 'peraturan_gallery' || currentBlock === 'pemimpin_gallery' || currentBlock === 'kalendar_pdf_gallery' || currentBlock === 'cuti_pdf_gallery' || currentBlock === 'pilihan_pdf_gallery' || currentBlock === 'pibg_pdf_gallery' || currentBlock === 'pibg_pdf' || currentBlock === 'slideshow_gallery' || currentBlock === 'enrolmen_gallery' || currentBlock === 'bil_kelas_gallery' || currentBlock === 'lencana_lagu' || currentBlock === 'cuti_kumpulan' || currentBlock === 'kurikulum_card' || currentBlock === 'kurikulum_card_add' || currentBlock === 'kurikulum_meta' || currentBlock === 'footer_social');
         panel.classList.toggle('is-news-editor', isNewsEditor);
         deleteBlock = null;
         var deletable = {
             quick_link: 'quick_link_delete',
-            slideshow_slide: 'slideshow_delete',
             news_item: 'news_delete',
             pengetua_item: 'pengetua_delete',
             pengurusan_item: 'pengurusan_delete',
@@ -653,21 +707,12 @@ body.smks3-is-editor.smks3-panel-open {
             fpk_item: 'fpk_delete',
             guru_item: 'guru_delete',
             akp_item: 'akp_delete',
-            kalendar_pdf: 'kalendar_pdf_delete',
-            cuti_pdf: 'cuti_pdf_delete',
-            pilihan_pdf: 'pilihan_pdf_delete',
-            enrolmen_item: 'enrolmen_delete',
-            bil_kelas_item: 'bil_kelas_delete',
-            peraturan_item: 'peraturan_delete',
-            pemimpin_item: 'pemimpin_delete',
             lencana_item: 'lencana_item_delete',
             profil_item: 'profil_item_delete',
             kurikulum_card: 'kurikulum_card_delete'
         };
         var saveBtn = document.getElementById('smks3EditSave');
         var deleteOnly = {
-            kalendar_pdf: 1, cuti_pdf: 1, pilihan_pdf: 1,
-            peraturan_item: 1, pemimpin_item: 1
         };
         if (deletable[currentBlock]) {
             deleteBlock = deletable[currentBlock];
@@ -727,14 +772,28 @@ body.smks3-is-editor.smks3-panel-open {
                 + field('year', 'Tahun', attr(el, 'data-year') || new Date().getFullYear(), false, false)
                 + richTextField('content', 'Kandungan (pilihan)', attr(el, 'data-content'), false)
                 + newsImagesField(el)
-                + fileField('pdf_file', 'PDF (pilihan)', false, 'application/pdf,.pdf', findCurrentPdfPath(el));
+                + newsImagesField(el, {
+                    pdf: true,
+                    jsonAttr: 'data-pdfs-json',
+                    removeName: 'remove_pdfs[]',
+                    orderName: 'pdf_order[]',
+                    inputId: 'smks3_f_news_pdfs',
+                    label: 'PDF (boleh lebih daripada satu)'
+                });
         }
         if (block === 'news_add') {
             return field('title', 'Tajuk', '')
                 + field('year', 'Tahun', String(new Date().getFullYear()), false, false)
                 + richTextField('content', 'Kandungan (pilihan)', '', false)
                 + newsImagesField(null)
-                + fileField('pdf_file', 'PDF (pilihan)', false, 'application/pdf,.pdf');
+                + newsImagesField(null, {
+                    pdf: true,
+                    jsonAttr: 'data-pdfs-json',
+                    removeName: 'remove_pdfs[]',
+                    orderName: 'pdf_order[]',
+                    inputId: 'smks3_f_news_pdfs',
+                    label: 'PDF (boleh lebih daripada satu)'
+                });
         }
         if (block === 'quick_link') {
             return hidden('index', attr(el, 'data-index'))
@@ -751,19 +810,9 @@ body.smks3-is-editor.smks3-panel-open {
                 + iconPicker('icon', 'Pilih ikon', 'bi-link-45deg')
                 + check('external', 'Pautan luaran', false);
         }
-        if (block === 'slideshow_slide') {
-            return hidden('index', attr(el, 'data-index'))
-                + field('alt', 'Teks alt', attr(el, 'data-alt'))
-                + field('href', 'Pautan (pilihan)', attr(el, 'data-href'), false, false)
-                + check('external', 'Pautan luaran', attr(el, 'data-external') === '1')
-                + fileField('image', 'Ganti gambar (pilihan)');
-        }
-        if (block === 'slideshow_add') {
-            return field('alt', 'Teks alt', 'Slaid baharu')
-                + field('href', 'Pautan (pilihan)', '', false, false)
-                + check('external', 'Pautan luaran', false)
-                + fileField('image', 'Gambar slaid', true)
-                + '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Slaid baharu akan ditambah. Slaid sedia ada kekal.</p>';
+        if (block === 'slideshow_gallery') {
+            return newsImagesField(el, { meta: 'slide', label: 'Slaid / poster (boleh lebih daripada satu)' })
+                + '<p class="small text-muted mb-0">Urus semua slaid dalam satu panel: tambah, buang, susun semula, serta edit alt/pautan setiap slaid.</p>';
         }
         if (block === 'profil_item' || block === 'profil_item_add') {
             var isAddProfil = block === 'profil_item_add';
@@ -845,13 +894,9 @@ body.smks3-is-editor.smks3-panel-open {
             return field('value', block === 'ubk_objektif' ? 'Objektif (satu baris = satu item)' : 'Fungsi (satu baris = satu item)', attr(el, 'data-value'), true)
                 + '<p class="small text-muted mb-0">Tekan Enter untuk item baharu.</p>';
         }
-        if (block === 'ubk_carta_image' || block === 'ubk_pamplet1' || block === 'ubk_pamplet2') {
-            var ubkPath = findCurrentImagePath(el);
-            var ubkLabel = block === 'ubk_carta_image'
-                ? (ubkPath ? 'Gambar carta baharu (ganti semasa)' : 'Gambar carta organisasi')
-                : (ubkPath ? 'Gambar pamplet baharu (ganti semasa)' : 'Gambar pamplet');
-            return fileField('image', ubkLabel, true, 'image/*', ubkPath)
-                + (ubkPath ? '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>Gambar semasa akan diganti.</p>' : '');
+        if (block === 'ubk_carta_image' || block === 'ubk_pamplet') {
+            return newsImagesField(el)
+                + '<p class="small text-muted mb-0">Boleh muat naik lebih dari satu gambar. Susun dengan anak panah; tandai “Buang” untuk padam.</p>';
         }
         if (block === 'kurikulum_meta') {
             var sectionsRaw = attr(el, 'data-sections');
@@ -1002,121 +1047,52 @@ body.smks3-is-editor.smks3-panel-open {
         if (block === 'html_text') {
             return field('value', 'Teks', attr(el, 'data-value'), true, false);
         }
-        if (block === 'kalendar_pdf_add' || block === 'cuti_pdf_add' || block === 'pilihan_pdf_add') {
-            // Pass '' so add forms never show another PDF on the page as "Fail semasa".
-            var pilihanReplace = block === 'pilihan_pdf_add';
-            return fileField(
-                'pdf',
-                pilihanReplace ? 'Fail PDF baharu (ganti semasa)' : 'Fail PDF baharu',
-                true,
-                'application/pdf,.pdf',
-                ''
-            ) + (pilihanReplace
-                ? '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>PDF semasa akan diganti, bukan ditambah sebagai fail baharu.</p>'
-                : '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>PDF baharu akan ditambah. PDF sedia ada kekal.</p>');
+        if (block === 'kalendar_pdf_gallery' || block === 'cuti_pdf_gallery' || block === 'pilihan_pdf_gallery') {
+            return newsImagesField(el, { pdf: true })
+                + '<p class="small text-muted mb-0">Urus semua PDF dalam satu panel: tambah, buang, dan susun semula.</p>';
         }
-        if (block === 'kalendar_pdf' || block === 'cuti_pdf' || block === 'pilihan_pdf') {
-            return hidden('id', attr(el, 'data-id'))
-                + currentFileBadge(findCurrentPdfPath(el), true)
-                + '<p class="small text-muted mb-0">Guna butang Padam untuk buang PDF ini.</p>';
+        if (block === 'peraturan_gallery' || block === 'pemimpin_gallery') {
+            return newsImagesField(el)
+                + '<p class="small text-muted mb-0">Urus semua gambar dalam satu panel: tambah, buang, dan susun semula.</p>';
         }
-        if (block === 'enrolmen_add') {
-            var slides = [];
-            try { slides = JSON.parse(attr(el, 'data-slides') || '[]') || []; } catch (err) { slides = []; }
-            if (!Array.isArray(slides)) slides = [];
-            var posOpts = [{ value: 'start', label: 'Di awal (slaid pertama)' }];
-            slides.forEach(function (s) {
-                if (!s || !s.id) return;
-                var label = String(s.title || ('Slaid #' + s.id)).trim() || ('Slaid #' + s.id);
-                posOpts.push({ value: 'after:' + s.id, label: 'Selepas “' + label + '”' });
-            });
-            posOpts.push({ value: 'end', label: 'Di akhir (slaid terakhir)' });
-            return field('title', 'Tajuk', 'Enrolmen', false, false)
-                + selectField('position', 'Kedudukan dalam slaid', 'end', posOpts)
-                + fileField('image', 'Gambar', true)
-                + '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Gambar baharu akan ditambah ke karusel. Gambar sedia ada kekal.</p>';
+        if (block === 'enrolmen_gallery') {
+            return newsImagesField(el, { meta: 'title', label: 'Gambar enrolmen (boleh lebih daripada satu)' })
+                + '<p class="small text-muted mb-0">Urus semua slaid dalam satu panel: tambah, buang, susun semula, serta edit tajuk setiap slaid.</p>';
         }
-        if (block === 'peraturan_add' || block === 'pemimpin_add') {
-            return fileField('image', 'Gambar', true)
-                + '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Gambar baharu akan ditambah. Gambar sedia ada kekal.</p>';
+        if (block === 'bil_kelas_gallery') {
+            var tingkatanGal = attr(el, 'data-tingkatan') || '';
+            return hidden('tingkatan', tingkatanGal)
+                + '<p class="small text-muted mb-3">Urus gambar untuk <strong>' + esc(tingkatanGal) + '</strong>.</p>'
+                + newsImagesField(el, { meta: 'title', label: 'Gambar tingkatan (boleh lebih daripada satu)' })
+                + '<p class="small text-muted mb-0">Tambah, buang, susun semula, dan edit tajuk setiap gambar dalam tingkatan ini.</p>';
         }
         if (block === 'bil_kelas_add') {
-            var tingkatanPreset = attr(el, 'data-tingkatan') || '';
-            var positionHtml = '';
-            if (!tingkatanPreset) {
-                var existingTings = [];
-                try {
-                    existingTings = JSON.parse(attr(el, 'data-tingkatan-options') || '[]') || [];
-                } catch (err) { existingTings = []; }
-                if (!Array.isArray(existingTings)) existingTings = [];
-                var posOptsBk = [{ value: 'start', label: 'Di awal (paling atas)' }];
-                existingTings.forEach(function (t) {
-                    t = String(t || '').trim();
-                    if (!t) return;
-                    posOptsBk.push({ value: 'after:' + t, label: 'Selepas “' + t + '”' });
-                });
-                posOptsBk.push({ value: 'end', label: 'Di akhir (paling bawah)' });
-                positionHtml = selectField('position', 'Kedudukan paparan', 'end', posOptsBk);
-            }
-            return (tingkatanPreset
-                    ? (hidden('tingkatan', tingkatanPreset)
-                        + '<p class="small text-muted mb-3">Tambah gambar untuk <strong>' + esc(tingkatanPreset) + '</strong>.</p>')
-                    : (field('tingkatan', 'Tingkatan baharu', '', false, false) + positionHtml))
-                + field('title', 'Tajuk', '', false, false)
-                + fileField('image', 'Gambar', true)
-                + '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Gambar baharu akan ditambah. Gambar sedia ada kekal.</p>';
-        }
-        if (block === 'enrolmen_item') {
-            var slidesEdit = [];
-            try { slidesEdit = JSON.parse(attr(el, 'data-slides') || '[]') || []; } catch (err2) { slidesEdit = []; }
-            if (!Array.isArray(slidesEdit)) slidesEdit = [];
-            var curId = String(attr(el, 'data-id') || '');
-            var posOptsEdit = [{ value: 'keep', label: 'Kekalkan kedudukan semasa' }, { value: 'start', label: 'Pindah ke awal' }];
-            slidesEdit.forEach(function (s) {
-                if (!s || !s.id || String(s.id) === curId) return;
-                var label = String(s.title || ('Slaid #' + s.id)).trim() || ('Slaid #' + s.id);
-                posOptsEdit.push({ value: 'after:' + s.id, label: 'Selepas “' + label + '”' });
+            var existingTings = [];
+            try {
+                existingTings = JSON.parse(attr(el, 'data-tingkatan-options') || '[]') || [];
+            } catch (err) { existingTings = []; }
+            if (!Array.isArray(existingTings)) existingTings = [];
+            var posOptsBk = [{ value: 'start', label: 'Di awal (paling atas)' }];
+            existingTings.forEach(function (t) {
+                t = String(t || '').trim();
+                if (!t) return;
+                posOptsBk.push({ value: 'after:' + t, label: 'Selepas “' + t + '”' });
             });
-            posOptsEdit.push({ value: 'end', label: 'Pindah ke akhir' });
-            return hidden('id', attr(el, 'data-id'))
-                + field('title', 'Tajuk', attr(el, 'data-title'), false, false)
-                + selectField('position', 'Kedudukan dalam slaid', 'keep', posOptsEdit)
-                + fileField('image', 'Ganti gambar (pilihan)')
-                + '<p class="small text-muted mb-0">Guna Padam untuk buang item ini.</p>';
-        }
-        if (block === 'bil_kelas_item') {
-            return hidden('id', attr(el, 'data-id'))
-                + field('tingkatan', 'Tingkatan', attr(el, 'data-tingkatan'), false, false)
-                + field('title', 'Tajuk', attr(el, 'data-title'), false, false)
-                + fileField('image', 'Ganti gambar (pilihan)')
-                + '<p class="small text-muted mb-0">Guna Padam untuk buang item ini.</p>';
-        }
-        if (block === 'peraturan_item' || block === 'pemimpin_item') {
-            return hidden('id', attr(el, 'data-id'))
-                + currentFileBadge(findCurrentImagePath(el), false)
-                + '<p class="small text-muted mb-0">Guna Padam untuk buang item ini.</p>';
-        }
-        if (block === 'enrolmen_feb') {
-            return field('title', 'Tajuk', attr(el, 'data-title'), false, false)
-                + fileField('image', 'Ganti gambar (pilihan)');
+            posOptsBk.push({ value: 'end', label: 'Di akhir (paling bawah)' });
+            return field('tingkatan', 'Tingkatan baharu', '', false, false)
+                + selectField('position', 'Kedudukan paparan', 'end', posOptsBk)
+                + field('title', 'Tajuk gambar pertama', '', false, false)
+                + fileField('image', 'Gambar pertama', true)
+                + '<p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Selepas tingkatan dicipta, urus gambar lanjut melalui panel galeri tingkatan.</p>';
         }
         if (block === 'pibg_meta') {
             return field('title', 'Tajuk', attr(el, 'data-title'), false, false)
                 + field('subtitle', 'Pengenalan', attr(el, 'data-subtitle'), true, false)
                 + field('button_label', 'Teks butang PDF', attr(el, 'data-button-label'), false, false);
         }
-        if (block === 'pibg_pdf') {
-            var pibgCurrent = findCurrentPdfPath(el) || attr(el, 'data-file') || '';
-            var pibgHasFile = !!fileBasename(pibgCurrent);
-            return fileField(
-                'pdf',
-                pibgHasFile ? 'Fail PDF baharu (ganti semasa)' : 'Fail PDF',
-                true,
-                'application/pdf,.pdf',
-                pibgCurrent || ''
-            ) + (pibgHasFile
-                ? '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>PDF semasa akan diganti, bukan ditambah sebagai fail baharu.</p>'
-                : '');
+        if (block === 'pibg_pdf_gallery' || block === 'pibg_pdf') {
+            return newsImagesField(el, { pdf: true })
+                + '<p class="small text-muted mb-0">Urus semua PDF dalam satu panel: tambah, buang, dan susun semula.</p>';
         }
         if (block === 'enrolmen_summary') {
             return field('title', 'Tajuk bahagian', attr(el, 'data-title'), false, false)
@@ -1148,19 +1124,13 @@ body.smks3-is-editor.smks3-panel-open {
                 ]);
         }
         if (block === 'pelan_image') {
-            return fileField('image', 'Gambar pelan baharu (ganti semasa)', true)
-                + '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>Gambar pelan semasa akan diganti.</p>';
+            return newsImagesField(el)
+                + '<p class="small text-muted mb-0">Boleh muat naik lebih dari satu gambar. Susun dengan anak panah; tandai “Buang” untuk padam.</p>';
         }
         if (block === 'pra_sekolah' || block === 'pra_sekolah_carta' || block === 'pra_sekolah_galeri') {
-            if (block === 'pra_sekolah_carta') {
-                var cartaPath = findCurrentImagePath(el);
-                return fileField('gambar_carta', cartaPath ? 'Gambar carta baharu (ganti semasa)' : 'Gambar carta organisasi', true, 'image/*', cartaPath)
-                    + (cartaPath ? '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>Gambar carta semasa akan diganti.</p>' : '');
-            }
-            if (block === 'pra_sekolah_galeri') {
-                var galeriPath = findCurrentImagePath(el);
-                return fileField('gambar_galeri', galeriPath ? 'Gambar galeri baharu (ganti semasa)' : 'Gambar galeri murid', true, 'image/*', galeriPath)
-                    + (galeriPath ? '<p class="small text-warning mb-0"><i class="bi bi-exclamation-triangle me-1"></i>Gambar galeri semasa akan diganti.</p>' : '');
+            if (block === 'pra_sekolah_carta' || block === 'pra_sekolah_galeri') {
+                return newsImagesField(el)
+                    + '<p class="small text-muted mb-0">Boleh muat naik lebih dari satu gambar. Susun dengan anak panah; tandai “Buang” untuk padam.</p>';
             }
             var praImgs = el.querySelectorAll('img[src]');
             var cartaSrc = praImgs[0] && !isPlaceholderMedia(praImgs[0].getAttribute('src') || '')
@@ -1191,11 +1161,8 @@ body.smks3-is-editor.smks3-panel-open {
                 + '</div>';
         }
         if (block === 'lencana_main') {
-            return field('moto', 'Moto', attr(el, 'data-moto'), true, false)
-                + field('lirik', 'Lirik', attr(el, 'data-lirik'), true, false)
-                + field('lirik_penggubah', 'Penggubah', attr(el, 'data-lirik-penggubah'), false, false)
-                + field('lirik_penulis', 'Penulis', attr(el, 'data-lirik-penulis'), false, false)
-                + fileField('image', 'Ganti gambar lencana (pilihan)');
+            return fileField('image', 'Ganti logo sekolah', true, 'image/*', findCurrentImagePath(el))
+                + '<p class="small text-muted mb-0">Diguna di lencana, navbar, laman utama, log masuk kakitangan, dan favicon.</p>';
         }
         if (block === 'lencana_item' || block === 'lencana_item_add') {
             var isAddL = block === 'lencana_item_add';
@@ -1354,48 +1321,257 @@ body.smks3-is-editor.smks3-panel-open {
             + '</div>';
     }
 
-    function newsImagesField(el) {
+    function newsImagesField(el, opts) {
+        opts = opts || {};
+        var isPdf = !!opts.pdf;
+        var meta = opts.meta || ''; // '', 'title', 'slide'
+        var accept = opts.accept || (isPdf ? 'application/pdf,.pdf' : 'image/*');
+        var inputName = opts.inputName || (isPdf ? 'files[]' : 'images[]');
+        var removeName = opts.removeName || 'remove_images[]';
+        var orderName = opts.orderName || 'image_order[]';
+        var jsonAttr = opts.jsonAttr || 'data-images-json';
+        var inputId = opts.inputId || (isPdf ? 'smks3_f_files' : 'smks3_f_images');
+        var label = opts.label || (isPdf ? 'PDF (boleh lebih daripada satu)' : 'Gambar (boleh lebih daripada satu)');
+        var extraHidden = opts.extraHidden || '';
         var images = [];
         if (el) {
             try {
-                images = JSON.parse(el.getAttribute('data-images-json') || '[]') || [];
+                images = JSON.parse(el.getAttribute(jsonAttr) || '[]') || [];
             } catch (err) {
                 images = [];
             }
             if (!Array.isArray(images) || !images.length) {
-                var fallback = findCurrentImagePath(el);
+                var fallback = isPdf ? findCurrentPdfPath(el) : findCurrentImagePath(el);
                 if (fallback) images = [fallback];
             }
         }
-        var listHtml = '';
-        if (images.length) {
-            listHtml = '<div class="smks3-news-images">' + images.map(function (src, idx) {
-                src = String(src || '').trim();
-                if (!src) return '';
-                var name = fileBasename(src);
-                var parts = splitFileName(name, false);
-                var label = (parts.stem || name) + (parts.ext || '');
-                var fileKey = name || ('image-' + idx);
-                return '<div class="smks3-news-images__item">'
-                    + '<img class="smks3-news-images__thumb" src="' + esc(src) + '" alt="">'
-                    + '<div class="smks3-news-images__meta">'
-                    + '<span class="smks3-news-images__name" title="' + esc(label) + '">'
-                    + '<span class="smks3-current-file__stem">' + esc(parts.stem || label) + '</span>'
-                    + (parts.ext ? '<span class="smks3-current-file__ext">' + esc(parts.ext) + '</span>' : '')
-                    + '</span>'
-                    + '<label class="smks3-news-images__remove form-check">'
-                    + '<input class="form-check-input me-1" type="checkbox" name="remove_images[]" value="' + esc(fileKey) + '">'
-                    + 'Buang'
-                    + '</label>'
-                    + '</div></div>';
-            }).join('') + '</div>';
+        function normItem(raw, idx) {
+            if (typeof raw === 'string') {
+                var src0 = String(raw || '').trim();
+                return { src: src0, key: fileBasename(src0) || ('file-' + idx), title: '', alt: '', href: '', external: false };
+            }
+            raw = raw || {};
+            var src = String(raw.src || raw.image || '').trim();
+            var key = String(raw.key != null ? raw.key : (raw.id != null ? raw.id : (fileBasename(src) || ('file-' + idx))));
+            return {
+                src: src,
+                key: key,
+                title: String(raw.title || ''),
+                alt: String(raw.alt || ''),
+                href: String(raw.href || ''),
+                external: !!raw.external
+            };
         }
-        return '<div class="mb-3">'
-            + '<label class="form-label" for="smks3_f_images">Gambar (boleh lebih daripada satu)</label>'
-            + listHtml
-            + '<input type="file" class="form-control" id="smks3_f_images" name="images[]" accept="image/*" multiple>'
-            + '<p class="form-text mb-0">Pilih beberapa fail sekali gus. Tandai “Buang” untuk padam gambar sedia ada.</p>'
+        function existingMetaHtml(item, fileKey) {
+            if (meta === 'title') {
+                return '<div class="smks3-news-images__fields">'
+                    + '<input type="text" class="form-control form-control-sm" name="item_title[]" value="' + esc(item.title) + '" placeholder="Tajuk">'
+                    + '</div>';
+            }
+            if (meta === 'slide') {
+                return '<div class="smks3-news-images__fields">'
+                    + '<input type="text" class="form-control form-control-sm mb-1" name="item_alt[]" value="' + esc(item.alt) + '" placeholder="Teks alt">'
+                    + '<input type="text" class="form-control form-control-sm mb-1" name="item_href[]" value="' + esc(item.href) + '" placeholder="Pautan (pilihan)">'
+                    + '<label class="form-check mb-0"><input class="form-check-input me-1" type="checkbox" name="item_external_on[]" value="' + esc(fileKey) + '"' + (item.external ? ' checked' : '') + '> Pautan luaran</label>'
+                    + '</div>';
+            }
+            return '';
+        }
+        var itemsHtml = images.map(function (raw, idx) {
+            var item = normItem(raw, idx);
+            if (!item.src && !item.key) return '';
+            var name = fileBasename(item.src) || String(item.key);
+            var parts = splitFileName(name, isPdf);
+            var labelName = (parts.stem || name) + (parts.ext || '');
+            var fileKey = String(item.key);
+            var thumbHtml = isPdf
+                ? '<span class="smks3-news-images__thumb smks3-news-images__thumb--file" aria-hidden="true"><i class="bi bi-file-earmark-pdf-fill"></i></span>'
+                : '<img class="smks3-news-images__thumb" src="' + esc(item.src) + '" alt="">';
+            return '<div class="smks3-news-images__item' + (meta ? ' smks3-news-images__item--meta' : '') + '">'
+                + '<div class="smks3-news-images__order">'
+                + '<button type="button" data-img-move="up" title="Naik" aria-label="Naik">&#9650;</button>'
+                + '<button type="button" data-img-move="down" title="Turun" aria-label="Turun">&#9660;</button>'
+                + '</div>'
+                + thumbHtml
+                + '<div class="smks3-news-images__meta">'
+                + '<span class="smks3-news-images__name" title="' + esc(labelName) + '">'
+                + '<span class="smks3-current-file__stem">' + esc(parts.stem || labelName) + '</span>'
+                + (parts.ext ? '<span class="smks3-current-file__ext">' + esc(parts.ext) + '</span>' : '')
+                + '</span>'
+                + existingMetaHtml(item, fileKey)
+                + '<label class="smks3-news-images__remove form-check">'
+                + '<input class="form-check-input me-1" type="checkbox" name="' + esc(removeName) + '" value="' + esc(fileKey) + '">'
+                + 'Buang'
+                + '</label>'
+                + '</div>'
+                + '<input type="hidden" name="' + esc(orderName) + '" value="' + esc(fileKey) + '">'
+                + '</div>';
+        }).join('');
+        var hint = meta
+            ? 'Pilih fail — medan tajuk/maklumat muncul terus. Guna anak panah untuk susun. Tandai “Buang” untuk padam fail sedia ada.'
+            : 'Pilih beberapa fail sekali gus. Pratonton muncul terus. Guna anak panah untuk susun semula. Tandai “Buang” untuk padam fail sedia ada.';
+        return (extraHidden || '')
+            + '<div class="mb-3">'
+            + '<label class="form-label" for="' + esc(inputId) + '">' + esc(label) + '</label>'
+            + '<div class="smks3-news-images" data-smks3-image-list="1" data-gallery-meta="' + esc(meta) + '" data-gallery-pdf="' + (isPdf ? '1' : '0') + '" data-gallery-input-name="' + esc(inputName) + '">'
+            + itemsHtml
+            + '</div>'
+            + '<input type="file" class="form-control" id="' + esc(inputId) + '" accept="' + esc(accept) + '" multiple data-smks3-gallery-pick>'
+            + '<p class="form-text mb-0">' + hint + '</p>'
             + '</div>';
+    }
+
+    function bindImageOrder(root) {
+        if (!root) return;
+        root.querySelectorAll('[data-smks3-image-list]').forEach(function (list) {
+            var wrap = list.closest('.mb-3') || list.parentElement;
+            var pick = wrap ? wrap.querySelector('[data-smks3-gallery-pick]') : null;
+            bindOneGalleryList(list, pick);
+        });
+    }
+
+    function bindOneGalleryList(list, pick) {
+        if (!list) return;
+
+        var meta = list.getAttribute('data-gallery-meta') || '';
+        var isPdf = list.getAttribute('data-gallery-pdf') === '1';
+        var inputName = list.getAttribute('data-gallery-input-name') || (isPdf ? 'files[]' : 'images[]');
+
+        function refreshMoveButtons() {
+            var items = Array.prototype.slice.call(list.querySelectorAll('.smks3-news-images__item'));
+            items.forEach(function (item, idx) {
+                var up = item.querySelector('[data-img-move="up"]');
+                var down = item.querySelector('[data-img-move="down"]');
+                if (up) up.disabled = idx === 0;
+                if (down) down.disabled = idx === items.length - 1;
+            });
+        }
+
+        function pendingMetaHtml(fileName) {
+            var stem = splitFileName(fileName, isPdf).stem || fileName;
+            if (meta === 'title') {
+                return '<div class="smks3-news-images__fields">'
+                    + '<input type="text" class="form-control form-control-sm" name="new_item_title[]" value="' + esc(stem) + '" placeholder="Tajuk" required>'
+                    + '</div>';
+            }
+            if (meta === 'slide') {
+                return '<div class="smks3-news-images__fields">'
+                    + '<input type="text" class="form-control form-control-sm mb-1" name="new_item_alt[]" value="' + esc(stem) + '" placeholder="Teks alt" required>'
+                    + '<input type="text" class="form-control form-control-sm mb-1" name="new_item_href[]" value="" placeholder="Pautan (pilihan)">'
+                    + '<input type="hidden" name="new_item_external[]" value="0" data-new-external-flag>'
+                    + '<label class="form-check mb-0"><input class="form-check-input me-1" type="checkbox" data-new-external-toggle> Pautan luaran</label>'
+                    + '</div>';
+            }
+            return '';
+        }
+
+        function appendPendingFile(file) {
+            if (!file) return;
+            var name = String(file.name || 'fail');
+            var parts = splitFileName(name, isPdf);
+            var labelName = (parts.stem || name) + (parts.ext || '');
+            var objectUrl = '';
+            var thumbHtml;
+            if (isPdf || !/^image\//i.test(String(file.type || ''))) {
+                thumbHtml = '<span class="smks3-news-images__thumb smks3-news-images__thumb--file" aria-hidden="true"><i class="bi bi-file-earmark-pdf-fill"></i></span>';
+            } else {
+                try { objectUrl = URL.createObjectURL(file); } catch (err) { objectUrl = ''; }
+                thumbHtml = objectUrl
+                    ? '<img class="smks3-news-images__thumb" src="' + esc(objectUrl) + '" alt="">'
+                    : '<span class="smks3-news-images__thumb smks3-news-images__thumb--file" aria-hidden="true"><i class="bi bi-image"></i></span>';
+            }
+            var wrap = document.createElement('div');
+            wrap.className = 'smks3-news-images__item smks3-news-images__item--pending' + (meta ? ' smks3-news-images__item--meta' : '');
+            wrap.setAttribute('data-pending', '1');
+            if (objectUrl) wrap.setAttribute('data-object-url', objectUrl);
+            wrap.innerHTML = '<div class="smks3-news-images__order">'
+                + '<button type="button" data-img-move="up" title="Naik" aria-label="Naik">&#9650;</button>'
+                + '<button type="button" data-img-move="down" title="Turun" aria-label="Turun">&#9660;</button>'
+                + '</div>'
+                + thumbHtml
+                + '<div class="smks3-news-images__meta">'
+                + '<span class="smks3-news-images__name" title="' + esc(labelName) + '">'
+                + '<span class="smks3-current-file__stem">' + esc(parts.stem || labelName) + '</span>'
+                + (parts.ext ? '<span class="smks3-current-file__ext">' + esc(parts.ext) + '</span>' : '')
+                + '</span>'
+                + pendingMetaHtml(name)
+                + '<button type="button" class="smks3-news-images__pending-remove" data-pending-remove>Buang</button>'
+                + '</div>';
+            var fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.name = inputName;
+            fileInput.className = 'd-none';
+            fileInput.tabIndex = -1;
+            try {
+                var dt = new DataTransfer();
+                dt.items.add(file);
+                fileInput.files = dt.files;
+            } catch (err2) {
+                return;
+            }
+            wrap.appendChild(fileInput);
+            list.appendChild(wrap);
+        }
+
+        list.addEventListener('click', function (e) {
+            var removeBtn = e.target.closest('[data-pending-remove]');
+            if (removeBtn && list.contains(removeBtn)) {
+                e.preventDefault();
+                e.stopPropagation();
+                var pendingItem = removeBtn.closest('.smks3-news-images__item');
+                if (pendingItem) {
+                    var objUrl = pendingItem.getAttribute('data-object-url');
+                    if (objUrl) {
+                        try { URL.revokeObjectURL(objUrl); } catch (err3) {}
+                    }
+                    pendingItem.remove();
+                    refreshMoveButtons();
+                }
+                return;
+            }
+            var btn = e.target.closest('[data-img-move]');
+            if (!btn || !list.contains(btn)) return;
+            e.preventDefault();
+            e.stopPropagation();
+            var item = btn.closest('.smks3-news-images__item');
+            if (!item) return;
+            if (btn.getAttribute('data-img-move') === 'up') {
+                if (item.previousElementSibling) {
+                    list.insertBefore(item, item.previousElementSibling);
+                }
+            } else if (btn.getAttribute('data-img-move') === 'down') {
+                if (item.nextElementSibling) {
+                    list.insertBefore(item.nextElementSibling, item);
+                }
+            }
+            refreshMoveButtons();
+        });
+
+        list.addEventListener('change', function (e) {
+            var toggle = e.target.closest('[data-new-external-toggle]');
+            if (!toggle || !list.contains(toggle)) return;
+            var row = toggle.closest('.smks3-news-images__item');
+            var flag = row ? row.querySelector('[data-new-external-flag]') : null;
+            if (flag) flag.value = toggle.checked ? '1' : '0';
+        });
+
+        if (pick) {
+            pick.addEventListener('change', function () {
+                var files = pick.files ? Array.prototype.slice.call(pick.files) : [];
+                files.forEach(appendPendingFile);
+                pick.value = '';
+                refreshMoveButtons();
+                var pendingRows = list.querySelectorAll('.smks3-news-images__item--pending');
+                var startIdx = Math.max(0, pendingRows.length - files.length);
+                var focusRow = pendingRows[startIdx] || pendingRows[pendingRows.length - 1];
+                var firstField = focusRow ? focusRow.querySelector('input[type="text"]') : null;
+                if (firstField) {
+                    try { firstField.focus(); firstField.select(); } catch (err4) {}
+                }
+            });
+        }
+
+        refreshMoveButtons();
     }
 
     function ensureQuillLoaded(done) {
@@ -2146,7 +2322,27 @@ body.smks3-is-editor.smks3-panel-open {
         if (interactive && interactive !== el && el.contains(interactive)) {
             var blockName = el.getAttribute('data-edit-block') || '';
             var linkOwnedBlocks = {
-                slideshow_slide: 1
+                slideshow_gallery: 1,
+                // Image / media blocks: click opens the edit panel, not the image link/lightbox.
+                ubk_carta_image: 1,
+                ubk_pamplet: 1,
+                pra_sekolah_carta: 1,
+                pra_sekolah_galeri: 1,
+                pelan_image: 1,
+                peraturan_gallery: 1,
+                pemimpin_gallery: 1,
+                kalendar_pdf_gallery: 1,
+                cuti_pdf_gallery: 1,
+                pilihan_pdf_gallery: 1,
+                pibg_pdf_gallery: 1,
+                pibg_pdf: 1,
+                bil_kelas_gallery: 1,
+                enrolmen_gallery: 1,
+                lencana_main: 1,
+                pengetua_item: 1,
+                pengurusan_item: 1,
+                guru_item: 1,
+                akp_item: 1
             };
             var isAddBlock = /_add$/.test(blockName);
             var isCarouselNav = interactive.hasAttribute('data-bs-slide')

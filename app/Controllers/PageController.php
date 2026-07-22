@@ -125,10 +125,11 @@ final class PageController extends Controller
         $settings = getSettings();
         $pdo = getConnection();
         
+        smks3_ensure_gallery_sort_order('cuti_perayaan', $pdo);
         $stmt = $pdo->query('
             SELECT *
             FROM cuti_perayaan
-            ORDER BY id DESC
+            ORDER BY sort_order ASC, id ASC
         ');
         $cuti_pdfs = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $is_editor = smks3_can_edit_page();
@@ -243,9 +244,9 @@ final class PageController extends Controller
             $data[$key] = $val !== '' ? $val : $fallback;
         }
 
-        // Always use the same badge as the site navbar
-        $data['image'] = 'hero-logo.png';
-        $lencana_image_src = 'images/hero-logo.png';
+        // Shared site logo (navbar / home / favicon / lencana).
+        $lencana_image_src = smks3_site_logo_src();
+        $data['image'] = basename($lencana_image_src);
 
         $lencana_items = $pdo->query('SELECT * FROM lencana_item ORDER BY sort_order ASC, id ASC')->fetchAll(PDO::FETCH_ASSOC);
         $this->render('pages/lencana-lagu-sekolah', get_defined_vars());
@@ -294,8 +295,9 @@ final class PageController extends Controller
             http_response_code(404);
             $page_title = 'Berita tidak dijumpai';
             $meta_robots = 'noindex, follow';
-            $pdfPath = null;
-            $this->render('pages/news-details', get_defined_vars());
+        $pdfPath = null;
+        $pdfPaths = [];
+        $this->render('pages/news-details', get_defined_vars());
             return;
         }
 
@@ -313,13 +315,8 @@ final class PageController extends Controller
         if ($rawImage !== '') {
             $og_image = smks3_news_image_src($rawImage);
         }
-        $pdfPath = null;
-        if (!empty($news_item['pdf_file'])) {
-            $candidate = 'uploads/pdf/' . basename((string) $news_item['pdf_file']);
-            if (is_file(BASE_PATH . '/' . $candidate)) {
-                $pdfPath = $candidate;
-            }
-        }
+        $pdfPaths = smks3_news_pdf_srcs($news_item['pdf_file'] ?? null);
+        $pdfPath = $pdfPaths[0] ?? null;
 
         $this->render('pages/news-details', get_defined_vars());
     }
@@ -459,14 +456,25 @@ final class PageController extends Controller
         ");
         
         $pelan = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         /**
-         * IMAGE PATH
+         * IMAGE PATHS (legacy single filename or JSON list)
          */
-        $image = !empty($pelan['image'])
-            ? 'images/pelan-sekolah/' . $pelan['image']
-            : 'images/no-image.png';
-        
+        $images = [];
+        foreach (smks3_news_parse_images($pelan['image'] ?? null) as $name) {
+            $path = 'images/pelan-sekolah/' . $name;
+            if (is_file(BASE_PATH . '/' . $path)) {
+                $images[] = $path;
+            }
+        }
+        $hasPelanImages = $images !== [];
+        if (!$hasPelanImages) {
+            $images = ['images/no-image.png'];
+        }
+        $image = $images[0];
+        // Only real uploads go into the edit panel (not the placeholder).
+        $editImages = $hasPelanImages ? $images : [];
+
         $is_editor = smks3_can_edit_page();
         $this->render('pages/pelan-sekolah', get_defined_vars());
     }
@@ -481,7 +489,8 @@ final class PageController extends Controller
         $page_meta = smks3_get_page_meta('pemimpin-murid');
         extract(smks3_kurikulum_page_vars('pemimpin-murid'), EXTR_OVERWRITE);
         
-        $stmt = $pdo->query('SELECT * FROM pemimpin_murid ORDER BY id ASC');
+        smks3_ensure_gallery_sort_order('pemimpin_murid', $pdo);
+        $stmt = $pdo->query('SELECT * FROM pemimpin_murid ORDER BY sort_order ASC, id ASC');
         $db_images = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         $static_image = is_file(BASE_PATH . '/images/barisanmpp.JPG') ? 'images/barisanmpp.JPG' : '';
@@ -539,7 +548,8 @@ final class PageController extends Controller
         $is_editor = smks3_can_edit_page();
         $page_meta = smks3_get_page_meta('peraturan-sekolah');
         
-        $stmt = $pdo->query('SELECT * FROM peraturan_sekolah ORDER BY id ASC');
+        smks3_ensure_gallery_sort_order('peraturan_sekolah', $pdo);
+        $stmt = $pdo->query('SELECT * FROM peraturan_sekolah ORDER BY sort_order ASC, id ASC');
         $db_images = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         $static_images = [];
@@ -554,17 +564,17 @@ final class PageController extends Controller
     public function page_pilihan_mata_pelajaran(): void
     {
         $page_title = 'Pilihan Mata Pelajaran';
-        
+
         $pdo = getConnection();
-        
-        $stmt = $pdo->query("
-            SELECT * 
-            FROM pilihan_mata_pelajaran 
-            ORDER BY id DESC 
-            LIMIT 1
-        ");
-        
-        $data = $stmt->fetch();
+
+        smks3_ensure_gallery_sort_order('pilihan_mata_pelajaran', $pdo);
+        $stmt = $pdo->query('
+            SELECT *
+            FROM pilihan_mata_pelajaran
+            ORDER BY sort_order ASC, id ASC
+        ');
+
+        $pilihan_pdfs = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $is_editor = smks3_can_edit_page();
         $this->render('pages/pilihan-mata-pelajaran', get_defined_vars());
     }
@@ -579,12 +589,27 @@ final class PageController extends Controller
         $kurikulum_page_key = 'pra-sekolah';
         $kurikulum_meta = smks3_get_kurikulum_meta('pra-sekolah');
         
-        /* GET DATA */
+        /* GET DATA — legacy single filename or JSON list per column */
         $stmt = $pdo->query("SELECT * FROM pra_sekolah LIMIT 1");
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        $carta = $data['gambar_carta'] ?? '';
-        $galeri = $data['gambar_galeri'] ?? '';
+        $data = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+        $cartaImages = [];
+        foreach (smks3_news_parse_images($data['gambar_carta'] ?? null) as $name) {
+            $path = 'uploads/pra_sekolah/' . $name;
+            if (is_file(BASE_PATH . '/' . $path)) {
+                $cartaImages[] = $path;
+            }
+        }
+        $galeriImages = [];
+        foreach (smks3_news_parse_images($data['gambar_galeri'] ?? null) as $name) {
+            $path = 'uploads/pra_sekolah/' . $name;
+            if (is_file(BASE_PATH . '/' . $path)) {
+                $galeriImages[] = $path;
+            }
+        }
+        // Keep legacy single vars for any older references.
+        $carta = $cartaImages[0] ?? '';
+        $galeri = $galeriImages[0] ?? '';
         $this->render('pages/pra-sekolah', get_defined_vars());
     }
 

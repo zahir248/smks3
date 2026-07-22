@@ -6,13 +6,16 @@
                 <?= date('d F Y', strtotime($news_item['published_at'])) ?>
             </p>
             <h1 class="fw-bold mb-3"><?= htmlspecialchars($news_item['title']) ?></h1>
-            <?php if (!empty($news_item['pdf_file'])) : ?>
-            <a href="uploads/pdf/<?= htmlspecialchars($news_item['pdf_file']) ?>" target="_blank" rel="noopener noreferrer">
+            <?php if (!empty($news_item['pdf_file'])) :
+                $detailPrimaryPdf = smks3_news_primary_pdf($news_item['pdf_file'] ?? null);
+                if ($detailPrimaryPdf !== ''):
+            ?>
+            <a href="uploads/pdf/<?= htmlspecialchars($detailPrimaryPdf, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">
                 <canvas class="pdf-thumb mb-3"
-                        data-pdf="uploads/pdf/<?= htmlspecialchars($news_item['pdf_file']) ?>">
+                        data-pdf="uploads/pdf/<?= htmlspecialchars($detailPrimaryPdf, ENT_QUOTES, 'UTF-8') ?>">
                 </canvas>
             </a>
-            <?php endif; ?>
+            <?php endif; endif; ?>
             <?= $news_item['content'] ?>
             <a href="news" class="btn btn-outline-primary mt-4">← Kembali ke Berita</a>
         </article>
@@ -52,10 +55,13 @@
                             <?= htmlspecialchars($newsTitle) ?>
                         </a>
                     </h2>
-                    <?php if (!empty($n['pdf_file'])) : ?>
+                    <?php
+                    $listPrimaryPdf = smks3_news_primary_pdf($n['pdf_file'] ?? null);
+                    if ($listPrimaryPdf !== '') :
+                    ?>
                     <a href="<?= htmlspecialchars($newsUrl, ENT_QUOTES, 'UTF-8') ?>">
                         <canvas class="pdf-thumb mb-2"
-                                data-pdf="uploads/pdf/<?= htmlspecialchars($n['pdf_file']) ?>">
+                                data-pdf="uploads/pdf/<?= htmlspecialchars($listPrimaryPdf, ENT_QUOTES, 'UTF-8') ?>">
                         </canvas>
                     </a>
                     <?php endif; ?>

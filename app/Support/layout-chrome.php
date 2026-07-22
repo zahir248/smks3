@@ -156,3 +156,87 @@ function smks3_layout_asset_src(string $path): string
     }
     return 'uploads/layout/' . ltrim($path, '/');
 }
+
+/**
+ * Canonical site logo path (navbar, hero, login, favicon, lencana).
+ * Prefers lencana_lagu_sekolah.image, then layout navbar_logo, then default.
+ */
+function smks3_site_logo_src(): string
+{
+    static $cached = null;
+    if ($cached !== null) {
+        return $cached;
+    }
+
+    $fallback = 'images/hero-logo.png';
+    try {
+        require_once BASE_PATH . '/config/database.php';
+        $pdo = getConnection();
+        $raw = (string) ($pdo->query('SELECT image FROM lencana_lagu_sekolah WHERE id = 1 LIMIT 1')->fetchColumn() ?: '');
+        $name = basename(str_replace('\\', '/', trim($raw, " \t\n\r\0\x0B\"'")));
+        if ($name !== '' && !str_contains($name, '..')) {
+            $candidate = str_starts_with($raw, 'images/') || str_starts_with($raw, 'uploads/')
+                ? ltrim(str_replace('\\', '/', $raw), '/')
+                : ('images/' . $name);
+            $candidate = preg_replace('#^/+#', '', $candidate) ?: $candidate;
+            if (is_file(BASE_PATH . '/' . $candidate)) {
+                return $cached = $candidate;
+            }
+        }
+    } catch (Throwable $e) {
+        // fall through
+    }
+
+    try {
+        $layout = smks3_get_layout_content();
+        $fromLayout = smks3_layout_asset_src((string) ($layout['navbar_logo'] ?? ''));
+        if ($fromLayout !== '' && is_file(BASE_PATH . '/' . $fromLayout)) {
+            return $cached = $fromLayout;
+        }
+    } catch (Throwable $e) {
+        // fall through
+    }
+
+    return $cached = $fallback;
+}
+
+/**
+ * Sync site-wide logo path into layout chrome (navbar / SEO).
+ */
+function smks3_set_site_logo(string $relativePath): void
+{
+    $relativePath = trim(str_replace('\\', '/', $relativePath));
+    if ($relativePath === '' || str_contains($relativePath, '..')) {
+        return;
+    }
+    if (!str_starts_with($relativePath, 'images/') && !str_starts_with($relativePath, 'uploads/')) {
+        $relativePath = 'images/' . basename($relativePath);
+    }
+    $layout = smks3_get_layout_content();
+    $layout['navbar_logo'] = $relativePath;
+    smks3_save_layout_content($layout);
+}
+
+/**
+ * Favicon link attributes derived from the site logo (PNG/JPEG/WebP/ICO).
+ *
+ * @return array{href:string,type:string}
+ */
+function smks3_site_favicon(): array
+{
+    $logo = smks3_site_logo_src();
+    $ext = strtolower(pathinfo($logo, PATHINFO_EXTENSION));
+    $types = [
+        'png' => 'image/png',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'webp' => 'image/webp',
+        'gif' => 'image/gif',
+        'svg' => 'image/svg+xml',
+        'ico' => 'image/x-icon',
+    ];
+    if (isset($types[$ext]) && is_file(BASE_PATH . '/' . $logo)) {
+        return ['href' => $logo, 'type' => $types[$ext]];
+    }
+    return ['href' => 'images/favicon-smks3.ico', 'type' => 'image/x-icon'];
+}

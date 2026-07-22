@@ -3,12 +3,56 @@
 declare(strict_types=1);
 
 /**
- * Role-based access: units → admins → page/footer edit permissions.
+ * Role-based access: units → admins; page edit permissions are per admin.
  */
 
 function smks3_is_superadmin(): bool
 {
     return smks3_editor_role() === 'superadmin';
+}
+
+/**
+ * Normalize login username: trim + collapse internal whitespace.
+ */
+function smks3_normalize_username(string $username): string
+{
+    $username = trim($username);
+    $username = preg_replace('/\s+/u', ' ', $username) ?? '';
+    return $username;
+}
+
+/**
+ * Username for login/daftar admin: 3–100 chars, letters/digits/space/._-
+ * Allows values like "Muhd Bakar".
+ */
+function smks3_is_valid_username(string $username): bool
+{
+    $len = strlen($username);
+    if ($len < 3 || $len > 100) {
+        return false;
+    }
+    return (bool) preg_match('/^[A-Za-z0-9._\-]+(?: [A-Za-z0-9._\-]+)*$/', $username);
+}
+
+function smks3_username_validation_error(): string
+{
+    return 'Nama pengguna mesti 3–100 aksara (huruf, nombor, ruang, . _ -).';
+}
+
+/**
+ * Exact username match (case-sensitive). MySQL default collations are CI.
+ */
+function smks3_sql_username_equals(string $column = 'username'): string
+{
+    return $column . ' COLLATE utf8mb4_bin = ?';
+}
+
+/**
+ * Case-insensitive username match (for uniqueness / "already exists").
+ */
+function smks3_sql_username_equals_ci(string $column = 'username'): string
+{
+    return 'LOWER(' . $column . ') = LOWER(?)';
 }
 
 function smks3_ensure_rbac_schema(?PDO $pdo = null): void
@@ -38,6 +82,15 @@ function smks3_ensure_rbac_schema(?PDO $pdo = null): void
                     FOREIGN KEY (unit_id) REFERENCES units(id) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
         );
+        $pdo->exec(
+            'CREATE TABLE IF NOT EXISTS user_permissions (
+                user_id INT NOT NULL,
+                permission_key VARCHAR(120) NOT NULL,
+                PRIMARY KEY (user_id, permission_key),
+                CONSTRAINT fk_user_permissions_user
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+        );
         $col = $pdo->query("SHOW COLUMNS FROM users LIKE 'unit_id'")->fetch(PDO::FETCH_ASSOC);
         if (!$col) {
             $pdo->exec('ALTER TABLE users ADD COLUMN unit_id INT NULL DEFAULT NULL');
@@ -53,13 +106,55 @@ function smks3_ensure_rbac_schema(?PDO $pdo = null): void
         }
         smks3_ensure_users_edit_preview_column($pdo);
         smks3_ensure_users_is_active_column($pdo);
+        smks3_rbac_migrate_unit_permissions_to_users($pdo);
     } catch (Throwable $e) {
         // schema best-effort
     }
 }
 
 /**
- * Editable areas superadmin can assign to a unit.
+ * One-time: copy unit_permissions onto each admin in that unit when user_permissions is empty.
+ */
+function smks3_rbac_migrate_unit_permissions_to_users(PDO $pdo): void
+{
+    static $migrated = false;
+    if ($migrated) {
+        return;
+    }
+    $migrated = true;
+    try {
+        $userPermCount = (int) $pdo->query('SELECT COUNT(*) FROM user_permissions')->fetchColumn();
+        $unitPermCount = (int) $pdo->query('SELECT COUNT(*) FROM unit_permissions')->fetchColumn();
+        if ($userPermCount > 0 || $unitPermCount < 1) {
+            return;
+        }
+        $rows = $pdo->query(
+            'SELECT us.id AS user_id, up.permission_key
+             FROM unit_permissions up
+             INNER JOIN users us ON us.unit_id = up.unit_id
+             WHERE us.role = \'admin\' OR us.role IS NULL OR us.role = \'\''
+        )->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        if ($rows === []) {
+            return;
+        }
+        $ins = $pdo->prepare(
+            'INSERT IGNORE INTO user_permissions (user_id, permission_key) VALUES (?, ?)'
+        );
+        foreach ($rows as $row) {
+            $uid = (int) ($row['user_id'] ?? 0);
+            $key = trim((string) ($row['permission_key'] ?? ''));
+            if ($uid < 1 || $key === '') {
+                continue;
+            }
+            $ins->execute([$uid, $key]);
+        }
+    } catch (Throwable $e) {
+        // best-effort
+    }
+}
+
+/**
+ * Editable areas superadmin can assign to an admin.
  *
  * @return array<string, array{label: string, group: string}>
  */
@@ -121,32 +216,10 @@ function smks3_rbac_canonical_permission(string $permissionKey): string
     return $aliases[$permissionKey] ?? $permissionKey;
 }
 
-/** Map CMS block name → permission key. */
-function smks3_rbac_permission_for_block(string $block): ?string
+/** Map CMS block name → permission key (exact block names only). */
+function smks3_rbac_block_permission_map(): array
 {
-    $block = trim($block);
-    if ($block === '') {
-        return null;
-    }
-
-    if (str_starts_with($block, 'footer_')) {
-        return 'footer';
-    }
-
-    $homeBlocks = array_merge(
-        array_keys(function_exists('smks3_default_home_content') ? smks3_default_home_content() : []),
-        ['school_info', 'sidebar_title', 'quick_link', 'quick_link_add', 'quick_link_delete', 'slideshow_slide', 'slideshow_add', 'slideshow_delete', 'news_hub']
-    );
-    if (in_array($block, $homeBlocks, true)) {
-        return 'home';
-    }
-
-    if (str_starts_with($block, 'news_')) {
-        return 'news';
-    }
-
-    /** @var array<string, string> $map */
-    static $map = [
+    return [
         'profil_item' => 'profil-sekolah',
         'profil_item_add' => 'profil-sekolah',
         'profil_item_delete' => 'profil-sekolah',
@@ -180,11 +253,9 @@ function smks3_rbac_permission_for_block(string $block): ?string
         'kalendar_table' => 'kalendar-akademik',
         'kalendar_page' => 'kalendar-akademik',
         'kalendar_cell' => 'kalendar-akademik',
-        'kalendar_pdf_add' => 'kalendar-akademik',
         'editable_table' => 'kalendar-akademik',
         'table_cell' => 'kalendar-akademik',
         'cuti_kumpulan' => 'cuti-perayaan',
-        'cuti_pdf_add' => 'cuti-perayaan',
         'list_item' => 'cuti-perayaan',
         'kurikulum_meta' => 'pentaksiran-peperiksaan',
         'kurikulum_section' => 'pentaksiran-peperiksaan',
@@ -194,17 +265,16 @@ function smks3_rbac_permission_for_block(string $block): ?string
         'pra_sekolah' => 'pra-sekolah',
         'pra_sekolah_carta' => 'pra-sekolah',
         'pra_sekolah_galeri' => 'pra-sekolah',
-        'pilihan_pdf_add' => 'pilihan-mata-pelajaran',
-        'enrolmen_add' => 'enrolmen-murid',
-        'enrolmen_item' => 'enrolmen-murid',
-        'enrolmen_delete' => 'enrolmen-murid',
-        'enrolmen_feb' => 'enrolmen-murid',
+        'pilihan_pdf_gallery' => 'pilihan-mata-pelajaran',
+        'kalendar_pdf_gallery' => 'kalendar-akademik',
+        'cuti_pdf_gallery' => 'cuti-perayaan',
+        'enrolmen_gallery' => 'enrolmen-murid',
         'enrolmen_summary' => 'enrolmen-murid',
         'enrolmen_blok' => 'enrolmen-murid',
         'enrolmen_floor' => 'enrolmen-murid',
+        'enrolmen_room' => 'enrolmen-murid',
         'bil_kelas_add' => 'bil-kelas-gambar',
-        'bil_kelas_item' => 'bil-kelas-gambar',
-        'bil_kelas_delete' => 'bil-kelas-gambar',
+        'bil_kelas_gallery' => 'bil-kelas-gambar',
         'ubk_pengenalan' => 'unit-bimbingan-kaunseling',
         'ubk_visi' => 'unit-bimbingan-kaunseling',
         'ubk_misi' => 'unit-bimbingan-kaunseling',
@@ -213,18 +283,111 @@ function smks3_rbac_permission_for_block(string $block): ?string
         'ubk_fungsi' => 'unit-bimbingan-kaunseling',
         'ubk_aktiviti' => 'unit-bimbingan-kaunseling',
         'ubk_carta_image' => 'unit-bimbingan-kaunseling',
-        'ubk_pamplet1' => 'unit-bimbingan-kaunseling',
-        'ubk_pamplet2' => 'unit-bimbingan-kaunseling',
-        'peraturan_add' => 'peraturan-sekolah',
-        'peraturan_delete' => 'peraturan-sekolah',
-        'pemimpin_add' => 'pemimpin-murid',
-        'pemimpin_delete' => 'pemimpin-murid',
+        'ubk_pamplet' => 'unit-bimbingan-kaunseling',
+        'peraturan_gallery' => 'peraturan-sekolah',
+        'pemimpin_gallery' => 'pemimpin-murid',
         'pibg_meta' => 'jawatankuasa-pibg',
         'pibg_pdf' => 'jawatankuasa-pibg',
+        'pibg_pdf_gallery' => 'jawatankuasa-pibg',
         'html_text' => 'home',
         'editable_html' => 'home',
     ];
+}
 
+/**
+ * Blocks that may appear on multiple pages — do not filter solely by entity_type.
+ *
+ * @return list<string>
+ */
+function smks3_rbac_shared_edit_blocks(): array
+{
+    return [
+        'html_text',
+        'editable_html',
+        'table_cell',
+        'list_item',
+        'editable_table',
+        'kurikulum_meta',
+        'kurikulum_section',
+        'kurikulum_card',
+        'kurikulum_card_add',
+        'kurikulum_card_delete',
+    ];
+}
+
+/**
+ * Block names (and prefixes) that belong to a kebenaran page key.
+ *
+ * @return array{blocks: list<string>, prefixes: list<string>}
+ */
+function smks3_rbac_blocks_for_permission(string $permissionKey): array
+{
+    $permissionKey = smks3_rbac_canonical_permission(trim($permissionKey));
+    if ($permissionKey === '' || $permissionKey === 'index') {
+        $permissionKey = 'home';
+    }
+
+    $blocks = [];
+    if ($permissionKey === 'home') {
+        $blocks = array_merge(
+            array_keys(function_exists('smks3_default_home_content') ? smks3_default_home_content() : []),
+            ['school_info', 'sidebar_title', 'quick_link', 'quick_link_add', 'quick_link_delete', 'slideshow_gallery', 'news_hub']
+        );
+    }
+
+    foreach (smks3_rbac_block_permission_map() as $block => $perm) {
+        if ($perm === $permissionKey) {
+            $blocks[] = $block;
+        }
+    }
+
+    $prefixes = [];
+    if ($permissionKey === 'footer') {
+        $prefixes[] = 'footer_';
+    }
+    if ($permissionKey === 'news') {
+        $prefixes[] = 'news_';
+    }
+
+    $shared = smks3_rbac_shared_edit_blocks();
+    $exclusive = [];
+    foreach (array_values(array_unique($blocks)) as $b) {
+        if (!in_array($b, $shared, true)) {
+            $exclusive[] = $b;
+        }
+    }
+
+    return [
+        'blocks' => $exclusive,
+        'prefixes' => $prefixes,
+    ];
+}
+
+/** Map CMS block name → permission key. */
+function smks3_rbac_permission_for_block(string $block): ?string
+{
+    $block = trim($block);
+    if ($block === '') {
+        return null;
+    }
+
+    if (str_starts_with($block, 'footer_')) {
+        return 'footer';
+    }
+
+    $homeBlocks = array_merge(
+        array_keys(function_exists('smks3_default_home_content') ? smks3_default_home_content() : []),
+        ['school_info', 'sidebar_title', 'quick_link', 'quick_link_add', 'quick_link_delete', 'slideshow_gallery', 'news_hub']
+    );
+    if (in_array($block, $homeBlocks, true)) {
+        return 'home';
+    }
+
+    if (str_starts_with($block, 'news_')) {
+        return 'news';
+    }
+
+    $map = smks3_rbac_block_permission_map();
     if (isset($map[$block])) {
         return $map[$block];
     }
@@ -240,6 +403,61 @@ function smks3_rbac_permission_for_block(string $block): ?string
     }
 
     return null;
+}
+
+/**
+ * Guess page key from HTTP Referer (save-content API has route = save-content).
+ */
+function smks3_page_key_from_referer(): string
+{
+    $ref = (string) ($_SERVER['HTTP_REFERER'] ?? '');
+    if ($ref === '') {
+        return '';
+    }
+    $path = parse_url($ref, PHP_URL_PATH);
+    if (!is_string($path) || $path === '') {
+        return '';
+    }
+    $path = trim(rawurldecode($path), '/');
+    if ($path === '' || $path === 'index.php' || $path === 'index') {
+        return 'home';
+    }
+    $base = basename(preg_replace('/\.php$/i', '', $path) ?: '');
+    if ($base === '' || $base === 'index') {
+        return 'home';
+    }
+    if ($base === 'news-details' || $base === 'buletin-sekolah') {
+        return 'news';
+    }
+    return smks3_rbac_canonical_permission($base);
+}
+
+/**
+ * Resolve kebenaran page key for an activity / content save.
+ *
+ * @param array<string,mixed> $data
+ */
+function smks3_activity_resolve_page_key(string $block, array $data = []): ?string
+{
+    $fromData = trim((string) ($data['page_key'] ?? $data['key'] ?? ''));
+    if ($fromData !== '') {
+        $canon = smks3_rbac_canonical_permission($fromData);
+        if ($canon === 'index' || $canon === '') {
+            return 'home';
+        }
+        return $canon;
+    }
+
+    $shared = smks3_rbac_shared_edit_blocks();
+    $perm = smks3_rbac_permission_for_block($block);
+    if ($perm === null || in_array($block, $shared, true)) {
+        $fromRef = smks3_page_key_from_referer();
+        if ($fromRef !== '') {
+            return $fromRef === 'index' ? 'home' : $fromRef;
+        }
+    }
+
+    return $perm;
 }
 
 function smks3_current_user_unit_id(): ?int
@@ -290,22 +508,46 @@ function smks3_current_user_unit_name(): ?string
     return is_string($name) && $name !== '' ? $name : null;
 }
 
+/** Logged-in users.id, or null. */
+function smks3_current_user_id(): ?int
+{
+    smks3_ensure_session();
+    if (isset($_SESSION['user_id']) && (int) $_SESSION['user_id'] > 0) {
+        return (int) $_SESSION['user_id'];
+    }
+    $username = trim((string) ($_SESSION['username'] ?? ''));
+    if ($username === '') {
+        return null;
+    }
+    try {
+        $pdo = getConnection();
+        $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ? LIMIT 1');
+        $stmt->execute([$username]);
+        $id = (int) ($stmt->fetchColumn() ?: 0);
+        if ($id > 0) {
+            $_SESSION['user_id'] = $id;
+            return $id;
+        }
+    } catch (Throwable $e) {
+        // ignore
+    }
+    return null;
+}
+
 /** @return list<string> */
 function smks3_current_user_permissions(): array
 {
     if (smks3_is_superadmin()) {
         return array_keys(smks3_rbac_permission_catalog());
     }
-    $unitId = smks3_current_user_unit_id();
-    if (!$unitId) {
+    $userId = smks3_current_user_id();
+    if (!$userId) {
         return [];
     }
     try {
         $pdo = getConnection();
         smks3_ensure_rbac_schema($pdo);
-        $stmt = $pdo->prepare('SELECT permission_key FROM unit_permissions WHERE unit_id = ?');
-        $stmt->execute([$unitId]);
-        return array_values(array_map('strval', $stmt->fetchAll(PDO::FETCH_COLUMN) ?: []));
+        return smks3_rbac_admin_permissions($pdo, $userId);
     } catch (Throwable $e) {
         return [];
     }
@@ -314,7 +556,8 @@ function smks3_current_user_permissions(): array
 function smks3_rbac_refresh_session_permissions(): void
 {
     smks3_ensure_session();
-    unset($_SESSION['rbac_permissions'], $_SESSION['unit_id'], $_SESSION['unit_name']);
+    unset($_SESSION['rbac_permissions'], $_SESSION['unit_id'], $_SESSION['unit_name'], $_SESSION['user_id']);
+    smks3_current_user_id();
     smks3_current_user_unit_id();
     smks3_current_user_permissions();
 }
@@ -425,8 +668,7 @@ function smks3_rbac_list_units(PDO $pdo): array
     smks3_ensure_rbac_schema($pdo);
     $rows = $pdo->query(
         'SELECT u.*,
-                (SELECT COUNT(*) FROM users us WHERE us.unit_id = u.id) AS admin_count,
-                (SELECT COUNT(*) FROM unit_permissions up WHERE up.unit_id = u.id) AS permission_count
+                (SELECT COUNT(*) FROM users us WHERE us.unit_id = u.id) AS admin_count
          FROM units u
          ORDER BY u.name ASC'
     )->fetchAll(PDO::FETCH_ASSOC);
@@ -455,6 +697,47 @@ function smks3_rbac_paginate(array $items, int $page, int $perPage = 4): array
 }
 
 /** @return list<string> */
+function smks3_rbac_admin_permissions(PDO $pdo, int $userId): array
+{
+    smks3_ensure_rbac_schema($pdo);
+    if ($userId < 1) {
+        return [];
+    }
+    $stmt = $pdo->prepare('SELECT permission_key FROM user_permissions WHERE user_id = ? ORDER BY permission_key');
+    $stmt->execute([$userId]);
+    $raw = array_map('strval', $stmt->fetchAll(PDO::FETCH_COLUMN) ?: []);
+    $catalog = smks3_rbac_permission_catalog();
+    $out = [];
+    foreach ($raw as $key) {
+        $canonical = smks3_rbac_canonical_permission($key);
+        if (isset($catalog[$canonical])) {
+            $out[$canonical] = $canonical;
+        }
+    }
+    return array_values($out);
+}
+
+function smks3_rbac_set_admin_permissions(PDO $pdo, int $userId, array $keys): void
+{
+    smks3_ensure_rbac_schema($pdo);
+    if ($userId < 1) {
+        throw new InvalidArgumentException('ID admin tidak sah.');
+    }
+    $catalog = smks3_rbac_permission_catalog();
+    $pdo->prepare('DELETE FROM user_permissions WHERE user_id = ?')->execute([$userId]);
+    $ins = $pdo->prepare('INSERT INTO user_permissions (user_id, permission_key) VALUES (?, ?)');
+    $seen = [];
+    foreach ($keys as $key) {
+        $key = smks3_rbac_canonical_permission(trim((string) $key));
+        if ($key === '' || !isset($catalog[$key]) || isset($seen[$key])) {
+            continue;
+        }
+        $seen[$key] = true;
+        $ins->execute([$userId, $key]);
+    }
+}
+
+/** @deprecated Prefer smks3_rbac_admin_permissions — kept for migration/read of old data. */
 function smks3_rbac_unit_permissions(PDO $pdo, int $unitId): array
 {
     smks3_ensure_rbac_schema($pdo);
@@ -472,6 +755,7 @@ function smks3_rbac_unit_permissions(PDO $pdo, int $unitId): array
     return array_values($out);
 }
 
+/** @deprecated */
 function smks3_rbac_set_unit_permissions(PDO $pdo, int $unitId, array $keys): void
 {
     smks3_ensure_rbac_schema($pdo);
@@ -495,7 +779,8 @@ function smks3_rbac_list_admins(PDO $pdo): array
     smks3_ensure_rbac_schema($pdo);
     smks3_ensure_users_is_active_column($pdo);
     $rows = $pdo->query(
-        "SELECT us.id, us.username, us.role, us.unit_id, us.is_active, u.name AS unit_name
+        "SELECT us.id, us.username, us.role, us.unit_id, us.is_active, u.name AS unit_name,
+                (SELECT COUNT(*) FROM user_permissions up WHERE up.user_id = us.id) AS permission_count
          FROM users us
          LEFT JOIN units u ON u.id = us.unit_id
          WHERE us.role = 'admin' OR (us.role IS NULL OR us.role = '')

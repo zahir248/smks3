@@ -1,7 +1,7 @@
 <section class="py-5 bg-light">
     <div class="container">
         <p class="text-muted lead mb-4">Program kemahiran yang kami tawarkan untuk masa depan pelajar.</p>
-        <div class="row g-4 mt-3">
+        <div class="row g-4 mt-3 justify-content-center">
             <?php foreach ($courses as $c) : ?>
             <div class="col-md-6 col-lg-4" id="<?= htmlspecialchars($c['slug']) ?>">
                 <div class="card card-hover border-0 shadow-sm h-100">

@@ -135,7 +135,7 @@ $footerSocial = is_array($layout['social'] ?? null) ? $layout['social'] : [];
             <div class="modal-content staff-login-modal">
                 <div class="staff-login-modal__header">
                     <div class="staff-login-modal__brand">
-                        <img src="images/hero-logo.png" alt="" width="48" height="43" class="staff-login-modal__logo" decoding="async">
+                        <img src="<?= htmlspecialchars(smks3_site_logo_src(), ENT_QUOTES, 'UTF-8') ?>" alt="" width="48" height="43" class="staff-login-modal__logo" decoding="async">
                         <div>
                             <p class="staff-login-modal__eyebrow">SMK Seremban 3</p>
                             <h2 class="staff-login-modal__title" id="staffLoginModalLabel">Portal Kakitangan</h2>
@@ -343,6 +343,11 @@ $footerSocial = is_array($layout['social'] ?? null) ? $layout['social'] : [];
 
         window.smks3OpenMediaOverlay = function (src) {
             if (!src) return;
+            // Avoid opening media while an editor is trying to click Edit on the image.
+            if (document.body.classList.contains('smks3-is-editor')
+                && !document.body.classList.contains('smks3-edit-preview')) {
+                return;
+            }
             img.src = src;
             setOverlayOpen(true);
         };

@@ -2,6 +2,39 @@
 $ubk = is_array($ubk ?? null) ? $ubk : smks3_get_ubk_content();
 $is_editor = !empty($is_editor);
 ?>
+<style>
+.ubk-gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin-inline: auto;
+}
+.ubk-gallery__item {
+    display: block;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+}
+.ubk-gallery__item a {
+    display: block;
+    width: 100%;
+}
+.ubk-gallery__item img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+}
+.ubk-image-empty {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 2rem 1rem;
+    background: #f8fafc;
+}
+</style>
 
 <!-- Pengenalan -->
 <section class="page-section" id="pengenalan">
@@ -105,26 +138,49 @@ $is_editor = !empty($is_editor);
     <div class="container">
         <h3 class="fw-bold text-center mb-4">Carta Organisasi</h3>
         <?php
-        $cartaSrc = smks3_ubk_img_src((string) ($ubk['carta_image'] ?? ''));
-        $cartaExists = $cartaSrc !== '' && (preg_match('#^https?://#i', $cartaSrc) || is_file(BASE_PATH . '/' . $cartaSrc));
+        $cartaSrcs = smks3_ubk_img_srcs($ubk['carta_image'] ?? []);
+        $cartaJson = json_encode($cartaSrcs, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         ?>
-        <div class="text-center"
-             <?php if ($is_editor): ?>
-             data-edit-block="ubk_carta_image"
-             data-edit-label="<?= $cartaExists ? 'Ganti carta organisasi UBK' : 'Muat naik carta organisasi UBK' ?>"
-             data-edit-hint="<?= $cartaExists ? 'Muat naik gambar baharu. Carta semasa akan diganti.' : 'Muat naik gambar carta organisasi.' ?>"
-             <?php endif; ?>>
-            <?php if ($cartaExists): ?>
-                <a href="<?= htmlspecialchars($cartaSrc, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">
-                    <img src="<?= htmlspecialchars($cartaSrc, ENT_QUOTES, 'UTF-8') ?>" alt="Carta Organisasi UBK" class="img-fluid rounded shadow">
-                </a>
-                <?php if ($is_editor): ?>
-                <p class="small text-muted mt-2 mb-0">Hanya satu carta. Muat naik baharu akan menggantikan yang sedia ada.</p>
-                <?php endif; ?>
-            <?php elseif ($is_editor): ?>
-                <p class="text-muted mb-0">Tiada gambar carta. Klik untuk muat naik.</p>
+        <?php if ($cartaSrcs !== []): ?>
+            <div class="ubk-gallery"
+                 <?php if ($is_editor): ?>
+                 data-edit-block="ubk_carta_image"
+                 data-edit-label="Urus carta organisasi UBK"
+                 data-edit-hint="Muat naik satu atau lebih gambar. Gambar baharu ditambah tanpa menggantikan yang lama."
+                 data-images-json="<?= htmlspecialchars($cartaJson ?: '[]', ENT_QUOTES, 'UTF-8') ?>"
+                 <?php endif; ?>>
+                <?php foreach ($cartaSrcs as $idx => $cartaSrc): ?>
+                <figure class="ubk-gallery__item">
+                    <?php if ($is_editor): ?>
+                        <img src="<?= htmlspecialchars($cartaSrc, ENT_QUOTES, 'UTF-8') ?>"
+                             alt="Carta Organisasi UBK<?= count($cartaSrcs) > 1 ? ' (' . ($idx + 1) . ')' : '' ?>"
+                             class="img-fluid rounded shadow"
+                             loading="<?= $idx === 0 ? 'eager' : 'lazy' ?>"
+                             decoding="async">
+                    <?php else: ?>
+                        <a href="<?= htmlspecialchars($cartaSrc, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">
+                            <img src="<?= htmlspecialchars($cartaSrc, ENT_QUOTES, 'UTF-8') ?>"
+                                 alt="Carta Organisasi UBK<?= count($cartaSrcs) > 1 ? ' (' . ($idx + 1) . ')' : '' ?>"
+                                 class="img-fluid rounded shadow"
+                                 loading="<?= $idx === 0 ? 'eager' : 'lazy' ?>"
+                                 decoding="async">
+                        </a>
+                    <?php endif; ?>
+                </figure>
+                <?php endforeach; ?>
+            </div>
+            <?php if ($is_editor): ?>
+            <p class="text-center small text-muted mt-2 mb-0">Boleh ada lebih dari satu gambar. Muat naik baharu tidak menggantikan yang lama.</p>
             <?php endif; ?>
-        </div>
+        <?php elseif ($is_editor): ?>
+            <div class="text-center ubk-image-empty"
+                 data-edit-block="ubk_carta_image"
+                 data-edit-label="Muat naik carta organisasi UBK"
+                 data-edit-hint="Pilih satu atau lebih gambar carta organisasi."
+                 data-images-json="[]">
+                <p class="text-muted mb-0">Tiada gambar carta. Klik untuk muat naik.</p>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -132,28 +188,50 @@ $is_editor = !empty($is_editor);
 <section class="page-section" id="proses">
     <div class="container">
         <h3 class="fw-bold text-center mb-4">Proses Perkhidmatan Bimbingan & Kaunseling/Komponen Perkhidmatan</h3>
-        <?php foreach (['pamplet1_image' => 'ubk_pamplet1', 'pamplet2_image' => 'ubk_pamplet2'] as $key => $block):
-            $src = smks3_ubk_img_src((string) ($ubk[$key] ?? ''));
-            $exists = $src !== '' && (preg_match('#^https?://#i', $src) || is_file(BASE_PATH . '/' . $src));
+        <?php
+        $pampletSrcs = smks3_ubk_img_srcs($ubk['pamplet_images'] ?? []);
+        $pampletJson = json_encode($pampletSrcs, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         ?>
-        <div class="text-center mb-4"
-             <?php if ($is_editor): ?>
-             data-edit-block="<?= htmlspecialchars($block, ENT_QUOTES, 'UTF-8') ?>"
-             data-edit-label="<?= $exists ? 'Ganti gambar pamplet' : 'Muat naik gambar pamplet' ?>"
-             data-edit-hint="<?= $exists ? 'Muat naik gambar baharu. Pamplet semasa akan diganti.' : 'Muat naik gambar pamplet.' ?>"
-             <?php endif; ?>>
-            <?php if ($exists): ?>
-                <a href="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">
-                    <img src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>" alt="Pamplet UBK" class="img-fluid rounded shadow">
-                </a>
-                <?php if ($is_editor): ?>
-                <p class="small text-muted mt-2 mb-0">Slot ini hanya satu gambar. Muat naik baharu akan menggantikan yang sedia ada.</p>
-                <?php endif; ?>
-            <?php elseif ($is_editor): ?>
-                <p class="text-muted mb-0">Tiada gambar. Klik untuk muat naik.</p>
+        <?php if ($pampletSrcs !== []): ?>
+            <div class="ubk-gallery"
+                 <?php if ($is_editor): ?>
+                 data-edit-block="ubk_pamplet"
+                 data-edit-label="Urus gambar proses / pamplet"
+                 data-edit-hint="Muat naik, buang, atau susun semula gambar dalam satu panel."
+                 data-images-json="<?= htmlspecialchars($pampletJson ?: '[]', ENT_QUOTES, 'UTF-8') ?>"
+                 <?php endif; ?>>
+                <?php foreach ($pampletSrcs as $idx => $src): ?>
+                <figure class="ubk-gallery__item">
+                    <?php if ($is_editor): ?>
+                        <img src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
+                             alt="Pamplet UBK<?= count($pampletSrcs) > 1 ? ' (' . ($idx + 1) . ')' : '' ?>"
+                             class="img-fluid rounded shadow"
+                             loading="<?= $idx === 0 ? 'eager' : 'lazy' ?>"
+                             decoding="async">
+                    <?php else: ?>
+                        <a href="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">
+                            <img src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
+                                 alt="Pamplet UBK<?= count($pampletSrcs) > 1 ? ' (' . ($idx + 1) . ')' : '' ?>"
+                                 class="img-fluid rounded shadow"
+                                 loading="<?= $idx === 0 ? 'eager' : 'lazy' ?>"
+                                 decoding="async">
+                        </a>
+                    <?php endif; ?>
+                </figure>
+                <?php endforeach; ?>
+            </div>
+            <?php if ($is_editor): ?>
+            <p class="text-center small text-muted mt-2 mb-0">Satu panel untuk semua gambar. Guna anak panah dalam suntingan untuk susun semula.</p>
             <?php endif; ?>
-        </div>
-        <?php endforeach; ?>
+        <?php elseif ($is_editor): ?>
+            <div class="text-center ubk-image-empty"
+                 data-edit-block="ubk_pamplet"
+                 data-edit-label="Muat naik gambar proses / pamplet"
+                 data-edit-hint="Pilih satu atau lebih gambar. Anda boleh susun semula kemudian."
+                 data-images-json="[]">
+                <p class="text-muted mb-0">Tiada gambar. Klik untuk muat naik.</p>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 

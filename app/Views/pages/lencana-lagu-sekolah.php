@@ -29,12 +29,20 @@
         <div class="row align-items-center g-4 bg-white">
 
             <!-- IMAGE -->
-            <div class="col-12 col-md-4 text-center">
+            <div class="col-12 col-md-4 text-center"
+                 <?php if ($is_editor): ?>
+                 data-edit-block="lencana_main"
+                 data-edit-label="Sunting logo sekolah"
+                 data-edit-hint="Logo ini diguna di lencana, navbar, laman utama, log masuk, dan favicon."
+                 <?php endif; ?>>
                 <img 
                     src="<?= htmlspecialchars($lencana_image_src ?? ('images/' . (string) ($data['image'] ?? 'hero-logo.png')), ENT_QUOTES, 'UTF-8') ?>" 
                     class="img-fluid lencana-img"
                     alt="Lencana Sekolah"
                 >
+                <?php if ($is_editor): ?>
+                <p class="small text-muted mt-2 mb-0">Klik untuk ganti logo (seluruh laman)</p>
+                <?php endif; ?>
             </div>
 
             <!-- CONTENT -->

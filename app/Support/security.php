@@ -109,6 +109,34 @@ function smks3_client_ip(): string
     return is_string($ip) && $ip !== '' ? $ip : '0.0.0.0';
 }
 
+/**
+ * Human-readable client IP for logs/UI.
+ * Loopback (::1) is shown with the IPv4 form so it is not cryptic.
+ */
+function smks3_format_client_ip(string $ip): string
+{
+    $ip = trim($ip);
+    if ($ip === '' || $ip === '0.0.0.0') {
+        return '';
+    }
+
+    $lower = strtolower($ip);
+    if ($lower === '::1' || $lower === '0:0:0:0:0:0:0:1') {
+        return '127.0.0.1 (::1)';
+    }
+    if (preg_match('/^::ffff:(127\.\d{1,3}\.\d{1,3}\.\d{1,3})$/i', $ip, $m)) {
+        return $m[1] . ' (::1)';
+    }
+    if (preg_match('/^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/i', $ip, $m)) {
+        return $m[1];
+    }
+    if ($ip === '127.0.0.1') {
+        return '127.0.0.1 (::1)';
+    }
+
+    return $ip;
+}
+
 function smks3_login_rate_limit_path(string $ip): string
 {
     $dir = (defined('BASE_PATH') ? BASE_PATH : dirname(__DIR__, 2)) . '/storage/rate_limit';

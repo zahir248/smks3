@@ -764,7 +764,7 @@
                 </div>
             </div>
             <div class="hero-home-enter-logo">
-                <img src="images/hero-logo.png" alt="<?= htmlspecialchars($settings['school_name']) ?>" class="hero-home-logo-img img-fluid" width="320" height="286" decoding="async">
+                <img src="<?= htmlspecialchars(smks3_site_logo_src(), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($settings['school_name']) ?>" class="hero-home-logo-img img-fluid" width="320" height="286" decoding="async">
             </div>
         </div>
     </div>
@@ -837,8 +837,34 @@
              <?php endif; ?>>
             <h2 class="home-section-head__title" data-bind="text"><?= htmlspecialchars($home_content['slideshow_section_title'], ENT_QUOTES, 'UTF-8') ?></h2>
         </div>
+        <?php
+        $slideshowGalleryJson = '[]';
+        if ($is_editor) {
+            $slideItems = [];
+            foreach ($home_slideshow as $slide) {
+                $img = trim((string) ($slide['image'] ?? ''));
+                if ($img === '') {
+                    continue;
+                }
+                $slideItems[] = [
+                    'src' => $img,
+                    'key' => basename(str_replace('\\', '/', $img)),
+                    'alt' => (string) ($slide['alt'] ?? ''),
+                    'href' => (string) ($slide['href'] ?? ''),
+                    'external' => !empty($slide['external']),
+                ];
+            }
+            $slideshowGalleryJson = htmlspecialchars(json_encode($slideItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
+        }
+        ?>
         <?php if (!empty($home_slideshow)) : ?>
-        <div id="homeSlideshow" class="carousel slide carousel-fade home-slideshow-wrap home-reveal<?= count($home_slideshow) < 2 ? ' home-slideshow-wrap--single' : '' ?>" data-bs-ride="carousel" data-bs-interval="5500" style="--home-reveal-delay: 80ms">
+        <div id="homeSlideshow" class="carousel slide carousel-fade home-slideshow-wrap home-reveal<?= count($home_slideshow) < 2 ? ' home-slideshow-wrap--single' : '' ?>" data-bs-ride="carousel" data-bs-interval="5500" style="--home-reveal-delay: 80ms"
+             <?php if ($is_editor): ?>
+             data-edit-block="slideshow_gallery"
+             data-edit-label="Urus slaid / poster"
+             data-edit-hint="Tambah, buang, susun semula, dan edit alt/pautan setiap slaid."
+             data-images-json="<?= $slideshowGalleryJson ?>"
+             <?php endif; ?>>
             <?php if (count($home_slideshow) > 1) : ?>
             <div class="carousel-indicators">
                 <?php foreach ($home_slideshow as $idx => $slide) : ?>
@@ -856,16 +882,7 @@
                     $imgAlt = htmlspecialchars($slide['alt'], ENT_QUOTES, 'UTF-8');
                     $href = trim((string) ($slide['href'] ?? ''));
                 ?>
-                <div class="carousel-item<?= $idx === 0 ? ' active' : '' ?>"
-                     <?php if ($is_editor): ?>
-                     data-edit-block="slideshow_slide"
-                     data-edit-label="Sunting slaid / poster"
-                     data-edit-hint="Kemaskini teks, pautan atau ganti gambar poster."
-                     data-index="<?= (int) $idx ?>"
-                     data-alt="<?= $imgAlt ?>"
-                     data-href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8') ?>"
-                     data-external="<?= !empty($slide['external']) ? '1' : '0' ?>"
-                     <?php endif; ?>>
+                <div class="carousel-item<?= $idx === 0 ? ' active' : '' ?>">
                     <?php if ($href !== '' && !$is_editor) :
                         $hrefEsc = htmlspecialchars($href, ENT_QUOTES, 'UTF-8');
                         $extAttrs = !empty($slide['external']) ? ' target="_blank" rel="noopener noreferrer"' : '';
@@ -889,17 +906,26 @@
             <?php endif; ?>
         </div>
         <?php elseif ($is_editor): ?>
-        <p class="text-center text-muted">Tiada slaid lagi. Tambah poster di bawah.</p>
-        <?php endif; ?>
-        <?php if ($is_editor): ?>
-        <div class="text-center mt-3"
-             data-edit-block="slideshow_add"
-             data-edit-label="Tambah slaid / poster"
-             data-edit-hint="Tambah poster baharu. Slaid sedia ada kekal.">
+        <div class="text-center"
+             data-edit-block="slideshow_gallery"
+             data-edit-label="Urus slaid / poster"
+             data-edit-hint="Tambah slaid baharu untuk paparan Berita &amp; Acara."
+             data-images-json="<?= $slideshowGalleryJson ?>">
+            <p class="text-muted mb-2">Tiada slaid lagi.</p>
             <button type="button" class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-plus-lg me-1"></i> Tambah slaid
+                <i class="bi bi-images me-1"></i> Urus slaid
             </button>
-            <p class="small text-muted mt-2 mb-0">Boleh ada lebih dari satu slaid. Muat naik baharu tidak menggantikan yang lama.</p>
+        </div>
+        <?php endif; ?>
+        <?php if ($is_editor && !empty($home_slideshow)): ?>
+        <div class="text-center mt-3">
+            <button type="button" class="btn btn-outline-primary btn-sm"
+                    data-edit-block="slideshow_gallery"
+                    data-edit-label="Urus slaid / poster"
+                    data-edit-hint="Tambah, buang, susun semula, dan edit alt/pautan setiap slaid."
+                    data-images-json="<?= $slideshowGalleryJson ?>">
+                <i class="bi bi-images me-1"></i> Urus slaid
+            </button>
         </div>
         <?php endif; ?>
     </div>
@@ -946,11 +972,14 @@
                                     <?= htmlspecialchars($newsTitle) ?>
                                 </a>
                             </h3>
-                            <?php if (!empty($n['pdf_file']) && file_exists(BASE_PATH . '/uploads/pdf/' . $n['pdf_file'])) : ?>
+                            <?php
+                            $homePrimaryPdf = smks3_news_primary_pdf($n['pdf_file'] ?? null);
+                            if ($homePrimaryPdf !== '' && is_file(BASE_PATH . '/uploads/pdf/' . $homePrimaryPdf)) :
+                            ?>
                             <div class="news-image mb-3">
                                 <a href="<?= htmlspecialchars($newsUrl, ENT_QUOTES, 'UTF-8') ?>">
                                     <canvas class="pdf-thumb"
-                                            data-pdf="/smks3/uploads/pdf/<?= htmlspecialchars($n['pdf_file']) ?>">
+                                            data-pdf="uploads/pdf/<?= htmlspecialchars($homePrimaryPdf, ENT_QUOTES, 'UTF-8') ?>">
                                     </canvas>
                                 </a>
                             </div>

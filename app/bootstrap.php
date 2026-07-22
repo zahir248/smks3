@@ -12,6 +12,8 @@ require_once CONFIG_PATH . '/database.php';
 require_once APP_PATH . '/Support/helpers.php';
 require_once APP_PATH . '/Support/seo.php';
 require_once APP_PATH . '/Support/rbac.php';
+require_once APP_PATH . '/Support/activity_log.php';
+require_once APP_PATH . '/Support/media_trash.php';
 require_once APP_PATH . '/Support/kurikulum.php';
 require_once APP_PATH . '/Support/hal-ehwal.php';
 require_once APP_PATH . '/Support/pibg.php';

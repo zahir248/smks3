@@ -1,10 +1,10 @@
 <?php
 $is_editor = !empty($is_editor);
-smks3_ensure_bilangan_kelas_sort($pdo);
+smks3_ensure_bilangan_kelas_item_sort($pdo);
 $data = $pdo->query('
     SELECT *
     FROM bilangan_kelas
-    ORDER BY sort_order ASC, tingkatan ASC, id DESC
+    ORDER BY sort_order ASC, tingkatan ASC, item_sort ASC, id DESC
 ')->fetchAll();
 
 $group = [];
@@ -146,21 +146,37 @@ $tingkatanOptions = array_keys($group);
         <?= htmlspecialchars((string) $tingkatan) ?>
     </h3>
 
+    <?php
+    $bilGalleryItems = [];
+    foreach ($items as $item) {
+        $id = (int) ($item['id'] ?? 0);
+        if ($id < 1) {
+            continue;
+        }
+        $bilGalleryItems[] = [
+            'src' => 'uploads/bil_kelas/' . ltrim((string) ($item['image'] ?? ''), '/'),
+            'key' => (string) $id,
+            'id' => $id,
+            'title' => (string) ($item['title'] ?? ''),
+        ];
+    }
+    $bilGalleryJson = htmlspecialchars(json_encode($bilGalleryItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
+    ?>
+
     <div id="<?= htmlspecialchars($carouselId, ENT_QUOTES, 'UTF-8') ?>"
          class="carousel slide bil-kelas-carousel"
-         <?= $is_editor ? 'data-bs-interval="false"' : 'data-bs-ride="carousel"' ?>>
+         <?= $is_editor ? 'data-bs-interval="false"' : 'data-bs-ride="carousel"' ?>
+         <?php if ($is_editor): ?>
+         data-edit-block="bil_kelas_gallery"
+         data-edit-label="Urus gambar: <?= htmlspecialchars((string) $tingkatan, ENT_QUOTES, 'UTF-8') ?>"
+         data-edit-hint="Tambah, buang, susun semula, dan edit tajuk gambar untuk tingkatan ini."
+         data-tingkatan="<?= htmlspecialchars((string) $tingkatan, ENT_QUOTES, 'UTF-8') ?>"
+         data-images-json="<?= $bilGalleryJson ?>"
+         <?php endif; ?>>
         <div class="carousel-inner">
             <?php foreach ($items as $index => $item) : ?>
             <div class="carousel-item <?= $index == 0 ? 'active' : '' ?>">
-                <div class="text-center"
-                     <?php if ($is_editor): ?>
-                     data-edit-block="bil_kelas_item"
-                     data-edit-label="Sunting bilangan kelas"
-                     data-edit-hint="Kemaskini tingkatan, tajuk atau gambar. Guna Padam untuk buang."
-                     data-id="<?= (int) $item['id'] ?>"
-                     data-tingkatan="<?= htmlspecialchars((string) ($item['tingkatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                     data-title="<?= htmlspecialchars((string) ($item['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                     <?php endif; ?>>
+                <div class="text-center">
                     <img src="uploads/bil_kelas/<?= htmlspecialchars((string) $item['image']) ?>"
                          class="img-fluid rounded shadow"
                          style="max-height:420px;object-fit:contain;<?= $is_editor ? '' : 'cursor:pointer;' ?>"
@@ -196,11 +212,12 @@ $tingkatanOptions = array_keys($group);
     <?php if ($is_editor): ?>
     <div class="text-center mt-3">
         <button type="button" class="btn btn-outline-primary btn-sm"
-                data-edit-block="bil_kelas_add"
-                data-edit-label="Tambah gambar: <?= htmlspecialchars((string) $tingkatan, ENT_QUOTES, 'UTF-8') ?>"
-                data-edit-hint="Tambah gambar baharu untuk tingkatan ini sahaja."
-                data-tingkatan="<?= htmlspecialchars((string) $tingkatan, ENT_QUOTES, 'UTF-8') ?>">
-            <i class="bi bi-plus-lg me-1"></i> Tambah Gambar
+                data-edit-block="bil_kelas_gallery"
+                data-edit-label="Urus gambar: <?= htmlspecialchars((string) $tingkatan, ENT_QUOTES, 'UTF-8') ?>"
+                data-edit-hint="Tambah, buang, susun semula, dan edit tajuk gambar untuk tingkatan ini."
+                data-tingkatan="<?= htmlspecialchars((string) $tingkatan, ENT_QUOTES, 'UTF-8') ?>"
+                data-images-json="<?= $bilGalleryJson ?>">
+            <i class="bi bi-images me-1"></i> Urus gambar
         </button>
     </div>
     <?php endif; ?>
@@ -220,7 +237,7 @@ $tingkatanOptions = array_keys($group);
             data-tingkatan-options="<?= htmlspecialchars(json_encode($tingkatanOptions, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>">
         <i class="bi bi-plus-lg me-1"></i> Tambah Tingkatan Baharu
     </button>
-    <p class="small text-muted mt-2 mb-0">Guna butang ini hanya untuk tingkatan yang belum wujud. Pilih kedudukan (awal / selepas / akhir). Untuk tingkatan sedia ada, guna “Tambah Gambar” di bahagian masing-masing.</p>
+    <p class="small text-muted mt-2 mb-0">Guna butang ini hanya untuk tingkatan yang belum wujud. Pilih kedudukan (awal / selepas / akhir). Untuk tingkatan sedia ada, guna “Urus gambar” di bahagian masing-masing.</p>
 </div>
 <?php endif; ?>
 

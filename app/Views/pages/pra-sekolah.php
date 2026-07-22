@@ -4,19 +4,41 @@ $sections = is_array($meta['sections'] ?? null) ? $meta['sections'] : [];
 $pageKey = (string) ($kurikulum_page_key ?? 'pra-sekolah');
 $cartaSec = is_array($sections['carta'] ?? null) ? $sections['carta'] : ['title' => 'Carta Organisasi Sekolah', 'subtitle' => ''];
 $galeriSec = is_array($sections['galeri'] ?? null) ? $sections['galeri'] : ['title' => 'Galeri Murid', 'subtitle' => ''];
+$cartaImages = is_array($cartaImages ?? null) ? array_values($cartaImages) : [];
+$galeriImages = is_array($galeriImages ?? null) ? array_values($galeriImages) : [];
+if ($cartaImages === [] && !empty($carta)) {
+    $cartaImages = [(string) $carta];
+}
+if ($galeriImages === [] && !empty($galeri)) {
+    $galeriImages = [(string) $galeri];
+}
+$cartaJson = json_encode($cartaImages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$galeriJson = json_encode($galeriImages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 ?>
 
 <style>
-.pra-image-edit {
-    position: relative;
-    display: inline-block;
+.pra-gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
     max-width: 1200px;
-    width: 100%;
+    margin-inline: auto;
 }
-.pra-image-edit img {
+.pra-gallery__item {
+    display: block;
     width: 100%;
+    margin: 0;
+    text-align: center;
+}
+.pra-gallery__item img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
     height: auto;
+    margin-inline: auto;
     border-radius: 0.5rem;
+    cursor: pointer;
 }
 .pra-image-empty {
     border: 2px dashed #cbd5e1;
@@ -45,31 +67,43 @@ $galeriSec = is_array($sections['galeri'] ?? null) ? $sections['galeri'] : ['tit
             <?php endif; ?>
         </div>
 
-        <div class="text-center">
-            <?php if ($carta): ?>
-                <div class="pra-image-edit"
-                     <?php if ($is_editor): ?>
-                     data-edit-block="pra_sekolah_carta"
-                     data-edit-label="Ganti gambar carta"
-                     data-edit-hint="Muat naik gambar baharu. Gambar carta semasa akan diganti."
-                     <?php else: ?>
-                     style="cursor:pointer;"
-                     onclick="window.open(this.querySelector('img').src, '_blank')"
-                     <?php endif; ?>>
-                    <img src="uploads/pra_sekolah/<?= htmlspecialchars($carta) ?>"
-                         alt="Carta Organisasi Sekolah"
-                         class="img-fluid rounded shadow">
-                </div>
-            <?php elseif ($is_editor): ?>
+        <?php if ($cartaImages !== []): ?>
+            <div class="pra-gallery"
+                 <?php if ($is_editor): ?>
+                 data-edit-block="pra_sekolah_carta"
+                 data-edit-label="Urus gambar carta"
+                 data-edit-hint="Muat naik satu atau lebih gambar. Gambar baharu ditambah tanpa menggantikan yang lama."
+                 data-images-json="<?= htmlspecialchars($cartaJson ?: '[]', ENT_QUOTES, 'UTF-8') ?>"
+                 <?php endif; ?>>
+                <?php foreach ($cartaImages as $idx => $src): ?>
+                <figure class="pra-gallery__item">
+                    <img src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
+                         alt="Carta Organisasi Sekolah<?= count($cartaImages) > 1 ? ' (' . ($idx + 1) . ')' : '' ?>"
+                         class="img-fluid rounded shadow"
+                         loading="<?= $idx === 0 ? 'eager' : 'lazy' ?>"
+                         decoding="async"
+                         <?php if (!$is_editor): ?>
+                         style="cursor:pointer;"
+                         onclick="window.open(this.src, '_blank')"
+                         <?php endif; ?>>
+                </figure>
+                <?php endforeach; ?>
+            </div>
+            <?php if ($is_editor): ?>
+            <p class="text-center small text-muted mt-3 mb-0">Boleh ada lebih dari satu gambar. Muat naik baharu tidak menggantikan yang lama.</p>
+            <?php endif; ?>
+        <?php elseif ($is_editor): ?>
+            <div class="text-center">
                 <div class="pra-image-empty"
                      data-edit-block="pra_sekolah_carta"
                      data-edit-label="Muat naik gambar carta"
-                     data-edit-hint="Pilih gambar carta organisasi.">
+                     data-edit-hint="Pilih satu atau lebih gambar carta organisasi."
+                     data-images-json="[]">
                     <i class="bi bi-image d-block fs-2 mb-2"></i>
                     Tiada gambar carta. Klik untuk muat naik.
                 </div>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -91,30 +125,42 @@ $galeriSec = is_array($sections['galeri'] ?? null) ? $sections['galeri'] : ['tit
             <?php endif; ?>
         </div>
 
-        <div class="text-center">
-            <?php if ($galeri): ?>
-                <div class="pra-image-edit"
-                     <?php if ($is_editor): ?>
-                     data-edit-block="pra_sekolah_galeri"
-                     data-edit-label="Ganti gambar galeri"
-                     data-edit-hint="Muat naik gambar baharu. Gambar galeri semasa akan diganti."
-                     <?php else: ?>
-                     style="cursor:pointer;"
-                     onclick="window.open(this.querySelector('img').src, '_blank')"
-                     <?php endif; ?>>
-                    <img src="uploads/pra_sekolah/<?= htmlspecialchars($galeri) ?>"
-                         alt="Galeri Murid"
-                         class="img-fluid rounded shadow">
-                </div>
-            <?php elseif ($is_editor): ?>
+        <?php if ($galeriImages !== []): ?>
+            <div class="pra-gallery"
+                 <?php if ($is_editor): ?>
+                 data-edit-block="pra_sekolah_galeri"
+                 data-edit-label="Urus gambar galeri"
+                 data-edit-hint="Muat naik satu atau lebih gambar. Gambar baharu ditambah tanpa menggantikan yang lama."
+                 data-images-json="<?= htmlspecialchars($galeriJson ?: '[]', ENT_QUOTES, 'UTF-8') ?>"
+                 <?php endif; ?>>
+                <?php foreach ($galeriImages as $idx => $src): ?>
+                <figure class="pra-gallery__item">
+                    <img src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
+                         alt="Galeri Murid<?= count($galeriImages) > 1 ? ' (' . ($idx + 1) . ')' : '' ?>"
+                         class="img-fluid rounded shadow"
+                         loading="<?= $idx === 0 ? 'eager' : 'lazy' ?>"
+                         decoding="async"
+                         <?php if (!$is_editor): ?>
+                         style="cursor:pointer;"
+                         onclick="window.open(this.src, '_blank')"
+                         <?php endif; ?>>
+                </figure>
+                <?php endforeach; ?>
+            </div>
+            <?php if ($is_editor): ?>
+            <p class="text-center small text-muted mt-3 mb-0">Boleh ada lebih dari satu gambar. Muat naik baharu tidak menggantikan yang lama.</p>
+            <?php endif; ?>
+        <?php elseif ($is_editor): ?>
+            <div class="text-center">
                 <div class="pra-image-empty"
                      data-edit-block="pra_sekolah_galeri"
                      data-edit-label="Muat naik gambar galeri"
-                     data-edit-hint="Pilih gambar galeri murid.">
+                     data-edit-hint="Pilih satu atau lebih gambar galeri murid."
+                     data-images-json="[]">
                     <i class="bi bi-image d-block fs-2 mb-2"></i>
                     Tiada gambar galeri. Klik untuk muat naik.
                 </div>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?>
     </div>
 </section>

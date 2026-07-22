@@ -9,7 +9,7 @@
 $cards = is_array($cards ?? null) ? $cards : [];
 $section_key = (string) ($section_key ?? 'main');
 $col_class = (string) ($col_class ?? 'col-md-6 col-lg-4');
-$row_class = (string) ($row_class ?? 'row g-4');
+$row_class = (string) ($row_class ?? 'row g-4 justify-content-center');
 $page_key = (string) ($kurikulum_page_key ?? '');
 ?>
 <style>

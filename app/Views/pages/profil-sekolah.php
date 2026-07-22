@@ -1,12 +1,8 @@
 <section class="page-section" id="maklumat-sekolah">
     <div class="container">
-        <div class="row g-3 g-md-4">
-            <?php
-            $profil_count = count($profil_data);
-            foreach ($profil_data as $index => $item) :
-                $is_last_card = ($profil_count % 3 === 1 && $index === $profil_count - 1);
-            ?>
-            <div class="col-md-6 col-lg-4<?= $is_last_card ? ' offset-md-3 offset-lg-4' : '' ?>"
+        <div class="row g-3 g-md-4 justify-content-center">
+            <?php foreach ($profil_data as $item) : ?>
+            <div class="col-md-6 col-lg-4"
                  <?php if ($is_editor): ?>
                  data-edit-block="profil_item"
                  data-edit-label="Sunting maklumat profil"
