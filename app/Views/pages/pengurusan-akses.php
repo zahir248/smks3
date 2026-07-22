@@ -2717,12 +2717,6 @@ foreach ($admins as $a) {
                     }
                 });
             }
-            var pageLabel = logPageLabel(log);
-            if (pageLabel) {
-                bits.push('<div class="small text-muted mt-1">Halaman: <strong>' + esc(pageLabel) + '</strong></div>');
-            } else if (log.route && log.route !== 'save-content' && log.route !== 'save-content.php') {
-                bits.push('<div class="small text-muted mt-1">Halaman: ' + esc(log.route) + '</div>');
-            }
             return bits.length ? '<div class="mt-3">' + bits.join('') + '</div>' : '';
         }
 
