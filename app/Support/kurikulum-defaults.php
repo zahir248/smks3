@@ -342,9 +342,9 @@ $defaults = [
                 'btn_label' => '',
                 'links' => [
                     ['title' => 'PBD INDIVIDU', 'href' => 'pbd-uasa-individu'],
-                    ['title' => 'PBD MATA PELAJARAN', 'href' => '#'],
-                    ['title' => 'PBD MATA PELAJARAN MENGIKUT TINGKATAN', 'href' => '#'],
-                    ['title' => 'PBD MENGIKUT KELAS', 'href' => '#'],
+                    ['title' => 'PBD MATA PELAJARAN', 'href' => smks3_drive_folder_url('1Y5b99nPnDoPBoNg71uXcS1vJcFVl5EKB')],
+                    ['title' => 'PBD MATA PELAJARAN MENGIKUT TINGKATAN', 'href' => smks3_drive_folder_url('1v-aDhZu-m70QHlo95TAMRNh5e4XEDY3s')],
+                    ['title' => 'PBD MENGIKUT KELAS', 'href' => smks3_drive_folder_url('1_ekv_WXKQbQESFtaUU2PydkoP26i8HQS')],
                 ],
             ],
         ],
@@ -370,15 +370,42 @@ $defaults = [
                 'is_external' => 0,
                 'btn_label' => '',
                 'links' => (static function (): array {
-                    $kelas = ['IHSAN', 'IKHLAS', 'IKRAM', 'ILTIZAM', 'ITQAN'];
+                    $map = [
+                        '1 IHSAN' => '1C3b-k_hSnEK1EblZOZ-4kgzl8yqfk-Fm',
+                        '1 IKHLAS' => '1WYtV4YQGQcSwj3S3QvYfBndq8psVWVMY',
+                        '1 IKRAM' => '1-ng7d4PC_5xMNS4XqBtQnQ9J7URmstT7',
+                        '1 ILTIZAM' => '1uhcX28Ja1CNALhbo4gAtwUi7uin2nbnE',
+                        '1 ITQAN' => '1htWPE82M-PhsB7aPt4tAQTVvn0db1xbP',
+                        '2 IHSAN' => '1T_s90I-TkIWCK2I4ivwVpJc5Jt1tuLzB',
+                        '2 IKHLAS' => '1gu6WFQQMKCmkq1s6NSXWik4fjdEKgLfT',
+                        '2 IKRAM' => '14sEx_ZIUJbQWU6hk3FWE9MO71yn-0syu',
+                        '2 ILTIZAM' => '',
+                        '2 ITQAN' => '1A2HoYpB24ZwZl9C1qmBfK0nGwnJe7xlZ',
+                        '3 IHSAN' => '1jd4sc6YCvVjw_QMdt8GzNTHGxnURcAT6',
+                        '3 IKHLAS' => '1nV3VdN_sVXxccea1ZNzGWFyWk4_A_vWI',
+                        '3 IKRAM' => '1J6t_-DdXd995dnRo0JdXGc3WSRgB9swr',
+                        '3 ILTIZAM' => '',
+                        '3 ITQAN' => '',
+                        '4 IHSAN' => '16kKTrPMno5j9C70o_oVVD_wx1z7SRk9w',
+                        '4 IKHLAS' => '1JOKP_D_Ri7V_Udmom61YWrUcOcN9sRiO',
+                        '4 IKRAM' => '1Byexsqgr4E4gOxIQ0z0SYNpbiNkNtYfj',
+                        '4 ILTIZAM' => '',
+                        '4 ITQAN' => '13_IROWMw3z0yVZG7ej1_7_afDwcxO2T-',
+                        '5 IHSAN' => '1MSnlZxnCu96RzQF9Vef9xxKJIjeYN7oe',
+                        '5 IKHLAS' => '1VI2VzJT2yDxBNrTd4ICosBqb1W1v7Dl3',
+                        '5 IKRAM' => '1x_G7c_WYLT7Mi1TYm9PTErC46rE7i0YW',
+                        '5 ILTIZAM' => '',
+                        '5 ITQAN' => '1_1IjG56cMNEsw5oUqxXisTPRSG-5il4T',
+                    ];
                     $links = [];
-                    for ($tingkatan = 1; $tingkatan <= 5; $tingkatan++) {
-                        foreach ($kelas as $nama) {
-                            $links[] = [
-                                'title' => $tingkatan . ' ' . $nama,
-                                'href' => '#',
-                            ];
+                    foreach ($map as $title => $id) {
+                        if ($id === '') {
+                            continue;
                         }
+                        $links[] = [
+                            'title' => $title,
+                            'href' => smks3_drive_folder_url($id),
+                        ];
                     }
                     return $links;
                 })(),
@@ -939,8 +966,87 @@ for ($tingkatan = 1; $tingkatan <= 5; $tingkatan++) {
     $pageKey = 'pbd-ppt-tingkatan-' . $tingkatan;
     $individuKey = $pageKey . '-individu';
 
+    $pptByTingkatan = [
+        1 => [
+            'kelas_title' => 'PBD KESELURUHAN MENGIKUT KELAS',
+            'kelas' => '1tLyAF3QRBOOOu0BnEFBneZYSqFNnmKGs',
+            'mata' => '1hSMCgCnW_lPRtiOeRKVWPslybmmAn_BA',
+            'individu' => [
+                'PBD 1 IHSAN' => '1HxvTsMngrSa6gEiUu-4W_SRgVbLG-Lh1',
+                'PBD 1 IHSAN KM' => '1xMRzMCAbw4Xwew9XTqbmrcrhBK9bxuHA',
+                'PBD 1 IKHLAS KM' => '1PkGBA9B0YcZaONfVwVs0yOIONEgiAhG4',
+                'PBD 1 IKRAM KM' => '1iTpZrsRVC1uqZZ5FnAKHKM9ArJl9NWVQ',
+                'PBD 1 ILTIZAM' => '1xLj4fEsyvWXXjHg8vvcsw5I00WXjvRQU',
+                'PBD 1 ILTIZAM KM' => '1k-sI6FDDshk3tYPz1Ti9Z6cFlVkxvGO9',
+                'PBD 1 ITQAN' => '1D-zGT0nkGRdHV19Ej8zBgTnvEbm0gqUr',
+            ],
+        ],
+        2 => [
+            'kelas_title' => 'PBD MENGIKUT KELAS',
+            'kelas' => '1z9-jvMK6i1E-tXF--Sr-aEpPsjWwu43r',
+            'mata' => '1QAA6SAPAydboY1ZoWL5_uytAuZXeOn6D',
+            'individu' => [
+                'PBD 2 IHSAN' => '1YeQdo3-W0Jbygf6b2VfNiZb7jPVKpj_o',
+                'PBD 2 IHSAN KM' => '1dm1GTFL3JNnJZqjeDvAN-4xX3Msuk67V',
+                'PBD 2 IKHLAS' => '1WLJ6To9ebSXDFgBSvSZTM3z8D8N9tCId',
+                'PBD 2 IKHLAS KM' => '15ZQgvg81UhgvcYIV5mK3egIUGAQldj0k',
+                'PBD 2 IKRAM' => '1YeeCELZIyOsvJkhhjlgIvdEESq0VcHG5',
+                'PBD 2 IKRAM KM' => '13gUxOJcalFCM5ZxXsCRW311WybnIYM47',
+                'PBD 2 ITQAN' => '1Tz1HReaYTSJhl9KxHTXsfkOL78sxZPU9',
+                'PBD 2 ITQAN KM' => '1z4axsntcpFIvrj-XL5VSt65sG25BcCWr',
+            ],
+        ],
+        3 => [
+            'kelas' => '1s8NrASnpJaHISoQ6Malek85Oa_hu09rD',
+            'mata' => '1iHXhTiyRaZjrOHggqmg9r1Nr6E_djdUO',
+            'individu' => [
+                'PBD 3 IHSAN' => '1nLAFfqUw0tDIktR_OZGAxEzCI53tTR1X',
+                'PBD 3 IHSAN KM' => '1TwQRvwtb2GPL3eVDCQtmcTaAIMH0W75U',
+                'PBD 3 IKHLAS' => '1XTYbejqnqJNoRZvblMvcGj9PahEhM8Iy',
+                'PBD 3 IKHLAS KM' => '1HW2v5ZbXmPgS0B5M3iugWG8y6QoKiub-',
+                'PBD 3 IKRAM' => '1jqbozmxXLTMc_9FuDUntSn4bjuhzKir-',
+                'PBD 3 IKRAM KM' => '14l6DqBNZTal6Hn9-j_hsmTmHxhs4Wxfe',
+            ],
+        ],
+        4 => [
+            'kelas' => '149LCrESxTnSbVB3JOiyxrj1gkATCQulR',
+            'mata' => '1Rn8FpYgdkHPXL1UkTvZFY7jpR-gTK4gs',
+            'individu' => [
+                'PBD 4 IHSAN' => '1STwkb-KEz8j1YEyhox6B7vmv_oWboGJM',
+                'PBD 4 IHSAN KM' => '12NOly-iJ0qyx-ffbUGYAGx9KxNOHzpwt',
+                'PBD 4 IKHLAS' => '1OZux9KSWOI31W8HCwdvkZ8WqIinsM56k',
+                'PBD 4 IKHLAS KM' => '1yH1Yp-tYU3_nNOG_6NyRWMKkENjFTHVW',
+                'PBD 4 IKRAM' => '1c-aFmZ6wbN1Jb9V7ls44Hhf1KI7Y0-ao',
+                'PBD 4 IKRAM KM' => '179Ath8Mzcz_UdA_djY5yRZplGz2rbtSc',
+                'PBD 4 ITQAN' => '1_K8q_CyOPt9R8PDCVGx4xLFEPAdT8oRl',
+            ],
+        ],
+        5 => [
+            'kelas' => '13oeAoyh4TL_iTRXxORrYHjxrS8VMHbDB',
+            'mata' => '1HJW2xqs9ATrl260Sl68IEkq7RuSIKNgi',
+            'individu' => [
+                'PBD 5 IHSAN' => '1gX7JBHUqMKkJT4X-Z7BlTyCZCzPfkIuP',
+                'PBD 5 IHSAN KM' => '1tK8opYMAnKGHKl9Eq4u2qioXah3Fc5JC',
+                'PBD 5 IKHLAS' => '1m2ZQ4iMC_oxdQPrcMPPv_VdusSLPcq2t',
+                'PBD 5 IKHLAS KM' => '12_-fB8Dzam60qMrES3jmnV6ejnBZ_KNN',
+                'PBD 5 IKRAM' => '1ZLLRwtIXITZLRS00Sms7grVsxF3eyGhc',
+                'PBD 5 IKRAM KM' => '1q3_zXgNKILqfjJ63BtcGNS3tdF2_Eo8R',
+                'PBD 5 ITQAN' => '1Ks2BhSSrQIJksmLwCJbm9n_h8ufnabbn',
+                'PBD 5 ITQAN KM' => '1wGOWwo_nuiwd20NPkpf_xfvNKqMdISKd',
+            ],
+        ],
+    ];
+
+    $cfg = $pptByTingkatan[$tingkatan];
+    $individuLinks = [];
+    foreach ($cfg['individu'] as $title => $folderId) {
+        $individuLinks[] = [
+            'title' => $title,
+            'href' => smks3_drive_folder_url($folderId),
+        ];
+    }
+
     if ($tingkatan <= 2) {
-        $kelasTitle = $tingkatan === 1 ? 'PBD KESELURUHAN MENGIKUT KELAS' : 'PBD MENGIKUT KELAS';
         $defaults[$pageKey] = [
             'meta' => [
                 'intro' => '',
@@ -962,8 +1068,8 @@ for ($tingkatan = 1; $tingkatan <= 5; $tingkatan++) {
                     'btn_label' => '',
                     'links' => [
                         ['title' => 'PBD INDIVIDU', 'href' => $individuKey],
-                        ['title' => $kelasTitle, 'href' => '#'],
-                        ['title' => 'PBD MENGIKUT MATA PELAJARAN', 'href' => '#'],
+                        ['title' => $cfg['kelas_title'], 'href' => smks3_drive_folder_url($cfg['kelas'])],
+                        ['title' => 'PBD MENGIKUT MATA PELAJARAN', 'href' => smks3_drive_folder_url($cfg['mata'])],
                     ],
                 ],
             ],
@@ -995,9 +1101,9 @@ for ($tingkatan = 1; $tingkatan <= 5; $tingkatan++) {
                     'title' => 'PBD MENGIKUT KELAS',
                     'description' => '',
                     'icon' => 'bi-folder2-open',
-                    'href' => '',
-                    'is_external' => 0,
-                    'btn_label' => '',
+                    'href' => smks3_drive_folder_url($cfg['kelas']),
+                    'is_external' => 1,
+                    'btn_label' => 'Lihat Bahagian',
                     'links' => [],
                 ],
                 [
@@ -1005,9 +1111,9 @@ for ($tingkatan = 1; $tingkatan <= 5; $tingkatan++) {
                     'title' => 'PBD MENGIKUT MATA PELAJARAN',
                     'description' => '',
                     'icon' => 'bi-folder2-open',
-                    'href' => '',
-                    'is_external' => 0,
-                    'btn_label' => '',
+                    'href' => smks3_drive_folder_url($cfg['mata']),
+                    'is_external' => 1,
+                    'btn_label' => 'Lihat Bahagian',
                     'links' => [],
                 ],
             ],
@@ -1033,17 +1139,37 @@ for ($tingkatan = 1; $tingkatan <= 5; $tingkatan++) {
                 'href' => '',
                 'is_external' => 0,
                 'btn_label' => '',
-                'links' => [],
+                'links' => $individuLinks,
             ],
         ],
     ];
 }
 
 $pbdPkBidang = [
-    'BIDANG BAHASA',
-    'BIDANG KEMANUSIAAN',
-    'BIDANG SAINS MATEMATIK',
-    'BIDANG TEKNIK VOKASIONAL',
+    'pemantauan' => [
+        'BIDANG BAHASA' => '1as5LIQc-5ZzkItVL0pmpnR-eEFU4FeQO',
+        'BIDANG KEMANUSIAAN' => '1au2g8Esejb3pKCCw0QO2m3tkfPTEaD_s',
+        'BIDANG SAINS MATEMATIK' => '1RItAR6G-EpbOrMjML82mmaaOboLbGjZD',
+        'BIDANG TEKNIK VOKASIONAL' => '18P8Lbpt-klLG3coYUUGR2dYCuU5p3GxK',
+    ],
+    'pementoran' => [
+        'BIDANG BAHASA' => '1xPG7JFj4OpBqwkpe1QlPLTnjULG21N7_',
+        'BIDANG KEMANUSIAAN' => '1AV6oEEiak1fETMgSGcEzieU2uIUO3E-b',
+        'BIDANG SAINS MATEMATIK' => '1zhJQ1AT2JbYPPPTn0jPM9ElMoXPVqRzL',
+        'BIDANG TEKNIK VOKASIONAL' => '1T7CsZt7FJb-R49ERXiWFIMzVkpcnhApG',
+    ],
+    'pengesanan' => [
+        'BIDANG BAHASA' => '1RVS_tyRtcJ-BARkthk8thNZ2zRJHVvW1',
+        'BIDANG KEMANUSIAAN' => '1COM749i4ylHIszp16tC8tCVvh0HlM5D0',
+        'BIDANG SAINS MATEMATIK' => '1yis9_fCTCnNzhJFonVl2MSpjcgRz_W7h',
+        'BIDANG TEKNIK VOKASIONAL' => '1O0rleeDWlWaMXj5vIV0uQ0ZMOLOVRnHh',
+    ],
+    'penyelarasan' => [
+        'BIDANG BAHASA' => '1zOtN4BHOy8VFC9FNXjenojrtS20FUqKy',
+        'BIDANG KEMANUSIAAN' => '1-ujD6Lzo_Efm2CI0BXPRcRjKvvSnsxf5',
+        'BIDANG SAINS MATEMATIK' => '1bzKn2fyoB2-pvbeWYzsdeerEOhvQbHr7',
+        'BIDANG TEKNIK VOKASIONAL' => '1zVzvyn_5huoTcqV793QMhSRmMImx4Kix',
+    ],
 ];
 
 $pbdPkFolders = [
@@ -1055,15 +1181,15 @@ $pbdPkFolders = [
 
 foreach ($pbdPkFolders as $slug => $label) {
     $bidangCards = [];
-    foreach ($pbdPkBidang as $bidang) {
+    foreach ($pbdPkBidang[$slug] as $bidang => $folderId) {
         $bidangCards[] = [
             'section_key' => 'main',
             'title' => $bidang,
             'description' => '',
             'icon' => 'bi-folder2-open',
-            'href' => '',
-            'is_external' => 0,
-            'btn_label' => '',
+            'href' => smks3_drive_folder_url($folderId),
+            'is_external' => 1,
+            'btn_label' => 'Lihat Bahagian',
             'links' => [],
         ];
     }

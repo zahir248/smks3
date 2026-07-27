@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+function smks3_drive_folder_url(string $folderId): string
+{
+    $folderId = trim($folderId);
+    if ($folderId === '') {
+        return '#';
+    }
+    return 'https://drive.google.com/drive/folders/' . $folderId;
+}
+
 function smks3_kurikulum_defaults(): array
 {
     static $defaults = null;
@@ -212,10 +221,189 @@ function smks3_seed_kurikulum_page(PDO $pdo, string $pageKey): void
     }
 }
 
+function smks3_kurikulum_href_is_placeholder(string $href): bool
+{
+    $href = trim($href);
+    return $href === '' || $href === '#';
+}
+
+/**
+ * Merge link lists: keep editor values, fill placeholder hrefs from defaults,
+ * and append default links that are missing by title.
+ *
+ * @param list<array{title:string,href:string}> $existing
+ * @param list<array{title:string,href:string}> $defaults
+ * @return list<array{title:string,href:string}>
+ */
+function smks3_merge_kurikulum_links_with_defaults(array $existing, array $defaults): array
+{
+    $defaults = smks3_normalize_kurikulum_links($defaults);
+    $existing = smks3_normalize_kurikulum_links($existing);
+
+    $defaultByTitle = [];
+    foreach ($defaults as $link) {
+        $defaultByTitle[strtoupper($link['title'])] = $link;
+    }
+
+    $out = [];
+    $have = [];
+    foreach ($existing as $link) {
+        $key = strtoupper($link['title']);
+        $have[$key] = true;
+        if (smks3_kurikulum_href_is_placeholder($link['href']) && isset($defaultByTitle[$key])) {
+            $defHref = $defaultByTitle[$key]['href'];
+            if (!smks3_kurikulum_href_is_placeholder($defHref)) {
+                $link['href'] = $defHref;
+            }
+        }
+        $out[] = $link;
+    }
+
+    foreach ($defaults as $link) {
+        $key = strtoupper($link['title']);
+        if (isset($have[$key])) {
+            continue;
+        }
+        $out[] = $link;
+        $have[$key] = true;
+    }
+
+    return $out;
+}
+
+/**
+ * Soft-sync defaults into DB without wiping CMS edits:
+ * - insert missing cards (matched by title)
+ * - fill empty / "#" hrefs from defaults
+ * - fill placeholder link hrefs + append missing links
+ * - fill empty btn_label from defaults
+ */
+function smks3_sync_kurikulum_page_from_defaults(PDO $pdo, string $pageKey): void
+{
+    $all = smks3_kurikulum_defaults();
+    if (!isset($all[$pageKey]) || !is_array($all[$pageKey])) {
+        return;
+    }
+    $defaults = $all[$pageKey]['cards'] ?? [];
+    if (!is_array($defaults) || $defaults === []) {
+        return;
+    }
+
+    smks3_ensure_kurikulum_cards_table($pdo);
+    smks3_seed_kurikulum_page($pdo, $pageKey);
+
+    $stmt = $pdo->prepare(
+        'SELECT * FROM kurikulum_card WHERE page_key = ? ORDER BY sort_order ASC, id ASC'
+    );
+    $stmt->execute([$pageKey]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+    $byTitle = [];
+    $maxOrder = 0;
+    foreach ($rows as $row) {
+        $title = strtoupper(trim((string) ($row['title'] ?? '')));
+        if ($title !== '') {
+            $byTitle[$title] = $row;
+        }
+        $maxOrder = max($maxOrder, (int) ($row['sort_order'] ?? 0));
+    }
+
+    $ins = $pdo->prepare(
+        'INSERT INTO kurikulum_card
+        (page_key, section_key, title, description, icon, href, is_external, btn_label, links_json, sort_order)
+        VALUES (?,?,?,?,?,?,?,?,?,?)'
+    );
+    $upd = $pdo->prepare(
+        'UPDATE kurikulum_card
+         SET href = ?, is_external = ?, btn_label = ?, links_json = ?
+         WHERE id = ?'
+    );
+
+    foreach ($defaults as $card) {
+        if (!is_array($card)) {
+            continue;
+        }
+        $title = trim((string) ($card['title'] ?? ''));
+        if ($title === '') {
+            continue;
+        }
+        $titleKey = strtoupper($title);
+        $defLinks = smks3_normalize_kurikulum_links($card['links'] ?? []);
+        $defHref = trim((string) ($card['href'] ?? ''));
+        $defBtn = trim((string) ($card['btn_label'] ?? ''));
+        $defExternal = !empty($card['is_external']) ? 1 : 0;
+        if (!$defExternal && smks3_is_external_kurikulum_url($defHref)) {
+            $defExternal = 1;
+        }
+
+        if (!isset($byTitle[$titleKey])) {
+            $ins->execute([
+                $pageKey,
+                trim((string) ($card['section_key'] ?? 'main')) ?: 'main',
+                $title,
+                trim((string) ($card['description'] ?? '')),
+                trim((string) ($card['icon'] ?? 'bi-folder2-open')) ?: 'bi-folder2-open',
+                $defHref,
+                $defExternal,
+                $defBtn,
+                $defLinks === [] ? null : json_encode($defLinks, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                ++$maxOrder,
+            ]);
+            continue;
+        }
+
+        $row = $byTitle[$titleKey];
+        $id = (int) ($row['id'] ?? 0);
+        if ($id <= 0) {
+            continue;
+        }
+
+        $href = trim((string) ($row['href'] ?? ''));
+        $btn = trim((string) ($row['btn_label'] ?? ''));
+        $external = !empty($row['is_external']) ? 1 : 0;
+        $links = smks3_normalize_kurikulum_links($row['links_json'] ?? []);
+
+        $changed = false;
+
+        if (smks3_kurikulum_href_is_placeholder($href) && !smks3_kurikulum_href_is_placeholder($defHref)) {
+            $href = $defHref;
+            $external = $defExternal;
+            $changed = true;
+        }
+
+        if ($btn === '' && $defBtn !== '') {
+            $btn = $defBtn;
+            $changed = true;
+        } elseif ($btn === 'Buka Folder' && $defBtn !== '' && $defBtn !== $btn) {
+            $btn = $defBtn;
+            $changed = true;
+        }
+
+        $mergedLinks = smks3_merge_kurikulum_links_with_defaults($links, $defLinks);
+        if ($mergedLinks !== $links) {
+            $links = $mergedLinks;
+            $changed = true;
+        }
+
+        if (!$changed) {
+            continue;
+        }
+
+        $upd->execute([
+            $href,
+            $external,
+            $btn,
+            $links === [] ? null : json_encode($links, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            $id,
+        ]);
+    }
+}
+
 function smks3_get_kurikulum_cards(PDO $pdo, string $pageKey, ?string $sectionKey = null): array
 {
     smks3_ensure_kurikulum_cards_table($pdo);
     smks3_seed_kurikulum_page($pdo, $pageKey);
+    smks3_sync_kurikulum_page_from_defaults($pdo, $pageKey);
 
     if ($sectionKey !== null) {
         $stmt = $pdo->prepare(
