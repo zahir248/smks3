@@ -734,7 +734,62 @@ $defaults = [
                 'is_external' => 0,
                 'btn_label' => '',
                 'links' => [
-                    ['title' => 'Empty', 'href' => '#'],
+                    ['title' => 'BCK', 'href' => 'bank-soalan-upsa-bck'],
+                    ['title' => 'BM', 'href' => 'bank-soalan-upsa-bm'],
+                ],
+            ],
+        ],
+    ],
+
+    'bank-soalan-upsa-bck' => [
+        'meta' => [
+            'intro' => '',
+            'sections' => [
+                'main' => [
+                    'title' => 'UPSA - BCK',
+                    'subtitle' => 'Bank soalan UPSA Bahasa Cina Komunikasi.',
+                ],
+            ],
+        ],
+        'cards' => [
+            [
+                'section_key' => 'main',
+                'title' => 'BCK',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => '',
+                'is_external' => 0,
+                'btn_label' => '',
+                'links' => [
+                    ['title' => 'UPSA BCK T1 2026.pdf', 'href' => 'https://drive.google.com/file/d/1mr5QVJTB420oZIM89HEGUv_bTEEi9rtG/view'],
+                    ['title' => 'UPSA BCK T2 2026.pdf', 'href' => 'https://drive.google.com/file/d/1kPJrOZhKjm3w9-7YKb77nMuuGnF4RQHM/view'],
+                    ['title' => 'UPSA BCK T3 2026.pdf', 'href' => 'https://drive.google.com/file/d/1r_iY47bNEZNa34CMDjAG7q90wXnOZgD8/view'],
+                ],
+            ],
+        ],
+    ],
+
+    'bank-soalan-upsa-bm' => [
+        'meta' => [
+            'intro' => '',
+            'sections' => [
+                'main' => [
+                    'title' => 'UPSA - BM',
+                    'subtitle' => 'Bank soalan UPSA Bahasa Melayu.',
+                ],
+            ],
+        ],
+        'cards' => [
+            [
+                'section_key' => 'main',
+                'title' => 'BM',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => '',
+                'is_external' => 0,
+                'btn_label' => '',
+                'links' => [
+                    ['title' => 'UPSA K2 BM T1 2026.pdf', 'href' => 'https://drive.google.com/file/d/1xcfg2_aqimnQos_3HrnUMCwxOfh0ecfE/view'],
                 ],
             ],
         ],

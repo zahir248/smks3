@@ -240,6 +240,23 @@ function smks3_merge_kurikulum_links_with_defaults(array $existing, array $defau
     $defaults = smks3_normalize_kurikulum_links($defaults);
     $existing = smks3_normalize_kurikulum_links($existing);
 
+    if ($defaults === []) {
+        return $existing;
+    }
+
+    // Replace placeholder-only lists (e.g. "Empty | #") with real defaults.
+    $onlyPlaceholders = true;
+    foreach ($existing as $link) {
+        $title = strtoupper(trim((string) ($link['title'] ?? '')));
+        if ($title !== 'EMPTY' && !smks3_kurikulum_href_is_placeholder((string) ($link['href'] ?? ''))) {
+            $onlyPlaceholders = false;
+            break;
+        }
+    }
+    if ($existing === [] || $onlyPlaceholders) {
+        return $defaults;
+    }
+
     $defaultByTitle = [];
     foreach ($defaults as $link) {
         $defaultByTitle[strtoupper($link['title'])] = $link;
@@ -249,6 +266,9 @@ function smks3_merge_kurikulum_links_with_defaults(array $existing, array $defau
     $have = [];
     foreach ($existing as $link) {
         $key = strtoupper($link['title']);
+        if ($key === 'EMPTY') {
+            continue;
+        }
         $have[$key] = true;
         if (smks3_kurikulum_href_is_placeholder($link['href']) && isset($defaultByTitle[$key])) {
             $defHref = $defaultByTitle[$key]['href'];

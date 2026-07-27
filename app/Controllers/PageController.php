@@ -44,6 +44,16 @@ final class PageController extends Controller
         $this->render('pages/bank-soalan-uasa-ppt-pat-selaras', get_defined_vars());
     }
 
+    public function page_bank_soalan_upsa_bck(): void
+    {
+        $this->renderKurikulumPage('bank-soalan-upsa-bck', 'UPSA - BCK');
+    }
+
+    public function page_bank_soalan_upsa_bm(): void
+    {
+        $this->renderKurikulumPage('bank-soalan-upsa-bm', 'UPSA - BM');
+    }
+
     public function page_bil_kelas_gambar(): void
     {
         $page_title = 'Bilangan Kelas Gambar';

@@ -15,6 +15,8 @@ $router->get('/about', [PageController::class, 'page_about']);
 $router->get('/analisis-pat-t4-uasa-t1,2,3', [PageController::class, 'page_analisis_pat_t4_uasa_t1_2_3']);
 $router->get('/analisis-ppt', [PageController::class, 'page_analisis_ppt']);
 $router->get('/bank-soalan-uasa-ppt-pat-selaras', [PageController::class, 'page_bank_soalan_uasa_ppt_pat_selaras']);
+$router->get('/bank-soalan-upsa-bck', [PageController::class, 'page_bank_soalan_upsa_bck']);
+$router->get('/bank-soalan-upsa-bm', [PageController::class, 'page_bank_soalan_upsa_bm']);
 $router->get('/bil-kelas-gambar', [PageController::class, 'page_bil_kelas_gambar']);
 $router->get('/buletin-sekolah', [PageController::class, 'page_buletin_sekolah']);
 $router->get('/contact', [PageController::class, 'page_contact']);

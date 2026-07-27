@@ -204,6 +204,8 @@ function smks3_rbac_permission_aliases(): array
         'analisis-pat-t4-uasa-t1,2,3' => 'pentaksiran-peperiksaan',
         'analisis-ppt' => 'pentaksiran-peperiksaan',
         'bank-soalan-uasa-ppt-pat-selaras' => 'pentaksiran-peperiksaan',
+        'bank-soalan-upsa-bck' => 'pentaksiran-peperiksaan',
+        'bank-soalan-upsa-bm' => 'pentaksiran-peperiksaan',
         'keputusan' => 'pentaksiran-peperiksaan',
         'penggubal-soalan-upsa-uasa' => 'pentaksiran-peperiksaan',
         'unit-pbd' => 'pentaksiran-peperiksaan',

@@ -561,6 +561,8 @@ function smks3_site_page_options(): array
         ['value' => 'analisis-pat-t4-uasa-t1,2,3', 'label' => 'Analisis PAT T4 & UASA T1,2,3', 'group' => 'Kurikulum'],
         ['value' => 'analisis-ppt', 'label' => 'Analisis PPT', 'group' => 'Kurikulum'],
         ['value' => 'bank-soalan-uasa-ppt-pat-selaras', 'label' => 'Bank Soalan UASA PPT, PAT', 'group' => 'Kurikulum'],
+        ['value' => 'bank-soalan-upsa-bck', 'label' => 'Bank Soalan UPSA - BCK', 'group' => 'Kurikulum'],
+        ['value' => 'bank-soalan-upsa-bm', 'label' => 'Bank Soalan UPSA - BM', 'group' => 'Kurikulum'],
         ['value' => 'keputusan', 'label' => 'Keputusan 2018-2024', 'group' => 'Kurikulum'],
         ['value' => 'penggubal-soalan-upsa-uasa', 'label' => 'Penggubal Soalan UPSA & UASA', 'group' => 'Kurikulum'],
         ['value' => 'unit-pbd', 'label' => 'Unit PBD', 'group' => 'Kurikulum'],

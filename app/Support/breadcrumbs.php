@@ -40,6 +40,8 @@ function smks3_default_breadcrumb_items(string $currentPage, string $pageTitle):
         'analisis-pat-t4-uasa-t1,2,3' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'Analisis PAT T4 & UASA T1,2,3'],
         'analisis-ppt' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'Analisis PPT'],
         'bank-soalan-uasa-ppt-pat-selaras' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'Bank Soalan UASA PPT, PAT'],
+        'bank-soalan-upsa-bck' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],['Bank Soalan UASA PPT, PAT', 'bank-soalan-uasa-ppt-pat-selaras'],'UPSA - BCK'],
+        'bank-soalan-upsa-bm' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],['Bank Soalan UASA PPT, PAT', 'bank-soalan-uasa-ppt-pat-selaras'],'UPSA - BM'],
         'keputusan' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'Keputusan 2018-2024'],
         'penggubal-soalan-upsa-uasa' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'Penggubal Soalan UPSA & UASA'],
         'unit-pbd' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'Unit PBD'],
