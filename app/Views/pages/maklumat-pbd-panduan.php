@@ -126,7 +126,7 @@ $galleryJson = htmlspecialchars(
                                 'id' => 'pbd-panduan-pdf-' . ($item['id'] > 0 ? $item['id'] : ($idx + 1)),
                                 'label' => 'Buka / Muat Turun PDF',
                                 'btn_class' => 'btn btn-outline-primary btn-sm',
-                                'fit' => 'grid',
+                                'fit' => 'paged',
                             ]);
                             ?>
                         </div>
