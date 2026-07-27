@@ -747,6 +747,30 @@ function smks3_handle_cms_block(string $block, array $data, PDO $pdo, callable $
         return ['ok' => true, 'message' => 'Gambar dikemaskini.', 'reload' => true];
     }
 
+    if ($block === 'pbd_panduan_gallery') {
+        smks3_ensure_pbd_panduan_table($pdo);
+        $uploads = smks3_normalize_uploaded_files($_FILES['files'] ?? null);
+        if ($uploads === []) {
+            $uploads = smks3_normalize_uploaded_files($_FILES['images'] ?? null);
+        }
+        if ($uploads === [] && !empty($_FILES['image']['name'])) {
+            $uploads = [$_FILES['image']];
+        }
+        smks3_sync_row_file_gallery(
+            $pdo,
+            [
+                'table' => 'pbd_panduan',
+                'col' => 'file',
+                'dir' => 'uploads/pbd_panduan',
+                'filenameOnly' => true,
+            ],
+            $data,
+            $uploads,
+            array_merge($imgExt, $pdfExt)
+        );
+        return ['ok' => true, 'message' => 'Fail dikemaskini.', 'reload' => true];
+    }
+
     if ($block === 'pelan_image') {
         $exists = (int) $pdo->query('SELECT COUNT(*) FROM pelan_sekolah')->fetchColumn();
         $curRaw = $exists > 0

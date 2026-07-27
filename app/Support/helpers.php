@@ -563,6 +563,26 @@ function smks3_site_page_options(): array
         ['value' => 'bank-soalan-uasa-ppt-pat-selaras', 'label' => 'Bank Soalan UASA PPT, PAT', 'group' => 'Kurikulum'],
         ['value' => 'keputusan', 'label' => 'Keputusan 2018-2024', 'group' => 'Kurikulum'],
         ['value' => 'penggubal-soalan-upsa-uasa', 'label' => 'Penggubal Soalan UPSA & UASA', 'group' => 'Kurikulum'],
+        ['value' => 'unit-pbd', 'label' => 'Unit PBD', 'group' => 'Kurikulum'],
+        ['value' => 'maklumat-pbd-panduan', 'label' => 'Maklumat PBD Dan Panduan', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt', 'label' => 'PBD PPT', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-uasa', 'label' => 'PBD UASA', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-uasa-individu', 'label' => 'PBD UASA Individu', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-penjaminan-kualiti', 'label' => 'Penjaminan Kualiti PBD', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-pk-pemantauan', 'label' => 'PBD Pemantauan', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-pk-pementoran', 'label' => 'PBD Pementoran', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-pk-pengesanan', 'label' => 'PBD Pengesanan', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-pk-penyelarasan', 'label' => 'PBD Penyelarasan', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt-tingkatan-1', 'label' => 'PBD Tingkatan 1', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt-tingkatan-1-individu', 'label' => 'PBD Tingkatan 1 Individu', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt-tingkatan-2', 'label' => 'PBD Tingkatan 2', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt-tingkatan-2-individu', 'label' => 'PBD Tingkatan 2 Individu', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt-tingkatan-3', 'label' => 'PBD Tingkatan 3', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt-tingkatan-3-individu', 'label' => 'PBD Tingkatan 3 Individu', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt-tingkatan-4', 'label' => 'PBD Tingkatan 4', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt-tingkatan-4-individu', 'label' => 'PBD Tingkatan 4 Individu', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt-tingkatan-5', 'label' => 'PBD Tingkatan 5', 'group' => 'Kurikulum'],
+        ['value' => 'pbd-ppt-tingkatan-5-individu', 'label' => 'PBD Tingkatan 5 Individu', 'group' => 'Kurikulum'],
         ['value' => 'pusat-sumber', 'label' => 'Pusat Sumber Sekolah', 'group' => 'Kurikulum'],
         ['value' => 'pra-sekolah', 'label' => 'Pra Sekolah', 'group' => 'Kurikulum'],
         ['value' => 'kecemerlangan-program-akademik', 'label' => 'Program Kecemerlangan Akademik', 'group' => 'Kurikulum'],
@@ -1856,6 +1876,58 @@ function smks3_image_remove_set(mixed $remove): array
         }
     }
     return $removeSet;
+}
+
+/**
+ * Ensure Maklumat PBD Dan Panduan gallery table exists.
+ */
+function smks3_ensure_pbd_panduan_table(?PDO $pdo = null): void
+{
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+    try {
+        $pdo = $pdo ?? getConnection();
+        $pdo->exec(
+            'CREATE TABLE IF NOT EXISTS pbd_panduan (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                file VARCHAR(255) NOT NULL,
+                sort_order INT NOT NULL DEFAULT 0,
+                KEY idx_pbd_panduan_sort (sort_order, id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+        );
+
+        // Import any loose files already sitting in the upload folder.
+        $dir = BASE_PATH . '/uploads/pbd_panduan';
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+        $count = (int) $pdo->query('SELECT COUNT(*) FROM pbd_panduan')->fetchColumn();
+        if ($count < 1 && is_dir($dir)) {
+            $files = [];
+            foreach (['jpg', 'jpeg', 'png', 'webp', 'gif', 'pdf'] as $ext) {
+                foreach (glob($dir . '/*.' . $ext) ?: [] as $path) {
+                    $files[] = basename($path);
+                }
+                foreach (glob($dir . '/*.' . strtoupper($ext)) ?: [] as $path) {
+                    $files[] = basename($path);
+                }
+            }
+            $files = array_values(array_unique($files));
+            sort($files, SORT_NATURAL | SORT_FLAG_CASE);
+            if ($files !== []) {
+                $ins = $pdo->prepare('INSERT INTO pbd_panduan (file, sort_order) VALUES (?, ?)');
+                $sort = 1;
+                foreach ($files as $name) {
+                    $ins->execute([$name, $sort++]);
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        // best-effort
+    }
 }
 
 /**

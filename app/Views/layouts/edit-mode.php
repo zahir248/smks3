@@ -695,7 +695,7 @@ body.smks3-is-editor.smks3-panel-open {
         bindRichTextEditor(form);
         bindImageOrder(form);
         var isNewsEditor = currentBlock === 'news_item' || currentBlock === 'news_add';
-        panel.classList.toggle('is-wide', isNewsEditor || currentBlock === 'pelan_image' || currentBlock === 'pra_sekolah_carta' || currentBlock === 'pra_sekolah_galeri' || currentBlock === 'ubk_carta_image' || currentBlock === 'ubk_pamplet' || currentBlock === 'peraturan_gallery' || currentBlock === 'pemimpin_gallery' || currentBlock === 'kalendar_pdf_gallery' || currentBlock === 'cuti_pdf_gallery' || currentBlock === 'pilihan_pdf_gallery' || currentBlock === 'pibg_pdf_gallery' || currentBlock === 'pibg_pdf' || currentBlock === 'slideshow_gallery' || currentBlock === 'enrolmen_gallery' || currentBlock === 'bil_kelas_gallery' || currentBlock === 'lencana_lagu' || currentBlock === 'cuti_kumpulan' || currentBlock === 'kurikulum_card' || currentBlock === 'kurikulum_card_add' || currentBlock === 'kurikulum_meta' || currentBlock === 'footer_social');
+        panel.classList.toggle('is-wide', isNewsEditor || currentBlock === 'pelan_image' || currentBlock === 'pra_sekolah_carta' || currentBlock === 'pra_sekolah_galeri' || currentBlock === 'ubk_carta_image' || currentBlock === 'ubk_pamplet' || currentBlock === 'peraturan_gallery' || currentBlock === 'pemimpin_gallery' || currentBlock === 'pbd_panduan_gallery' || currentBlock === 'kalendar_pdf_gallery' || currentBlock === 'cuti_pdf_gallery' || currentBlock === 'pilihan_pdf_gallery' || currentBlock === 'pibg_pdf_gallery' || currentBlock === 'pibg_pdf' || currentBlock === 'slideshow_gallery' || currentBlock === 'enrolmen_gallery' || currentBlock === 'bil_kelas_gallery' || currentBlock === 'lencana_lagu' || currentBlock === 'cuti_kumpulan' || currentBlock === 'kurikulum_card' || currentBlock === 'kurikulum_card_add' || currentBlock === 'kurikulum_meta' || currentBlock === 'footer_social');
         panel.classList.toggle('is-news-editor', isNewsEditor);
         deleteBlock = null;
         var deletable = {
@@ -1104,6 +1104,15 @@ body.smks3-is-editor.smks3-panel-open {
             return newsImagesField(el)
                 + '<p class="small text-muted mb-0">Urus semua gambar dalam satu panel: tambah, buang, dan susun semula.</p>';
         }
+        if (block === 'pbd_panduan_gallery') {
+            return newsImagesField(el, {
+                accept: 'image/*,application/pdf,.pdf',
+                inputName: 'files[]',
+                inputId: 'smks3_f_files',
+                label: 'Fail (imej atau PDF)'
+            })
+                + '<p class="small text-muted mb-0">Muat naik imej atau PDF, buang, dan susun semula dalam satu panel.</p>';
+        }
         if (block === 'enrolmen_gallery') {
             return newsImagesField(el, { meta: 'title', label: 'Gambar enrolmen (boleh lebih daripada satu)' })
                 + '<p class="small text-muted mb-0">Urus semua slaid dalam satu panel: tambah, buang, susun semula, serta edit tajuk setiap slaid.</p>';
@@ -1432,7 +1441,8 @@ body.smks3-is-editor.smks3-panel-open {
             var parts = splitFileName(name, isPdf);
             var labelName = (parts.stem || name) + (parts.ext || '');
             var fileKey = String(item.key);
-            var thumbHtml = isPdf
+            var itemIsPdf = isPdf || /\.pdf(?:$|[?#])/i.test(String(item.src || name));
+            var thumbHtml = itemIsPdf
                 ? '<span class="smks3-news-images__thumb smks3-news-images__thumb--file" aria-hidden="true"><i class="bi bi-file-earmark-pdf-fill"></i></span>'
                 : '<img class="smks3-news-images__thumb" src="' + esc(item.src) + '" alt="">';
             return '<div class="smks3-news-images__item' + (meta ? ' smks3-news-images__item--meta' : '') + '">'
@@ -2550,6 +2560,7 @@ body.smks3-is-editor.smks3-panel-open {
                 pelan_image: 1,
                 peraturan_gallery: 1,
                 pemimpin_gallery: 1,
+                pbd_panduan_gallery: 1,
                 kalendar_pdf_gallery: 1,
                 cuti_pdf_gallery: 1,
                 pilihan_pdf_gallery: 1,

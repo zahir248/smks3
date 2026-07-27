@@ -252,6 +252,20 @@ final class PageController extends Controller
         $this->render('pages/lencana-lagu-sekolah', get_defined_vars());
     }
 
+    public function page_maklumat_pbd_panduan(): void
+    {
+        $page_title = 'Maklumat PBD Dan Panduan';
+        $settings = getSettings();
+        $pdo = getConnection();
+        $is_editor = smks3_can_edit_page();
+        smks3_ensure_pbd_panduan_table($pdo);
+        smks3_ensure_gallery_sort_order('pbd_panduan', $pdo);
+        $db_files = $pdo->query(
+            'SELECT id, file, sort_order FROM pbd_panduan ORDER BY sort_order ASC, id ASC'
+        )->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $this->render('pages/maklumat-pbd-panduan', get_defined_vars());
+    }
+
     public function page_misi_visi_sekolah(): void
     {
         $page_title = 'FPK, Visi, Misi, Motto Sekolah';
@@ -686,6 +700,109 @@ final class PageController extends Controller
         $is_editor = smks3_can_edit_page();
         $ubk = smks3_get_ubk_content();
         $this->render('pages/unit-bimbingan-kaunseling', get_defined_vars());
+    }
+
+    public function page_unit_pbd(): void
+    {
+        $this->renderKurikulumPage('unit-pbd', 'Unit PBD');
+    }
+
+    public function page_pbd_ppt(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt', 'PBD PPT');
+    }
+
+    public function page_pbd_uasa(): void
+    {
+        $this->renderKurikulumPage('pbd-uasa', 'PBD UASA');
+    }
+
+    public function page_pbd_penjaminan_kualiti(): void
+    {
+        $this->renderKurikulumPage('pbd-penjaminan-kualiti', 'Penjaminan Kualiti PBD');
+    }
+
+    public function page_pbd_pk_pemantauan(): void
+    {
+        $this->renderKurikulumPage('pbd-pk-pemantauan', 'Pemantauan');
+    }
+
+    public function page_pbd_pk_pementoran(): void
+    {
+        $this->renderKurikulumPage('pbd-pk-pementoran', 'Pementoran');
+    }
+
+    public function page_pbd_pk_pengesanan(): void
+    {
+        $this->renderKurikulumPage('pbd-pk-pengesanan', 'Pengesanan');
+    }
+
+    public function page_pbd_pk_penyelarasan(): void
+    {
+        $this->renderKurikulumPage('pbd-pk-penyelarasan', 'Penyelarasan');
+    }
+
+    public function page_pbd_uasa_individu(): void
+    {
+        $this->renderKurikulumPage('pbd-uasa-individu', 'PBD INDIVIDU');
+    }
+
+    public function page_pbd_ppt_tingkatan_1(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt-tingkatan-1', 'PBD Tingkatan 1');
+    }
+
+    public function page_pbd_ppt_tingkatan_1_individu(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt-tingkatan-1-individu', 'PBD INDIVIDU');
+    }
+
+    public function page_pbd_ppt_tingkatan_2(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt-tingkatan-2', 'PBD Tingkatan 2');
+    }
+
+    public function page_pbd_ppt_tingkatan_2_individu(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt-tingkatan-2-individu', 'PBD INDIVIDU');
+    }
+
+    public function page_pbd_ppt_tingkatan_3(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt-tingkatan-3', 'PBD Tingkatan 3');
+    }
+
+    public function page_pbd_ppt_tingkatan_3_individu(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt-tingkatan-3-individu', 'PBD INDIVIDU');
+    }
+
+    public function page_pbd_ppt_tingkatan_4(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt-tingkatan-4', 'PBD Tingkatan 4');
+    }
+
+    public function page_pbd_ppt_tingkatan_4_individu(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt-tingkatan-4-individu', 'PBD INDIVIDU');
+    }
+
+    public function page_pbd_ppt_tingkatan_5(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt-tingkatan-5', 'PBD Tingkatan 5');
+    }
+
+    public function page_pbd_ppt_tingkatan_5_individu(): void
+    {
+        $this->renderKurikulumPage('pbd-ppt-tingkatan-5-individu', 'PBD INDIVIDU');
+    }
+
+    private function renderKurikulumPage(string $pageKey, string $pageTitle): void
+    {
+        $page_title = $pageTitle;
+        $settings = getSettings();
+        extract(smks3_kurikulum_page_vars($pageKey), EXTR_OVERWRITE);
+        $this->render('pages/' . $pageKey, get_defined_vars());
     }
 
     public function home(): void

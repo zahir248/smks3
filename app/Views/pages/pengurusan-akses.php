@@ -2242,6 +2242,7 @@ foreach ($admins as $a) {
                 quick_link_delete: 'Pautan pantas',
                 peraturan_gallery: 'Imej peraturan',
                 pemimpin_gallery: 'Imej pemimpin',
+                pbd_panduan_gallery: 'Fail PBD panduan',
                 kalendar_pdf_gallery: 'Fail PDF kalendar',
                 cuti_pdf_gallery: 'Fail PDF cuti',
                 pilihan_pdf_gallery: 'Fail PDF pilihan',

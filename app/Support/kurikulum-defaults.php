@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-return [
+$defaults = [
     'kecemerlangan-program-akademik' => [
         'meta' => [
             'intro' => 'Pelbagai program akademik dijalankan bagi meningkatkan prestasi dan kecemerlangan pelajar SMK Seremban 3.',
@@ -178,6 +178,283 @@ return [
                 'href' => 'https://lookerstudio.google.com/u/0/reporting/a93b2cf1-f955-443e-829e-cf4a9a3d37c1/page/OXERC',
                 'is_external' => 1,
                 'btn_label' => 'Semak Sekarang',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'pbd',
+                'title' => 'MAKLUMAT PBD DAN PANDUAN',
+                'description' => 'Rujukan gambar maklumat PBD dan panduan pelaksanaan.',
+                'icon' => 'bi-images',
+                'href' => 'maklumat-pbd-panduan',
+                'is_external' => 0,
+                'btn_label' => 'Lihat Maklumat',
+                'links' => [],
+            ],
+        ],
+    ],
+
+    'unit-pbd' => [
+        'meta' => [
+            'intro' => 'Maklumat dan dokumen berkaitan Pentaksiran Bilik Darjah (PBD) termasuk laporan PPT, UASA, penjaminan kualiti dan surat pekeliling.',
+            'sections' => [
+                'main' => [
+                    'title' => 'Unit PBD',
+                    'subtitle' => 'Sila pilih folder di bawah untuk melihat dokumen dan laporan PBD.',
+                ],
+            ],
+        ],
+        'cards' => [
+            [
+                'section_key' => 'main',
+                'title' => 'PBD PPT',
+                'description' => 'Laporan dan dokumen PBD bagi Peperiksaan Pertengahan Tahun mengikut tingkatan.',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-ppt',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PBD UASA',
+                'description' => 'Laporan dan dokumen PBD bagi UASA.',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-uasa',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PENJAMINAN KUALITI PBD',
+                'description' => 'Dokumen penjaminan kualiti Pentaksiran Bilik Darjah.',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-penjaminan-kualiti',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'SURAT PEKELILING',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'https://drive.google.com/drive/folders/1PYFHUPxvAt6-LeZacXZC9Cv1nkAxnCq1',
+                'is_external' => 1,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+        ],
+    ],
+
+    'pbd-penjaminan-kualiti' => [
+        'meta' => [
+            'intro' => '',
+            'sections' => [
+                'main' => [
+                    'title' => 'Penjaminan Kualiti PBD',
+                    'subtitle' => 'Sila pilih folder di bawah.',
+                ],
+            ],
+        ],
+        'cards' => [
+            [
+                'section_key' => 'main',
+                'title' => 'CARTA ORGANISASI',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'https://drive.google.com/drive/folders/1Z837DkxGziZFsADfgxL3fUQI1OYdirfn',
+                'is_external' => 1,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'CONTOH LAPORAN',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'https://drive.google.com/drive/folders/1WZOT182f4RFi5Ajcow5wX9cmoaOhYX3N',
+                'is_external' => 1,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PEMANTAUAN',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-pk-pemantauan',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PEMENTORAN',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-pk-pementoran',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PENGESANAN',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-pk-pengesanan',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PENYELARASAN',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-pk-penyelarasan',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+        ],
+    ],
+
+    'pbd-uasa' => [
+        'meta' => [
+            'intro' => '',
+            'sections' => [
+                'main' => [
+                    'title' => 'PBD UASA',
+                    'subtitle' => 'Sila pilih folder tahun di bawah.',
+                ],
+            ],
+        ],
+        'cards' => [
+            [
+                'section_key' => 'main',
+                'title' => '2025',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => '',
+                'is_external' => 0,
+                'btn_label' => '',
+                'links' => [
+                    ['title' => 'PBD INDIVIDU', 'href' => 'pbd-uasa-individu'],
+                    ['title' => 'PBD MATA PELAJARAN', 'href' => '#'],
+                    ['title' => 'PBD MATA PELAJARAN MENGIKUT TINGKATAN', 'href' => '#'],
+                    ['title' => 'PBD MENGIKUT KELAS', 'href' => '#'],
+                ],
+            ],
+        ],
+    ],
+
+    'pbd-uasa-individu' => [
+        'meta' => [
+            'intro' => '',
+            'sections' => [
+                'main' => [
+                    'title' => 'PBD INDIVIDU',
+                    'subtitle' => 'Senarai kelas PBD UASA 2025.',
+                ],
+            ],
+        ],
+        'cards' => [
+            [
+                'section_key' => 'main',
+                'title' => 'SENARAI KELAS',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => '',
+                'is_external' => 0,
+                'btn_label' => '',
+                'links' => (static function (): array {
+                    $kelas = ['IHSAN', 'IKHLAS', 'IKRAM', 'ILTIZAM', 'ITQAN'];
+                    $links = [];
+                    for ($tingkatan = 1; $tingkatan <= 5; $tingkatan++) {
+                        foreach ($kelas as $nama) {
+                            $links[] = [
+                                'title' => $tingkatan . ' ' . $nama,
+                                'href' => '#',
+                            ];
+                        }
+                    }
+                    return $links;
+                })(),
+            ],
+        ],
+    ],
+
+    'pbd-ppt' => [
+        'meta' => [
+            'intro' => '',
+            'sections' => [
+                'main' => [
+                    'title' => 'PBD PPT',
+                    'subtitle' => 'Sila pilih tingkatan atau analisis di bawah.',
+                ],
+            ],
+        ],
+        'cards' => [
+            [
+                'section_key' => 'main',
+                'title' => 'ANALISIS PBD UPSA',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'https://drive.google.com/drive/folders/1633mAw0AVJAMK2TIRe0OT8JhE75n4CjH',
+                'is_external' => 1,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PBD TINGKATAN 1',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-ppt-tingkatan-1',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PBD TINGKATAN 2',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-ppt-tingkatan-2',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PBD TINGKATAN 3',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-ppt-tingkatan-3',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PBD TINGKATAN 4',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-ppt-tingkatan-4',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
+                'links' => [],
+            ],
+            [
+                'section_key' => 'main',
+                'title' => 'PBD TINGKATAN 5',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => 'pbd-ppt-tingkatan-5',
+                'is_external' => 0,
+                'btn_label' => 'Buka Folder',
                 'links' => [],
             ],
         ],
@@ -657,3 +934,152 @@ return [
         ],
     ],
 ];
+
+for ($tingkatan = 1; $tingkatan <= 5; $tingkatan++) {
+    $pageKey = 'pbd-ppt-tingkatan-' . $tingkatan;
+    $individuKey = $pageKey . '-individu';
+
+    if ($tingkatan <= 2) {
+        $kelasTitle = $tingkatan === 1 ? 'PBD KESELURUHAN MENGIKUT KELAS' : 'PBD MENGIKUT KELAS';
+        $defaults[$pageKey] = [
+            'meta' => [
+                'intro' => '',
+                'sections' => [
+                    'main' => [
+                        'title' => 'PBD Tingkatan ' . $tingkatan,
+                        'subtitle' => 'Sila pilih folder tahun di bawah.',
+                    ],
+                ],
+            ],
+            'cards' => [
+                [
+                    'section_key' => 'main',
+                    'title' => '2025',
+                    'description' => '',
+                    'icon' => 'bi-folder2-open',
+                    'href' => '',
+                    'is_external' => 0,
+                    'btn_label' => '',
+                    'links' => [
+                        ['title' => 'PBD INDIVIDU', 'href' => $individuKey],
+                        ['title' => $kelasTitle, 'href' => '#'],
+                        ['title' => 'PBD MENGIKUT MATA PELAJARAN', 'href' => '#'],
+                    ],
+                ],
+            ],
+        ];
+    } else {
+        $defaults[$pageKey] = [
+            'meta' => [
+                'intro' => '',
+                'sections' => [
+                    'main' => [
+                        'title' => 'PBD Tingkatan ' . $tingkatan,
+                        'subtitle' => 'Sila pilih folder di bawah.',
+                    ],
+                ],
+            ],
+            'cards' => [
+                [
+                    'section_key' => 'main',
+                    'title' => 'PBD INDIVIDU',
+                    'description' => '',
+                    'icon' => 'bi-folder2-open',
+                    'href' => $individuKey,
+                    'is_external' => 0,
+                    'btn_label' => 'Buka Folder',
+                    'links' => [],
+                ],
+                [
+                    'section_key' => 'main',
+                    'title' => 'PBD MENGIKUT KELAS',
+                    'description' => '',
+                    'icon' => 'bi-folder2-open',
+                    'href' => '',
+                    'is_external' => 0,
+                    'btn_label' => '',
+                    'links' => [],
+                ],
+                [
+                    'section_key' => 'main',
+                    'title' => 'PBD MENGIKUT MATA PELAJARAN',
+                    'description' => '',
+                    'icon' => 'bi-folder2-open',
+                    'href' => '',
+                    'is_external' => 0,
+                    'btn_label' => '',
+                    'links' => [],
+                ],
+            ],
+        ];
+    }
+
+    $defaults[$individuKey] = [
+        'meta' => [
+            'intro' => '',
+            'sections' => [
+                'main' => [
+                    'title' => 'PBD INDIVIDU',
+                    'subtitle' => 'Senarai kelas PBD Tingkatan ' . $tingkatan . '.',
+                ],
+            ],
+        ],
+        'cards' => [
+            [
+                'section_key' => 'main',
+                'title' => 'SENARAI KELAS',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => '',
+                'is_external' => 0,
+                'btn_label' => '',
+                'links' => [],
+            ],
+        ],
+    ];
+}
+
+$pbdPkBidang = [
+    'BIDANG BAHASA',
+    'BIDANG KEMANUSIAAN',
+    'BIDANG SAINS MATEMATIK',
+    'BIDANG TEKNIK VOKASIONAL',
+];
+
+$pbdPkFolders = [
+    'pemantauan' => 'PEMANTAUAN',
+    'pementoran' => 'PEMENTORAN',
+    'pengesanan' => 'PENGESANAN',
+    'penyelarasan' => 'PENYELARASAN',
+];
+
+foreach ($pbdPkFolders as $slug => $label) {
+    $bidangCards = [];
+    foreach ($pbdPkBidang as $bidang) {
+        $bidangCards[] = [
+            'section_key' => 'main',
+            'title' => $bidang,
+            'description' => '',
+            'icon' => 'bi-folder2-open',
+            'href' => '',
+            'is_external' => 0,
+            'btn_label' => '',
+            'links' => [],
+        ];
+    }
+
+    $defaults['pbd-pk-' . $slug] = [
+        'meta' => [
+            'intro' => '',
+            'sections' => [
+                'main' => [
+                    'title' => $label,
+                    'subtitle' => 'Sila pilih bidang di bawah.',
+                ],
+            ],
+        ],
+        'cards' => $bidangCards,
+    ];
+}
+
+return $defaults;

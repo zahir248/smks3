@@ -588,6 +588,18 @@ function smks3_activity_snapshot_block(string $block, array $data, PDO $pdo): ?a
             ];
         }
 
+        if ($block === 'pbd_panduan_gallery') {
+            if (function_exists('smks3_ensure_pbd_panduan_table')) {
+                smks3_ensure_pbd_panduan_table($pdo);
+            }
+            $rows = $pdo->query(
+                'SELECT id, file, sort_order FROM pbd_panduan ORDER BY sort_order ASC, id ASC'
+            )->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return [
+                'rows' => smks3_activity_prefix_row_field($rows, 'file', 'uploads/pbd_panduan'),
+            ];
+        }
+
         if ($block === 'pelan_image') {
             $row = $pdo->query('SELECT * FROM pelan_sekolah LIMIT 1')->fetch(PDO::FETCH_ASSOC) ?: null;
             if (!$row) {
