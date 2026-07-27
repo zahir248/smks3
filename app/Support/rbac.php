@@ -208,6 +208,7 @@ function smks3_rbac_permission_aliases(): array
         'bank-soalan-upsa-bm' => 'pentaksiran-peperiksaan',
         'keputusan' => 'pentaksiran-peperiksaan',
         'penggubal-soalan-upsa-uasa' => 'pentaksiran-peperiksaan',
+        'upsa-2026' => 'pentaksiran-peperiksaan',
         'unit-pbd' => 'pentaksiran-peperiksaan',
         'maklumat-pbd-panduan' => 'pentaksiran-peperiksaan',
         'pbd-ppt' => 'pentaksiran-peperiksaan',

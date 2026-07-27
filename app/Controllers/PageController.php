@@ -529,6 +529,11 @@ final class PageController extends Controller
         $this->render('pages/penggubal-soalan-upsa-uasa', get_defined_vars());
     }
 
+    public function page_upsa_2026(): void
+    {
+        $this->renderKurikulumPage('upsa-2026', 'UPSA 2026');
+    }
+
     public function page_pengurusan_tertinggi(): void
     {
         $page_title = 'Pengurusan Tertinggi Sekolah';

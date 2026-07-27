@@ -148,6 +148,7 @@ $defaults = [
                     ['title' => 'BANK SOALAN UASA, PPT, PAT SELARAS', 'href' => 'bank-soalan-uasa-ppt-pat-selaras'],
                     ['title' => 'KEPUTUSAN 2018 - 2024', 'href' => 'keputusan'],
                     ['title' => 'PENGGUBAL SOALAN UPSA & UASA', 'href' => 'penggubal-soalan-upsa-uasa'],
+                    ['title' => 'UPSA 2026', 'href' => 'upsa-2026'],
                 ],
             ],
             [
@@ -790,6 +791,43 @@ $defaults = [
                 'btn_label' => '',
                 'links' => [
                     ['title' => 'UPSA K2 BM T1 2026.pdf', 'href' => 'https://drive.google.com/file/d/1xcfg2_aqimnQos_3HrnUMCwxOfh0ecfE/view'],
+                ],
+            ],
+        ],
+    ],
+
+    'upsa-2026' => [
+        'meta' => [
+            'intro' => '',
+            'sections' => [
+                'main' => [
+                    'title' => 'UPSA 2026',
+                    'subtitle' => 'Analisis dan lembaran markah UPSA 2026.',
+                ],
+            ],
+        ],
+        'cards' => [
+            [
+                'section_key' => 'main',
+                'title' => 'DOKUMEN UPSA 2026',
+                'description' => '',
+                'icon' => 'bi-folder2-open',
+                'href' => '',
+                'is_external' => 0,
+                'btn_label' => '',
+                'links' => [
+                    ['title' => 'Lembaran markah tingkatan 4.xlsx', 'href' => 'https://drive.google.com/file/d/1nbG7KRwnDHDp0EPeaNcMZ_uDrL3R-Kxv/view'],
+                    ['title' => 'Lembaran markah tingkatan 5.xlsx', 'href' => 'https://drive.google.com/file/d/1gGqI5XwZ-bDdNLe5oJw729IXPxhDIg8L/view'],
+                    ['title' => 'UPSA - ANALISA TING1 .pdf', 'href' => 'https://drive.google.com/file/d/1iSw-VgYXrPWN6ondOxnU5KdWleF-N-sJ/view'],
+                    ['title' => 'UPSA - ANALISA TING1.xlsx', 'href' => 'https://drive.google.com/file/d/13392IgIQ8clrdC5NntTZDB3uV6HH_Q7M/view'],
+                    ['title' => 'UPSA - ANALISA TINGKATAN 2 .pdf', 'href' => 'https://drive.google.com/file/d/1mPcOLpIrHoMPqH1jq_VoaFUo19c5zkAf/view'],
+                    ['title' => 'UPSA - ANALISA TINGKATAN 2 .xlsx', 'href' => 'https://drive.google.com/file/d/1csYb-pnIGtr5xVcuYPNNxjNknEUjWyFd/view'],
+                    ['title' => 'UPSA - ANALISA TINGKATAN 3.pdf', 'href' => 'https://drive.google.com/file/d/1WemVVcL6j4X9D5MmmDsqK0A56hFqfbYc/view'],
+                    ['title' => 'UPSA - ANALISA TINGKATAN 3.xlsx', 'href' => 'https://drive.google.com/file/d/1lzfa1Bsg4yXlI7sjFiNi9g14sNdeS6eX/view'],
+                    ['title' => 'UPSA ANALISA TING4.pdf', 'href' => 'https://drive.google.com/file/d/10vtu6p443_uz4eMKXJ4TMTM_K8PezNHD/view'],
+                    ['title' => 'UPSA ANALISA TING4.xlsx', 'href' => 'https://drive.google.com/file/d/1NaPYYTLsClytfm78xIQ-e4tckSE_xhhb/view'],
+                    ['title' => 'UPSA ANALISA TING.5.pdf', 'href' => 'https://drive.google.com/file/d/1Dz40IUAs1-n1mFDjLeR2V7z6X3V6dCXQ/view'],
+                    ['title' => 'UPSA ANALISA TING.5.xlsx', 'href' => 'https://drive.google.com/file/d/19e2th1cfuMsrM3lEtYONoDdNjs3jxsjB/view'],
                 ],
             ],
         ],

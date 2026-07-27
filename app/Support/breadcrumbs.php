@@ -44,6 +44,7 @@ function smks3_default_breadcrumb_items(string $currentPage, string $pageTitle):
         'bank-soalan-upsa-bm' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],['Bank Soalan UASA PPT, PAT', 'bank-soalan-uasa-ppt-pat-selaras'],'UPSA - BM'],
         'keputusan' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'Keputusan 2018-2024'],
         'penggubal-soalan-upsa-uasa' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'Penggubal Soalan UPSA & UASA'],
+        'upsa-2026' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'UPSA 2026'],
         'unit-pbd' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'Unit PBD'],
         'maklumat-pbd-panduan' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],'Maklumat PBD Dan Panduan'],
         'pbd-ppt' => ['Kurikulum',['Pentaksiran Dan Peperiksaan', 'pentaksiran-peperiksaan'],['Unit PBD', 'unit-pbd'],'PBD PPT'],

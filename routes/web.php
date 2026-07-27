@@ -56,6 +56,7 @@ $router->get('/pbd-ppt-tingkatan-5-individu', [PageController::class, 'page_pbd_
 $router->get('/pelan-sekolah', [PageController::class, 'page_pelan_sekolah']);
 $router->get('/pemimpin-murid', [PageController::class, 'page_pemimpin_murid']);
 $router->get('/penggubal-soalan-upsa-uasa', [PageController::class, 'page_penggubal_soalan_upsa_uasa']);
+$router->get('/upsa-2026', [PageController::class, 'page_upsa_2026']);
 $router->get('/pengurusan-tertinggi', [PageController::class, 'page_pengurusan_tertinggi']);
 $router->get('/pentaksiran-peperiksaan', [PageController::class, 'page_pentaksiran_peperiksaan']);
 $router->get('/peraturan-sekolah', [PageController::class, 'page_peraturan_sekolah']);

@@ -565,6 +565,7 @@ function smks3_site_page_options(): array
         ['value' => 'bank-soalan-upsa-bm', 'label' => 'Bank Soalan UPSA - BM', 'group' => 'Kurikulum'],
         ['value' => 'keputusan', 'label' => 'Keputusan 2018-2024', 'group' => 'Kurikulum'],
         ['value' => 'penggubal-soalan-upsa-uasa', 'label' => 'Penggubal Soalan UPSA & UASA', 'group' => 'Kurikulum'],
+        ['value' => 'upsa-2026', 'label' => 'UPSA 2026', 'group' => 'Kurikulum'],
         ['value' => 'unit-pbd', 'label' => 'Unit PBD', 'group' => 'Kurikulum'],
         ['value' => 'maklumat-pbd-panduan', 'label' => 'Maklumat PBD Dan Panduan', 'group' => 'Kurikulum'],
         ['value' => 'pbd-ppt', 'label' => 'PBD PPT', 'group' => 'Kurikulum'],
