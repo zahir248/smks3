@@ -211,7 +211,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-ppt',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -221,7 +221,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-uasa',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -231,7 +231,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-penjaminan-kualiti',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -241,7 +241,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'https://drive.google.com/drive/folders/1PYFHUPxvAt6-LeZacXZC9Cv1nkAxnCq1',
                 'is_external' => 1,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
         ],
@@ -265,7 +265,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'https://drive.google.com/drive/folders/1Z837DkxGziZFsADfgxL3fUQI1OYdirfn',
                 'is_external' => 1,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -275,7 +275,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'https://drive.google.com/drive/folders/1WZOT182f4RFi5Ajcow5wX9cmoaOhYX3N',
                 'is_external' => 1,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -285,7 +285,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-pk-pemantauan',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -295,7 +295,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-pk-pementoran',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -305,7 +305,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-pk-pengesanan',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -315,7 +315,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-pk-penyelarasan',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
         ],
@@ -404,7 +404,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'https://drive.google.com/drive/folders/1633mAw0AVJAMK2TIRe0OT8JhE75n4CjH',
                 'is_external' => 1,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -414,7 +414,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-ppt-tingkatan-1',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -424,7 +424,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-ppt-tingkatan-2',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -434,7 +434,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-ppt-tingkatan-3',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -444,7 +444,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-ppt-tingkatan-4',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
             [
@@ -454,7 +454,7 @@ $defaults = [
                 'icon' => 'bi-folder2-open',
                 'href' => 'pbd-ppt-tingkatan-5',
                 'is_external' => 0,
-                'btn_label' => 'Buka Folder',
+                'btn_label' => 'Lihat Bahagian',
                 'links' => [],
             ],
         ],
@@ -987,7 +987,7 @@ for ($tingkatan = 1; $tingkatan <= 5; $tingkatan++) {
                     'icon' => 'bi-folder2-open',
                     'href' => $individuKey,
                     'is_external' => 0,
-                    'btn_label' => 'Buka Folder',
+                    'btn_label' => 'Lihat Bahagian',
                     'links' => [],
                 ],
                 [
