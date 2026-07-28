@@ -2170,7 +2170,7 @@ function smks3_ensure_news_indexes(?PDO $pdo = null): void
 }
 
 /** Published news rows, newest first. Empty if DB unavailable or `news` missing. */
-function smks3_fetch_published_news_paginated(int $page, int $perPage = 3, ?string $year = null): ?array
+function smks3_fetch_published_news_paginated(int $page, int $perPage = 3, ?string $year = null, ?string $query = null): ?array
 {
     require_once BASE_PATH . '/config/database.php';
 
@@ -2184,6 +2184,15 @@ function smks3_fetch_published_news_paginated(int $page, int $perPage = 3, ?stri
         if ($year) {
             $where .= " AND year = ?";
             $params[] = $year;
+        }
+        $query = trim((string) $query);
+        if ($query !== '') {
+            $where .= " AND (title LIKE ? OR excerpt LIKE ? OR content LIKE ? OR slug LIKE ?)";
+            $like = '%' . $query . '%';
+            $params[] = $like;
+            $params[] = $like;
+            $params[] = $like;
+            $params[] = $like;
         }
 
         // COUNT

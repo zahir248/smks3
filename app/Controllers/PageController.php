@@ -327,6 +327,8 @@ final class PageController extends Controller
 
         $page_title = (string) ($news_item['title'] ?? 'Butiran Berita');
         $meta_title = $page_title . ' | SMK Seremban 3 (SMKS3)';
+        // Keep article pages crawlable for links, but avoid competing with homepage on brand queries.
+        $meta_robots = 'noindex, follow';
         $excerpt = trim((string) ($news_item['excerpt'] ?? ''));
         if ($excerpt === '') {
             $excerpt = (string) ($news_item['content'] ?? '');
@@ -354,6 +356,7 @@ final class PageController extends Controller
         $slugParam   = isset($_GET['slug']) ? trim($_GET['slug']) : '';
         $legacyId    = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         $yearFilter  = isset($_GET['year']) ? $_GET['year'] : '';
+        $searchQuery = isset($_GET['q']) ? trim((string) $_GET['q']) : '';
         $listPage    = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
         
         $news_per_page = 3;
@@ -390,7 +393,7 @@ final class PageController extends Controller
         
         if (!$news_item) {
         
-            $paginated = smks3_fetch_published_news_paginated($listPage, $news_per_page, $yearFilter);
+            $paginated = smks3_fetch_published_news_paginated($listPage, $news_per_page, $yearFilter, $searchQuery);
         
             if ($paginated && $paginated['total'] > 0) {
         
@@ -433,6 +436,19 @@ final class PageController extends Controller
                         return substr($n['published_at'], 0, 4) == $yearFilter;
                     });
                 }
+                if ($searchQuery !== '') {
+                    $qLower = function_exists('mb_strtolower') ? mb_strtolower($searchQuery, 'UTF-8') : strtolower($searchQuery);
+                    $news_all = array_values(array_filter($news_all, function ($n) use ($qLower) {
+                        $haystack = implode(' ', [
+                            (string) ($n['title'] ?? ''),
+                            (string) ($n['excerpt'] ?? ''),
+                            (string) ($n['content'] ?? ''),
+                            (string) ($n['slug'] ?? ''),
+                        ]);
+                        $haystack = function_exists('mb_strtolower') ? mb_strtolower($haystack, 'UTF-8') : strtolower($haystack);
+                        return str_contains($haystack, $qLower);
+                    }));
+                }
         
                 $total = count($news_all);
                 $totalPages = max(1, ceil($total / $news_per_page));
@@ -455,6 +471,21 @@ final class PageController extends Controller
             $page_title = $news_item['title'];
         } else {
             $page_lead = 'Senarai berita dan pengumuman terbaru dari sekolah.';
+            if ($searchQuery !== '') {
+                $meta_title = 'Carian Berita: ' . $searchQuery . ' | SMK Seremban 3 (SMKS3)';
+                $meta_description = 'Keputusan carian berita untuk "' . $searchQuery . '" di portal rasmi SMK Seremban 3 (SMKS3).';
+            }
+            $canonicalParams = [];
+            if ($yearFilter !== '') {
+                $canonicalParams['year'] = $yearFilter;
+            }
+            if ($searchQuery !== '') {
+                $canonicalParams['q'] = $searchQuery;
+            }
+            if ($listPage > 1) {
+                $canonicalParams['page'] = $listPage;
+            }
+            $canonical_url = 'news' . ($canonicalParams !== [] ? ('?' . http_build_query($canonicalParams)) : '');
         }
         
         $is_editor = smks3_can_edit_page();
@@ -823,14 +854,17 @@ final class PageController extends Controller
     public function home(): void
     {
         $page_title = 'Laman Utama';
-        $meta_title = 'SMK Seremban 3 (SMKS3) | Portal Rasmi Sekolah Menengah Kebangsaan Seremban 3';
+        $meta_title = 'SMKS3 | SMK Seremban 3 (Sekolah Menengah Kebangsaan Seremban 3) Rasmi';
         
         $pdo = getConnection();
         
         $settings = getSettings();
         $meta_description = trim((string) ($settings['about_summary'] ?? ''));
+        $brandPrefix = 'SMKS3 ialah SMK Seremban 3 (Sekolah Menengah Kebangsaan Seremban 3), juga dikenali sebagai SMK Seremban, di Seremban, Negeri Sembilan.';
         if ($meta_description === '') {
-            $meta_description = 'Portal rasmi SMK Seremban 3 (SMKS3), Seremban, Negeri Sembilan. Berita sekolah, akademik, kokurikulum dan maklumat rasmi SMKS3.';
+            $meta_description = $brandPrefix . ' Portal rasmi berita sekolah, akademik, kokurikulum dan maklumat warga sekolah.';
+        } else {
+            $meta_description = $brandPrefix . ' ' . $meta_description;
         }
         $home_content = smks3_get_home_content();
         $is_editor = smks3_can_edit_page();

@@ -25,6 +25,12 @@ $footerSocial = is_array($layout['social'] ?? null) ? $layout['social'] : [];
                      <?php endif; ?>>
                     <h5 class="mb-2" data-bind="footer_brand"><?= htmlspecialchars((string) ($layout['footer_brand'] ?? 'SMK Seremban 3')) ?></h5>
                     <p class="text-white-50 small mb-3" data-bind="footer_blurb"><?= htmlspecialchars((string) ($layout['footer_blurb'] ?? '')) ?></p>
+                    <p class="text-white-50 small mb-3">
+                        Laman rasmi
+                        <a href="./" class="text-white">SMKS3</a> /
+                        <a href="profil-sekolah" class="text-white">SMK Seremban 3</a> /
+                        <a href="contact" class="text-white">SMK Seremban</a>.
+                    </p>
                     <?php if (!$logged_in_editor) : ?>
                     <button type="button"
                             class="footer-staff-access"

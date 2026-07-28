@@ -373,6 +373,11 @@ function smks3_resolve_seo(array $vars = []): array
         'url' => smks3_absolute_url('/'),
         'inLanguage' => 'ms-MY',
         'publisher' => ['@id' => $orgId],
+        'potentialAction' => [
+            '@type' => 'SearchAction',
+            'target' => smks3_absolute_url('news') . '?q={search_term_string}',
+            'query-input' => 'required name=search_term_string',
+        ],
     ];
 
     $webpage = [
@@ -421,6 +426,39 @@ function smks3_resolve_seo(array $vars = []): array
             'inLanguage' => 'ms-MY',
         ];
         $jsonLd[] = array_filter($article, static fn ($v) => $v !== null);
+    }
+
+    if ($route === 'index') {
+        $jsonLd[] = [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => [
+                [
+                    '@type' => 'Question',
+                    'name' => 'Adakah SMKS3 ialah SMK Seremban 3?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Ya. SMKS3 merujuk kepada Sekolah Menengah Kebangsaan Seremban 3 (SMK Seremban 3) di Seremban, Negeri Sembilan.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'Di mana lokasi SMK Seremban 3?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'SMK Seremban 3 terletak di Jalan Seremban Tiga 3 25, Seremban 3, 70300 Seremban, Negeri Sembilan.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'Apakah laman rasmi SMKS3?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Laman rasmi SMKS3 ialah ' . smks3_absolute_url('/') . '.',
+                    ],
+                ],
+            ],
+        ];
     }
 
     // BreadcrumbList when available
@@ -493,39 +531,6 @@ function smks3_seo_sitemap_entries(): array
             'changefreq' => $changefreq,
             'priority' => $priority,
         ];
-    }
-
-    try {
-        $pdo = getConnection();
-        $stmt = $pdo->query(
-            'SELECT slug, updated_at, created_at FROM news
-             WHERE slug IS NOT NULL AND slug <> \'\'
-             ORDER BY COALESCE(updated_at, created_at) DESC
-             LIMIT 500'
-        );
-        if ($stmt) {
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $slug = trim((string) ($row['slug'] ?? ''));
-                if ($slug === '' || !preg_match('/^[a-zA-Z0-9_-]+$/', $slug)) {
-                    continue;
-                }
-                $last = (string) ($row['updated_at'] ?? $row['created_at'] ?? '');
-                $entry = [
-                    'loc' => smks3_absolute_url('news-details?' . http_build_query(['slug' => $slug])),
-                    'changefreq' => 'monthly',
-                    'priority' => '0.6',
-                ];
-                if ($last !== '') {
-                    $ts = strtotime($last);
-                    if ($ts !== false) {
-                        $entry['lastmod'] = date('Y-m-d', $ts);
-                    }
-                }
-                $entries[] = $entry;
-            }
-        }
-    } catch (Throwable $e) {
-        // pages only
     }
 
     return $entries;
